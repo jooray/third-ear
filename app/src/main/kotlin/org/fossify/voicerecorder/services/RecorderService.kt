@@ -9,8 +9,12 @@ import android.app.Service
 import android.content.Intent
 import android.media.MediaScannerConnection
 import android.net.Uri
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
+import android.os.PowerManager
 import android.provider.DocumentsContract
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.content.FileProvider
 import org.fossify.commons.extensions.createDocumentUriUsingFirstParentTreeUri
@@ -39,6 +43,7 @@ import org.fossify.voicerecorder.helpers.RECORDING_PAUSED
 import org.fossify.voicerecorder.helpers.RECORDING_RUNNING
 import org.fossify.voicerecorder.helpers.RECORDING_STOPPED
 import org.fossify.voicerecorder.helpers.STOP_AMPLITUDE_UPDATE
+import org.fossify.voicerecorder.helpers.STOP_RECORDING
 import org.fossify.voicerecorder.helpers.TOGGLE_PAUSE
 import org.fossify.voicerecorder.models.Events
 import org.fossify.voicerecorder.recorder.MediaRecorderWrapper
@@ -54,6 +59,20 @@ class RecorderService : Service() {
         var isRunning = false
 
         private const val AMPLITUDE_UPDATE_MS = 75L
+        private const val WATCHDOG_INTERVAL_MS = 1000L
+
+        // How long the input may deliver nothing but digital silence before the user is warned.
+        // A muted system microphone, another app holding the input and a dead route all look
+        // exactly like this, and none of them raise an error from MediaRecorder.
+        private const val SILENT_SECONDS_FOR_WARNING = 8
+
+        // Hard cap so a leaked lock cannot drain the battery if the service dies badly.
+        private const val WAKE_LOCK_TIMEOUT_MS = 12 * 60 * 60 * 1000L
+        private const val WAKE_LOCK_TAG = "voicerecorder:recording"
+
+        private const val WARNING_CHANNEL_ID = "recorder_warning"
+        private const val WARNING_NOTIF_ID = 2
+        private const val TAG = "RecorderService"
     }
 
 
@@ -64,7 +83,13 @@ class RecorderService : Service() {
     private var status = RECORDING_STOPPED
     private var durationTimer = Timer()
     private var amplitudeTimer = Timer()
+    private var watchdogTimer = Timer()
     private var recorder: Recorder? = null
+
+    private var wakeLock: PowerManager.WakeLock? = null
+    private var silentSeconds = 0
+    private var silenceWarningShown = false
+    private val mainHandler by lazy { Handler(Looper.getMainLooper()) }
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -76,6 +101,11 @@ class RecorderService : Service() {
             STOP_AMPLITUDE_UPDATE -> amplitudeTimer.cancel()
             TOGGLE_PAUSE -> togglePause()
             CANCEL_RECORDING -> cancelRecording()
+            STOP_RECORDING -> {
+                stopRecording()
+                stopSelf()
+            }
+
             else -> startRecording()
         }
 
@@ -108,10 +138,12 @@ class RecorderService : Service() {
         resultUri = null
 
         try {
+            acquireWakeLock()
+
             recorder = if (recordMp3()) {
                 Mp3Recorder(this)
             } else {
-                MediaRecorderWrapper(this)
+                MediaRecorderWrapper(this) { what, extra -> onRecorderError(what, extra) }
             }
 
             if (isRPlus()) {
@@ -134,26 +166,35 @@ class RecorderService : Service() {
                 )
             }
 
+            // Show the notification before anything can fail: on Android 12+ a microphone
+            // foreground service started while the app is in the background must post it
+            // immediately, and a recorder that runs without one is invisible to the user.
+            startForeground(RECORDER_RUNNING_NOTIF_ID, showNotification())
+
             recorder?.prepare()
             recorder?.start()
             duration = 0
             status = RECORDING_RUNNING
             broadcastRecorderInfo()
-            startForeground(RECORDER_RUNNING_NOTIF_ID, showNotification())
 
             durationTimer = Timer()
             durationTimer.scheduleAtFixedRate(getDurationUpdateTask(), 1000, 1000)
 
             startAmplitudeUpdates()
+            startWatchdog()
         } catch (e: Exception) {
             showErrorToast(e)
-            stopRecording()
+            releaseRecorderQuietly()
+            cancelTimers()
+            status = RECORDING_STOPPED
+            releaseWakeLock()
+            stopForeground(STOP_FOREGROUND_REMOVE)
+            stopSelf()
         }
     }
 
     private fun stopRecording() {
-        durationTimer.cancel()
-        amplitudeTimer.cancel()
+        cancelTimers()
         status = RECORDING_STOPPED
 
         recorder?.apply {
@@ -178,22 +219,20 @@ class RecorderService : Service() {
             }
         }
         recorder = null
+        releaseWakeLock()
+        resetSilenceWatch()
+        stopForeground(STOP_FOREGROUND_REMOVE)
     }
 
     private fun cancelRecording() {
-        durationTimer.cancel()
-        amplitudeTimer.cancel()
+        cancelTimers()
         status = RECORDING_STOPPED
 
-        recorder?.apply {
-            try {
-                stop()
-                release()
-            } catch (ignored: Exception) {
-            }
-        }
+        releaseRecorderQuietly()
+        releaseWakeLock()
+        resetSilenceWatch()
+        stopForeground(STOP_FOREGROUND_REMOVE)
 
-        recorder = null
         if (isRPlus()) {
             val recordingUri = createDocumentUriUsingFirstParentTreeUri(recordingPath)
             DocumentsContract.deleteDocument(contentResolver, recordingUri)
@@ -203,6 +242,115 @@ class RecorderService : Service() {
 
         EventBus.getDefault().post(Events.RecordingCompleted())
         stopSelf()
+    }
+
+    private fun acquireWakeLock() {
+        if (wakeLock?.isHeld == true) return
+        val powerManager = getSystemService(POWER_SERVICE) as PowerManager
+        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKE_LOCK_TAG).apply {
+            setReferenceCounted(false)
+            acquire(WAKE_LOCK_TIMEOUT_MS)
+        }
+    }
+
+    private fun releaseWakeLock() {
+        wakeLock?.takeIf { it.isHeld }?.release()
+        wakeLock = null
+    }
+
+    private fun cancelTimers() {
+        durationTimer.cancel()
+        amplitudeTimer.cancel()
+        watchdogTimer.cancel()
+    }
+
+    private fun releaseRecorderQuietly() {
+        recorder?.apply {
+            try {
+                release()
+            } catch (ignored: Exception) {
+            }
+        }
+        recorder = null
+    }
+
+    /**
+     * Watches for a recording that is running but receiving pure silence. MediaRecorder never
+     * reports this as an error, so without a watchdog the user only finds out when they play
+     * back an empty file.
+     */
+    private fun startWatchdog() {
+        resetSilenceWatch()
+        watchdogTimer = Timer()
+        watchdogTimer.scheduleAtFixedRate(getWatchdogTask(), WATCHDOG_INTERVAL_MS, WATCHDOG_INTERVAL_MS)
+    }
+
+    private fun resetSilenceWatch() {
+        silentSeconds = 0
+        silenceWarningShown = false
+        runCatching {
+            (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).cancel(WARNING_NOTIF_ID)
+        }
+    }
+
+    private fun getWatchdogTask() = object : TimerTask() {
+        override fun run() {
+            // A paused recording is legitimately silent.
+            if (status != RECORDING_RUNNING) return
+
+            val amplitude = try {
+                recorder?.getMaxAmplitude() ?: 0
+            } catch (ignored: Exception) {
+                0
+            }
+
+            if (amplitude > 0) {
+                silentSeconds = 0
+                return
+            }
+
+            silentSeconds++
+            if (silentSeconds >= SILENT_SECONDS_FOR_WARNING && !silenceWarningShown) {
+                silenceWarningShown = true
+                showSilenceWarning()
+            }
+        }
+    }
+
+    private fun onRecorderError(what: Int, extra: Int) {
+        Log.e(TAG, "MediaRecorder error: what=$what extra=$extra")
+        mainHandler.post {
+            if (status == RECORDING_STOPPED) return@post
+            toast(R.string.recording_failed)
+            stopRecording()
+            stopSelf()
+        }
+    }
+
+    private fun showSilenceWarning() {
+        runCatching {
+            val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+            NotificationChannel(
+                WARNING_CHANNEL_ID,
+                getString(R.string.microphone_silent_title),
+                NotificationManager.IMPORTANCE_DEFAULT
+            ).apply {
+                setSound(null, null)
+                notificationManager.createNotificationChannel(this)
+            }
+
+            val notification = NotificationCompat.Builder(this, WARNING_CHANNEL_ID)
+                .setContentTitle(getString(R.string.microphone_silent_title))
+                .setContentText(getString(R.string.microphone_silent_text))
+                .setStyle(NotificationCompat.BigTextStyle().bigText(getString(R.string.microphone_silent_text)))
+                .setSmallIcon(R.drawable.ic_graphic_eq_vector)
+                .setContentIntent(getOpenAppIntent())
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setAutoCancel(true)
+                .build()
+
+            notificationManager.notify(WARNING_NOTIF_ID, notification)
+        }
     }
 
     private fun broadcastRecorderInfo() {
@@ -293,6 +441,7 @@ class RecorderService : Service() {
         if (status == RECORDING_PAUSED) {
             text += " (${getString(R.string.paused)})"
         }
+        val pauseLabelId = if (status == RECORDING_PAUSED) R.string.resume_recording else R.string.pause_recording
 
         val builder = NotificationCompat.Builder(this, channelId)
             .setContentTitle(title)
@@ -303,9 +452,22 @@ class RecorderService : Service() {
             .setVisibility(visibility)
             .setSound(null)
             .setOngoing(true)
+            .setOnlyAlertOnce(true)
             .setAutoCancel(true)
+            .addAction(0, getString(pauseLabelId), getServiceActionIntent(TOGGLE_PAUSE, 1))
+            .addAction(0, getString(R.string.stop_recording), getServiceActionIntent(STOP_RECORDING, 2))
 
         return builder.build()
+    }
+
+    private fun getServiceActionIntent(action: String, requestCode: Int): PendingIntent {
+        val intent = Intent(this, RecorderService::class.java).setAction(action)
+        return PendingIntent.getService(
+            this,
+            requestCode,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
     }
 
     private fun getOpenAppIntent(): PendingIntent {

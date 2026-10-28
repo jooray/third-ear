@@ -6,7 +6,10 @@ import android.media.MediaRecorder
 import android.os.ParcelFileDescriptor
 import org.fossify.voicerecorder.extensions.config
 
-class MediaRecorderWrapper(val context: Context) : Recorder {
+class MediaRecorderWrapper(
+    val context: Context,
+    private val onError: ((what: Int, extra: Int) -> Unit)? = null,
+) : Recorder {
 
     @Suppress("DEPRECATION")
     private var recorder = MediaRecorder().apply {
@@ -17,12 +20,25 @@ class MediaRecorderWrapper(val context: Context) : Recorder {
         setAudioSamplingRate(context.config.samplingRate)
     }
 
+    private var duplicatedOutput: ParcelFileDescriptor? = null
+
+    init {
+        // Without these, a dead encoder is indistinguishable from a healthy recording:
+        // the duration timer keeps ticking while nothing reaches the file.
+        recorder.setOnErrorListener { _, what, extra ->
+            onError?.invoke(what, extra)
+            true
+        }
+    }
+
     override fun setOutputFile(path: String) {
         recorder.setOutputFile(path)
     }
 
     override fun setOutputFile(parcelFileDescriptor: ParcelFileDescriptor) {
         val pFD = ParcelFileDescriptor.dup(parcelFileDescriptor.fileDescriptor)
+        duplicatedOutput?.close()
+        duplicatedOutput = pFD
         recorder.setOutputFile(pFD.fileDescriptor)
     }
 
@@ -50,6 +66,8 @@ class MediaRecorderWrapper(val context: Context) : Recorder {
 
     override fun release() {
         recorder.release()
+        duplicatedOutput?.close()
+        duplicatedOutput = null
     }
 
     override fun getMaxAmplitude(): Int {

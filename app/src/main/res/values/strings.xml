@@ -7,6 +7,12 @@
     <string name="recording_saved_successfully">Recording saved successfully</string>
     <string name="recording_too_short">Recording was too short to record!</string>
     <string name="recording">Recording</string>
+    <string name="recording_failed">Recording failed</string>
+    <string name="stop_recording">Stop</string>
+    <string name="pause_recording">Pause</string>
+    <string name="resume_recording">Resume</string>
+    <string name="microphone_silent_title">No audio detected</string>
+    <string name="microphone_silent_text">The microphone has been silent for a while. Another app may be using it, or the system microphone switch may be off. The recording is still running.</string>
     <string name="no_recordings_found">No recordings created by this app\nhave been found</string>
     <string name="no_recordings_in_folder_found">No recordings have been found\nin the selected folder</string>
     <string name="paused">Paused</string>
