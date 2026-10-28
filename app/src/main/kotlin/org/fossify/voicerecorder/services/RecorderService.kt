@@ -187,15 +187,28 @@ class RecorderService : Service() {
             releaseRecorderQuietly()
             cancelTimers()
             status = RECORDING_STOPPED
+            broadcastStoppedState()
             releaseWakeLock()
             stopForeground(STOP_FOREGROUND_REMOVE)
             stopSelf()
         }
     }
 
+    /**
+     * The recorder screen keeps its own optimistic copy of the recording state. When a stop
+     * does not come from that screen - the notification action, an encoder error, a failed
+     * start - it must be told, or it keeps showing a paused/recording state while nothing is
+     * running.
+     */
+    private fun broadcastStoppedState() {
+        EventBus.getDefault().post(Events.RecordingStatus(RECORDING_STOPPED))
+        EventBus.getDefault().post(Events.RecordingDuration(0))
+    }
+
     private fun stopRecording() {
         cancelTimers()
         status = RECORDING_STOPPED
+        broadcastStoppedState()
 
         recorder?.apply {
             try {
@@ -227,6 +240,7 @@ class RecorderService : Service() {
     private fun cancelRecording() {
         cancelTimers()
         status = RECORDING_STOPPED
+        broadcastStoppedState()
 
         releaseRecorderQuietly()
         releaseWakeLock()
