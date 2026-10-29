@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Third Ear: diktafón s akciami, Bluetooth mikrofónmi a White Noise</title>
+<meta name="description" content="Bezplatný diktafón s otvoreným kódom pre Android. Jedno tlačidlo na každý cieľ, poriadna podpora Bluetooth mikrofónov a načúvacích aparátov, prepis v telefóne, White Noise a Android Auto.">
+<meta name="theme-color" content="#14161d">
+<meta property="og:title" content="Third Ear: diktafón s akciami, Bluetooth mikrofónmi a White Noise">
+<meta property="og:description" content="Bezplatný diktafón s otvoreným kódom pre Android. Jedno tlačidlo na každý cieľ, poriadna podpora Bluetooth mikrofónov a načúvacích aparátov, prepis v telefóne, White Noise a Android Auto.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="../img/recorder.png">
+<link rel="alternate" hreflang="en" href="../">
+<link rel="alternate" hreflang="sk" href="../sk/">
+<link rel="alternate" hreflang="cs" href="../cs/">
+<link rel="alternate" hreflang="de" href="../de/">
+<link rel="alternate" hreflang="es" href="../es/">
+<link rel="alternate" hreflang="x-default" href="../">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2314161d'/%3E%3Cpath d='M24 44c0 4 3 7 7 7 5 0 8-4 8-9 0-6 6-8 6-16 0-9-7-15-15-15s-15 6-15 14' fill='none' stroke='%238291b8' stroke-width='4' stroke-linecap='round'/%3E%3Cpath d='M30 26c0-3 2-5 5-5s5 2 5 5c0 4-4 5-4 9' fill='none' stroke='%238291b8' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<a class="skip" href="#main">Preskočiť na obsah</a>
+<header class="top">
+ <div class="wrap bar">
+  <a class="brand" href="../sk/"><svg width="28" height="28" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#8291b8"/><path d="M24 44c0 4 3 7 7 7 5 0 8-4 8-9 0-6 6-8 6-16 0-9-7-15-15-15s-15 6-15 14" fill="none" stroke="#14161d" stroke-width="4" stroke-linecap="round"/><path d="M30 26c0-3 2-5 5-5s5 2 5 5c0 4-4 5-4 9" fill="none" stroke="#14161d" stroke-width="4" stroke-linecap="round"/></svg>Third Ear</a>
+  <nav class="links" aria-label="Sections"><a href="#actions">Akcie</a><a href="#bluetooth">Bluetooth</a><a href="#ostt">Prepis</a><a href="#whitenoise">White Noise</a><a href="#car">Android Auto</a><a href="#get">Získať</a></nav>
+  <nav class="lang" aria-label="Language"><a href="../" hreflang="en" lang="en">EN</a><a href="../sk/" hreflang="sk" lang="sk" aria-current="page">SK</a><a href="../cs/" hreflang="cs" lang="cs">CS</a><a href="../de/" hreflang="de" lang="de">DE</a><a href="../es/" hreflang="es" lang="es">ES</a></nav>
+ </div>
+</header>
+<main id="main">
+<section class="hero wrap">
+ <div class="hero-text">
+  <h1>Diktafón, ktorý vie, kam majú ísť tvoje slová</h1>
+  <p class="lead">Nahrávaj z telefónu, Bluetooth slúchadiel, načúvacích aparátov s LE Audio alebo z auta. Prepis vznikne v telefóne. Výsledok pôjde tam, kam hovorí tlačidlo, na ktoré si ťukol.</p>
+  <ul class="badges"><li>Zadarmo</li><li>Otvorený kód (GPLv3)</li><li>Bez účtu a analytiky</li><li>Android 12+</li></ul>
+  <p class="cta"><a class="btn primary" href="#get">Získať Third Ear</a> <a class="btn" href="https://github.com/jooray/third-ear">Zdrojový kód</a></p>
+  <!-- TODO confirm URL -->
+ </div>
+ <div class="hero-shot"><img class="shot hero-img" src="../img/recorder.webp" width="720" height="1616" alt="Obrazovka nahrávania Third Ear s tlačidlami akcií „Meeting notes“, „Family“ a „Ask Hermes“ a poslednou nahrávkou s prepisom" loading="lazy" decoding="async"></div>
+</section>
+
+<section id="actions" class="wrap stack">
+ <div class="copy">
+  <h2>Tlačidlo pre každý cieľ</h2>
+  <p>Väčšina diktafónov má jedno tlačidlo nahrávania. Third Ear má tie, ktoré si nadefinuješ: názov a to, čo sa má po nahrávke stať.</p>
+  <ul class="list"><li>iba uložiť nahrávku</li><li>skopírovať prepis do schránky</li><li>zdieľať súbor alebo text</li><li>poslať zvuk, prepis alebo oboje do skupiny vo White Noise</li><li>poslať na webhook (n8n, Home Assistant, vlastný server)</li></ul>
+  <p>Ťukni na tlačidlo a nahrávanie sa začne. Počas nahrávania sa každé tlačidlo zmení na „Stop → názov“ a napíše, čo urobí, takže cieľ môžeš ešte zmeniť v okamihu zastavenia. Potom notifikácia ukazuje každý krok (ukladanie, prepis, čakanie na aplikáciu na prepis, odosielanie) a na želanie ho aj povie nahlas, napríklad „Uložené, prepisujem.“</p>
+ </div>
+ <div class="shots three">
+  <figure><img class="shot" src="../img/recording.webp" width="720" height="1616" alt="Obrazovka počas nahrávania: každé tlačidlo akcie ukazuje „Stop → názov“ a čo urobí" loading="lazy" decoding="async"><figcaption>Počas nahrávania sa každé tlačidlo zmení na „Stop → akcia“. Upozornenie nad tlačidlami je strážca ticha, snímka je z emulátora bez vstupu z mikrofónu.</figcaption></figure>
+  <figure><img class="shot" src="../img/notification.webp" width="720" height="1616" alt="Notifikácia nahrávania s akciami na zastavenie" loading="lazy" decoding="async"></figure>
+  <figure><img class="shot" src="../img/action-editor.webp" width="720" height="1616" alt="Úprava akcie: názov, cieľ a čo sa pošle" loading="lazy" decoding="async"></figure>
+ </div>
+</section>
+
+<section id="bluetooth" class="band">
+ <div class="wrap split rev">
+  <div class="copy">
+   <h2>Bluetooth mikrofóny, ktoré naozaj fungujú</h2>
+   <p>Android dáva Bluetooth mikrofón len aplikáciám, ktoré sa správajú ako telefonát. Third Ear to smerovanie vyrieši za teba, takže môžeš nahrávať zo slúchadiel, načúvacích aparátov s LE Audio aj z handsfree mikrofónu v aute.</p>
+   <ul class="list"><li>Počká, kým sa LE Audio rozbehne („Čakám na Bluetooth mikrofón…“, zvyčajne 1,7 až 3,5 s).</li><li>Keď mikrofón naozaj dodáva zvuk, povie nahlas, že môžeš hovoriť.</li><li>Tlačidlo zdroja na obrazovke nahrávania ukáže, ktorý mikrofón práve nahráva.</li><li>Ak sa Bluetooth mikrofón nerozbehne alebo sa odpojí, Third Ear sa raz prepne na mikrofón telefónu a ozve sa zvukový signál.</li><li>Mikrofón môžeš prepnúť aj uprostred nahrávania. Pokračuje sa v tom istom súbore.</li></ul>
+   <p class="note">Overené na Pixeli s načúvacími aparátmi s LE Audio.</p>
+  </div>
+  <div class="art"><img src="../img/hero-art.webp" width="1024" height="1024" alt="Abstraktná ilustrácia: načúvací aparát, auto a telefón prepojené zvukovými vlnami a bublinami správ" loading="lazy" decoding="async"></div>
+ </div>
+</section>
+
+<section id="ostt" class="wrap">
+ <div class="card ostt">
+  <h2>Najlepšie funguje s Offline Speech to Text</h2>
+  <p>Third Ear nemá vlastný rozpoznávač reči. Hotový súbor odovzdá aplikácii Offline Speech to Text (OSTT), ktorá je zadarmo a prepisuje priamo v zariadení, bez internetu. Beží to na pozadí, zamknutá obrazovka nevadí.</p>
+  <ul class="list"><li>Ak je OSTT práve zaneprázdnená (napríklad diktuje jej klávesnica), Third Ear počká a skúša to znova asi 10 minút.</li><li>Prepisy sa ukladajú ako súbory .txt vedľa nahrávky a môžeš ich kopírovať.</li></ul>
+  <p><a class="btn primary" href="https://zapstore.dev/apps/app.offlinespeechtotext">Získať Offline Speech to Text na Zapstore</a></p>
+  <h3 class="sub">Zápisky zo schôdzok a diktovanie</h3>
+  <p>Vyrob si akciu „Meeting notes“: nahráš, dostaneš prepis. Alebo použi „Prepis do schránky“ a diktuj do ľubovoľnej aplikácie: nahraj, ťukni, vlož. Prepisy sú obyčajné textové súbory vedľa zvuku, takže sa v nich dá hľadať.</p>
+ </div>
+</section>
+
+<section id="whitenoise" class="wrap split">
+ <div class="copy">
+  <h2>Hlasové správy vo White Noise a odpovede späť</h2>
+  <p>White Noise je end-to-end šifrovaný messenger postavený na nostr (Marmot/MLS). Third Ear tam má vlastnú identitu, ukázanú ako npub s QR kódom. Pozvi ho do skupiny, prijmi pozvánku a akcia pošle tvoju hlasovú správu s prepisom ako popisom, alebo iba text.</p>
+  <p>Odpovede sa vracajú. Pre každú skupinu si vyberieš: vypnuté, prehrávať hlasové správy, alebo prehrávať hlas a text čítať nahlas hlasovou syntézou. Deje sa to automaticky alebo na požiadanie cez „Prečítať nahlas“ v notifikácii. Zoznam ignorovaných (predvolene 🎙️) preskočí správy, ktoré nechceš čítať. Zoznam posledných správ má tlačidlá Prehrať a Prečítať. Kľúč si zazálohuješ exportom a importom nsec.</p>
+  <h3>Rozprávaj sa s AI agentom bez rúk</h3>
+  <p>Daj Third Ear a agenta, napríklad Hermes agent, do jednej skupiny. Hermes je AI agent, s ktorým sa dá rozprávať v skupinách White Noise cez konektor MDK. Ty hovoríš, agent dostane prepis (alebo zvuk) a jeho odpoveď ti prečíta alebo prehrá, so slúchadlami či načúvacími aparátmi a bez pohľadu na displej. Ozvenu tvojho prepisu od agenta preskočí položka 🎙️ v zozname ignorovaných.</p>
+  <p class="note">Agenti za konektorom MDK musia povoliť npub aplikácie Third Ear (<code>--allow-welcomer</code> alebo <code>--allow-user</code>).</p>
+ </div>
+ <div class="shots two">
+  <figure><img class="shot" src="../img/white-noise.webp" width="720" height="1616" alt="Obrazovka White Noise s vlastným npub aplikácie Third Ear, QR kódom a skupinami" loading="lazy" decoding="async"></figure>
+  <figure><img class="shot" src="../img/group-settings.webp" width="720" height="1616" alt="Nastavenia skupiny: odpovede a zoznam ignorovaných" loading="lazy" decoding="async"></figure>
+ </div>
+</section>
+
+<section id="car" class="band">
+ <div class="wrap narrow">
+  <h2>V aute s Android Auto</h2>
+  <ul class="list"><li>Na obrazovke auta nájdeš mriežku svojich akcií.</li><li>Nahrávanie cez mikrofón auta a obrazovka „Stop → akcia“.</li><li>Prichádzajúce správy z White Noise sa v aute objavia ako notifikácie s tlačidlami Odpovedať a Označiť ako prečítané. Android Auto ich prečíta, keď o to požiadaš, nikdy sám od seba.</li></ul>
+  <p class="note">Aplikácie inštalované mimo obchodu potrebujú v nastaveniach pre vývojárov Android Auto zapnuté Neznáme zdroje.</p>
+ </div>
+</section>
+
+<section id="reliability" class="wrap grid2">
+ <div class="card">
+  <h2>Stavané na dlhé nahrávky</h2>
+  <ul class="list"><li>Nahráva ďalej s vypnutou obrazovkou a zamknutým telefónom, kým ju nezastavíš.</li><li>Odolné voči pádu: ak systém aplikáciu zabije, nahraté sa pri ďalšom spustení obnoví a uloží. Stratí sa najviac posledná sekunda.</li><li>Strážca ticha ťa upozorní, keď mikrofón dodáva digitálne ticho, napríklad pre vypnutý spínač mikrofónu alebo preto, že ho drží iná aplikácia.</li><li>Formáty: AAC (.m4a), Opus (.ogg) a MP3.</li></ul>
+ </div>
+ <div class="card">
+  <h3 class="sub">Po ruke všade</h3>
+  <p>Tri dlaždice rýchlych nastavení, každá viazaná na jednu z tvojich akcií, a miniaplikácia na domovskej obrazovke. Obrazovky Third Ear sú v angličtine, slovenčine, češtine, nemčine a španielčine.</p>
+  <h2 class="h2b">Zadarmo, s otvoreným kódom a súkromne</h2>
+  <p>Third Ear je slobodný softvér pod licenciou GPLv3. Nepotrebuje účet a nemá analytiku. Prepis sa robí v tvojom telefóne.</p>
+  <p>Je to fork aplikácie <a href="https://github.com/FossifyOrg/Voice-Recorder">Fossify Voice Recorder</a> <!-- TODO confirm URL -->, ktorý vytvoril Juraj Bednár.</p>
+ </div>
+</section>
+
+<section id="get" class="wrap get">
+ <h2>Získať Third Ear</h2>
+ <p>Third Ear zatiaľ nie je zverejnený. Čoskoro bude na Zapstore. Vyžaduje Android 12 alebo novší.</p>
+ <!-- TODO: Zapstore link https://zapstore.dev/apps/app.thirdear once published -->
+ <p class="cta"><span class="btn primary disabled" aria-disabled="true">Čoskoro na Zapstore</span>
+ <!-- TODO confirm URL -->
+ <a class="btn" href="https://github.com/jooray/third-ear">Zdroj na GitHube</a></p>
+ <p class="note"><a href="https://zapstore.dev/apps/app.offlinespeechtotext">Najprv si nainštaluj Offline Speech to Text, ten robí prepis.</a></p>
+</section>
+</main>
+<footer class="foot">
+ <div class="wrap">
+  <p>Od Juraja Bednára je aj <a href="https://jooray.github.io/i-hear-you/">I Hear You</a> <!-- TODO confirm URL -->, diaľkový ovládač pre načúvacie aparáty ReSound/GN, ktorý nahráva hlasové poznámky z tlačidiel aparátu.</p>
+  <p>Third Ear má otvorený kód pod licenciou GPLv3. Fossify Voice Recorder, Juraj Bednár.</p>
+ </div>
+</footer>
+</body>
+</html>
