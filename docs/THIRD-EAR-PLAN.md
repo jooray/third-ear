@@ -90,8 +90,8 @@ spoken cues, pause media, White Noise (own screen), Android Auto notes.
   carry the `.txt` along (SAF sibling by document id); rename does not, and the in-app transcript
   (Copy transcript) is matched by the saved file name, so it is lost on rename. Small follow-up.
 - **APK size.** The debug APK is ~120 MB: MarmotKit's 52 MB arm64 library (compressed to 25 MB)
-  plus unminified dex of its 47k-line generated bindings. A release build (R8) will be far smaller;
-  a release keep rule for JNA/UniFFI is still to be checked when release signing is set up.
+  plus unminified dex of its 47k-line generated bindings. An unsigned release build (R8, keep
+  rules for JNA/UniFFI in `proguard-rules.pro`) is 36 MB; it was not run on a device yet.
 - **Not done / ideas:** a "Transcribe" menu item for recordings made before Third Ear (would run a
   recording through the pipeline); per-action spoken-cue toggle (it is global); webhook URL is per
   action; pause media needs notification access (Settings row opens the system screen).
