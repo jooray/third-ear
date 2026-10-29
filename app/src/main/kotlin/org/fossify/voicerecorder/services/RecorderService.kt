@@ -107,14 +107,29 @@ class RecorderService : Service() {
         fun start(context: Context, actionId: String?) = launch(context, intent(context, ACTION_START).putExtra(EXTRA_ACTION_ID, actionId))
 
         /** Ends the recording and runs [actionId]'s action (null: the one it was started with). */
-        fun stop(context: Context, actionId: String?) = launch(context, intent(context, ACTION_STOP).putExtra(EXTRA_ACTION_ID, actionId))
+        fun stop(context: Context, actionId: String?) = control(context, intent(context, ACTION_STOP).putExtra(EXTRA_ACTION_ID, actionId))
 
-        fun discard(context: Context) = launch(context, intent(context, ACTION_DISCARD))
+        fun discard(context: Context) = control(context, intent(context, ACTION_DISCARD))
 
-        fun togglePause(context: Context) = launch(context, intent(context, TOGGLE_PAUSE))
+        fun togglePause(context: Context) = control(context, intent(context, TOGGLE_PAUSE))
 
         fun switchSource(context: Context, source: Source) =
-            launch(context, intent(context, ACTION_SWITCH_SOURCE).putExtra(EXTRA_SOURCE, source.name))
+            control(context, intent(context, ACTION_SWITCH_SOURCE).putExtra(EXTRA_SOURCE, source.name))
+
+        /**
+         * Commands for a recording in progress: the service already runs in the foreground, so a
+         * plain start reaches it from anywhere (a tile, the car), where a foreground start from
+         * the background could be refused.
+         */
+        private fun control(context: Context, intent: Intent): Boolean {
+            if (!isRunning) return false
+            return try {
+                context.startService(intent)
+                true
+            } catch (t: Throwable) {
+                launch(context, intent)
+            }
+        }
 
         fun retry(context: Context, noteId: String) = launch(context, intent(context, ACTION_RETRY).putExtra(EXTRA_NOTE_ID, noteId))
 

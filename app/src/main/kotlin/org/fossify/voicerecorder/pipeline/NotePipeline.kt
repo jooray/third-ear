@@ -169,8 +169,9 @@ class NotePipeline(private val context: Context, private val store: NoteStore = 
         if (failedSave) {
             failureNotification(note, note.error ?: context.getString(R.string.te_error_save, "?"))
         } else {
-            // the user's copy exists; the working copies only cost space
-            store.dropAudio(note)
+            // the user's copy exists; the working copies only cost space (a share target may
+            // still be reading the shared copy, so that one stays until the note is pruned)
+            if (plan.action.destination != Destination.SHARE) store.dropAudio(note)
             if (note.recovered) simpleNotification(context.getString(R.string.te_recovered_title), context.getString(R.string.te_recovered_body, note.savedName))
             else if (plan.action.destination != Destination.SAVE && plan.action.destination != Destination.COPY_TRANSCRIPT && plan.action.destination != Destination.SHARE) {
                 if (context.config.spokenCues) Cues.play(Cues.Tone.SENT)
