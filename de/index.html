@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Third Ear: Diktiergerät mit Aktionen, Bluetooth-Mikrofonen und White Noise</title>
-<meta name="description" content="Kostenloses Open-Source-Diktiergerät für Android. Eine Taste pro Ziel, Bluetooth- und Hörgeräte-Mikrofone, die wirklich funktionieren, Transkription auf dem Handy, White Noise und Android Auto.">
+<title>Third Ear: das Diktiergerät fürs Weltraumzeitalter</title>
+<meta name="description" content="Das modernste Diktiergerät für Android. Kostenlos und Open Source. Nimmt mit dem Handy, Bluetooth-Headsets, LE-Audio-Hörgeräten und im Auto auf, transkribiert auf dem Gerät und arbeitet mit White Noise und Android Auto.">
 <meta name="theme-color" content="#16130f">
-<meta property="og:title" content="Third Ear: Diktiergerät mit Aktionen, Bluetooth-Mikrofonen und White Noise">
-<meta property="og:description" content="Kostenloses Open-Source-Diktiergerät für Android. Eine Taste pro Ziel, Bluetooth- und Hörgeräte-Mikrofone, die wirklich funktionieren, Transkription auf dem Handy, White Noise und Android Auto.">
+<meta property="og:title" content="Third Ear: das Diktiergerät fürs Weltraumzeitalter">
+<meta property="og:description" content="Das modernste Diktiergerät für Android. Kostenlos und Open Source. Nimmt mit dem Handy, Bluetooth-Headsets, LE-Audio-Hörgeräten und im Auto auf, transkribiert auf dem Gerät und arbeitet mit White Noise und Android Auto.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="../img/recorder.png">
 <link rel="alternate" hreflang="en" href="../">
@@ -34,8 +34,8 @@
 <main id="main">
 <section class="hero wrap">
  <div class="hero-text">
-  <h1>Das Diktiergerät, das weiß, wohin deine Worte gehören</h1>
-  <p class="lead">Nimm mit dem Handy auf, mit einem Bluetooth-Headset, mit LE-Audio-Hörgeräten oder im Auto. Das Transkript entsteht auf dem Handy. Das Ergebnis geht dorthin, wo die Taste hinführt, auf die du getippt hast.</p>
+  <h1>Das Diktiergerät fürs Weltraumzeitalter</h1>
+  <p class="lead">Das modernste Diktiergerät für Android und ein drittes Ohr für alles, was du sonst vergessen würdest aufzuschreiben. Es nimmt mit dem Handy auf, mit einem Bluetooth-Headset, mit LE-Audio-Hörgeräten oder im Auto. Das Transkript entsteht auf dem Handy, und das Ergebnis geht dorthin, wo die Taste hinführt, auf die du getippt hast. Der Name ist ein Wortspiel mit dem dritten Auge, aber die Arbeit macht das Ohr.</p>
   <ul class="badges"><li>Kostenlos</li><li>Open Source (GPLv3)</li><li>Kein Konto, keine Analyse</li><li>Android 12+</li></ul>
   <p class="cta"><a class="btn primary" href="#get">Third Ear holen</a> <a class="btn" href="https://github.com/jooray/third-ear">Quellcode</a></p>
  </div>
@@ -44,8 +44,8 @@
 
 <section id="actions" class="wrap stack">
  <div class="copy">
-  <h2>Eine Taste für jedes Ziel</h2>
-  <p>Die meisten Rekorder haben eine Aufnahmetaste. Third Ear hat die Tasten, die du selbst festlegst: ein Name und das, was danach passiert.</p>
+  <h2>Eine Taste für jedes Ziel, wie eine kleine Bodenstation</h2>
+  <p>Die meisten Rekorder haben eine Aufnahmetaste und viel Hoffnung. Third Ear hat die Tasten, die du selbst festlegst: ein Name und das, was danach passiert.</p>
   <ul class="list"><li>nur die Aufnahme speichern</li><li>das Transkript in die Zwischenablage kopieren</li><li>die Datei oder den Text teilen</li><li>Audio, Transkript oder beides an eine White-Noise-Gruppe senden</li><li>an einen Webhook senden (n8n, Home Assistant, dein eigener Server)</li></ul>
   <p>Tippe auf eine Taste, und die Aufnahme startet. Während der Aufnahme wird jede Taste zu „Stopp → Name“ und sagt, was sie tun wird. So kannst du das Ziel im Moment des Stoppens noch ändern. Danach zeigt eine Benachrichtigung jeden Schritt (speichern, transkribieren, auf die Transkriptions-App warten, senden) und spricht ihn auf Wunsch auch aus, zum Beispiel „Gespeichert, wird transkribiert.“</p>
   <p>Jede Leitung auf der Tafel hat ihre eigene Kabelfarbe, einen kurzen Code und eine Lampe, so liest du den Zustand von allem mit einem Blick:</p>
@@ -61,8 +61,8 @@
 <section id="bluetooth" class="band">
  <div class="wrap split rev">
   <div class="copy">
-   <h2>Bluetooth-Mikrofone, die wirklich funktionieren</h2>
-   <p>Android gibt ein Bluetooth-Mikrofon nur an Apps, die sich wie ein Telefonat verhalten. Third Ear übernimmt dieses Routing für dich. So kannst du mit Headsets, LE-Audio-Hörgeräten und der Freisprechanlage im Auto aufnehmen.</p>
+   <h2>Bluetooth-Mikrofone, die sich wirklich melden</h2>
+   <p>Android gibt ein Bluetooth-Mikrofon nur an Apps, die sich wie ein Telefonat verhalten, also verhält sich Third Ear wie eines. Das Routing übernimmt es für dich. So kannst du mit Headsets, LE-Audio-Hörgeräten und der Freisprechanlage im Auto aufnehmen.</p>
    <ul class="list"><li>Es wartet, bis LE Audio gestartet ist („Warte auf das Bluetooth-Mikrofon…“, meist 1,7 bis 3,5 Sekunden).</li><li>Sobald das Mikrofon wirklich Ton liefert, sagt eine Stimme, dass du loslegen kannst.</li><li>Die Quellentaste auf dem Aufnahmebildschirm zeigt, welches Mikrofon tatsächlich aufnimmt.</li><li>Wenn das Bluetooth-Mikrofon nicht startet oder die Verbindung abbricht, wechselt Third Ear einmal zum Handy-Mikrofon, mit hörbarem Signal.</li><li>Du kannst das Mikrofon mitten in der Aufnahme wechseln. Sie läuft in derselben Datei weiter.</li></ul>
    <p class="note">Getestet auf einem Pixel mit LE-Audio-Hörgeräten.</p>
   </div>
@@ -73,7 +73,7 @@
 <section id="ostt" class="wrap">
  <div class="card ostt">
   <h2>Am besten mit Offline Speech to Text</h2>
-  <p>Third Ear bringt keine eigene Spracherkennung mit. Es übergibt die fertige Datei an Offline Speech to Text (OSTT), eine kostenlose App, die direkt auf dem Gerät und ohne Internet transkribiert. Das läuft im Hintergrund, ein gesperrter Bildschirm stört nicht.</p>
+  <p>Third Ear bringt keine eigene Spracherkennung mit. Es übergibt die fertige Datei an Offline Speech to Text (OSTT), eine kostenlose App, die direkt auf dem Gerät und ohne Internet transkribiert. OSTT ist sozusagen das Gehirn hinter den Ohren. Das läuft im Hintergrund, ein gesperrter Bildschirm stört nicht.</p>
   <ul class="list"><li>Ist OSTT gerade beschäftigt (etwa weil die Tastatur diktiert), wartet Third Ear und versucht es etwa 10 Minuten lang erneut.</li><li>Transkripte werden als .txt-Dateien neben der Aufnahme gespeichert, und du kannst sie kopieren.</li></ul>
   <p><a class="btn primary" href="https://zapstore.dev/apps/app.offlinespeechtotext">Offline Speech to Text im Zapstore holen</a></p>
   <h3 class="sub">Besprechungsnotizen und Diktat</h3>
@@ -101,28 +101,28 @@
   <h2>Im Auto mit Android Auto</h2>
   <ul class="list"><li>Ein Raster deiner Aktionen auf dem Autobildschirm.</li><li>Aufnahme mit dem Mikrofon des Autos und ein Bildschirm „Stopp → Aktion“.</li><li>Eingehende White-Noise-Nachrichten erscheinen als Auto-Benachrichtigungen mit Antworten und Als gelesen markieren. Android Auto liest sie vor, wenn du darum bittest, nie von selbst.</li></ul>
   <h3 id="car-setup">Third Ear in Android Auto einschalten</h3>
-  <p>Third Ear kommt nicht aus dem Play Store, deshalb blendet Android Auto es aus, bis du unbekannte Quellen erlaubst. Das dauert eine Minute:</p>
+  <p>Third Ear kommt nicht aus dem Play Store, deshalb versteckt Android Auto es, bis du unbekannte Quellen erlaubst. Die Startfreigabe dauert etwa eine Minute:</p>
   <ol class="steps"><li>Öffne auf dem Handy die Android-Auto-Einstellungen (in den Einstellungen nach „Android Auto“ suchen).</li><li>Scrolle ganz nach unten und tippe etwa zehnmal auf <b>Version</b>, dann erlaube die Entwicklereinstellungen.</li><li>Tippe oben rechts auf <b>⋮</b> → <b>Entwicklereinstellungen</b> → schalte <b>Unbekannte Quellen</b> ein.</li><li>Zurück in den Android-Auto-Einstellungen öffnest du <b>Launcher anpassen</b> und hakst <b>Third Ear</b> an.</li><li>Schalte in Third Ear <b>Bluetooth-Mikrofon verwenden</b> ein, damit es mit dem Mikrofon des Autos aufnimmt.</li><li>Verbinde dich mit dem Auto. Taucht Third Ear nicht auf, beende Android Auto erzwungen und verbinde neu.</li></ol>
  </div>
 </section>
 
 <section id="reliability" class="wrap grid2">
  <div class="card">
-  <h2>Gebaut für lange Aufnahmen</h2>
+  <h2>Gebaut für lange Aufnahmen, auch bei ausgeschaltetem Bildschirm</h2>
   <ul class="list"><li>Nimmt bei ausgeschaltetem Bildschirm und gesperrtem Handy weiter auf, bis du stoppst.</li><li>Absturzsicher: Wird die App beendet, wird das Aufgenommene beim nächsten Start wiederhergestellt und gespeichert. Höchstens die letzte Sekunde geht verloren.</li><li>Ein Stille-Wächter warnt dich, wenn das Mikrofon digitale Stille liefert, etwa weil der Mikrofonschalter aus ist oder eine andere App es belegt.</li><li>Formate: AAC (.m4a), Opus (.ogg) und MP3.</li></ul>
  </div>
  <div class="card">
   <h3 class="sub">Überall griffbereit</h3>
   <p>Drei Schnelleinstellungs-Kacheln, jede an eine deiner Aktionen gebunden, und ein Widget für den Startbildschirm. Die Bildschirme von Third Ear gibt es auf Englisch, Slowakisch, Tschechisch, Deutsch und Spanisch.</p>
   <h2 class="h2b">Kostenlos, Open Source, privat</h2>
-  <p>Third Ear ist freie Software unter der GPLv3. Es gibt kein Konto und keine Analyse. Die Transkription läuft auf deinem Handy.</p>
+  <p>Third Ear ist freie Software unter der GPLv3. Es gibt kein Konto und keine Analyse. Die Transkription läuft auf deinem Handy, nicht auf irgendeinem Server im Orbit.</p>
   <p>Es ist ein Fork von <a href="https://github.com/FossifyOrg/Voice-Recorder">Fossify Voice Recorder</a>, entwickelt von Juraj Bednár.</p>
  </div>
 </section>
 
 <section id="get" class="wrap get">
  <h2>Third Ear holen</h2>
- <p>Hol dir Third Ear im Zapstore oder lade die APK aus dem GitHub-Release. Voraussetzung ist Android 12 oder neuer.</p>
+ <p>Bereit zum Start? Hol dir Third Ear im Zapstore oder lade die APK aus dem GitHub-Release. Voraussetzung ist Android 12 oder neuer.</p>
  <p class="cta"><a class="btn primary" href="https://zapstore.dev/apps/app.thirdear">Im Zapstore holen</a>
  <a class="btn" href="https://github.com/jooray/third-ear/releases/latest">APK herunterladen</a>
  <a class="btn" href="https://github.com/jooray/third-ear">Quellcode auf GitHub</a></p>
