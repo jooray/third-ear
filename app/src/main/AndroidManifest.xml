@@ -22,6 +22,7 @@
         <!-- OSTT's file transcription contract ships with this activity; it is the capability probe -->
         <intent>
             <action android:name="app.offlinespeechtotext.action.TRANSCRIBE_AUDIO" />
+            <data android:scheme="content" />
         </intent>
         <package android:name="app.offlinespeechtotext" />
         <!-- text-to-speech engines, for reading White Noise messages -->

@@ -68,7 +68,9 @@ class Transcriber(private val context: Context) {
 
     /** OSTT's file API ships with its TRANSCRIBE_AUDIO activity; their presence is the capability probe. */
     fun supportsFileApi(component: ComponentName): Boolean = runCatching {
-        context.packageManager.queryIntentActivities(Intent(ACTION_TRANSCRIBE_AUDIO).setPackage(component.packageName), 0).isNotEmpty()
+        // the activity only matches with a content: Uri, so probe with one
+        val probe = Intent(ACTION_TRANSCRIBE_AUDIO).setPackage(component.packageName).setData(Uri.parse("content://probe/audio"))
+        context.packageManager.queryIntentActivities(probe, 0).isNotEmpty()
     }.getOrDefault(false)
 
     fun contractFor(component: ComponentName): Contract? = when {
