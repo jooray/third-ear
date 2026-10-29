@@ -16,3 +16,4 @@ fastlane/report.xml
 app/src/marmotkit/
 *.jks
 *.keystore
+release/

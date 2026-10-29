@@ -1,0 +1,28 @@
+repository: https://github.com/jooray/third-ear
+metadata_sources:
+    - github
+pubkey: npub1m2mvvpjugwdehtaskrcl7ksvdqnnhnjur9v6g9v266nss504q7mqvlr8p9
+name: Third Ear
+summary: The voice recorder for the space age, with Bluetooth and hearing-aid microphones, on-device transcription, White Noise and Android Auto.
+description: |
+  Third Ear is a free, open-source voice recorder for Android. Instead of one record button you get your own action buttons: save, copy the transcript, share, post to a webhook or send to a White Noise group. While recording, every button turns into "Stop → action", so the destination can still change when you stop.
+
+  It records from the phone, Bluetooth headsets, LE Audio hearing aids and the car's hands-free microphone, and shows which microphone really records. Transcription happens on the phone with Offline Speech to Text. Third Ear has its own White Noise identity, so it can talk to your groups and to AI agents in them and read the replies aloud. It also works in Android Auto. Long recordings keep going with the screen off and survive crashes.
+tags:
+    - voice-recorder
+    - transcription
+    - bluetooth
+    - hearing-aids
+    - white-noise
+    - nostr
+    - android-auto
+license: GPL-3.0-only
+website: https://jooray.github.io/third-ear/
+icon: ./graphics/icon-512.png
+images:
+    - ./website/img/recorder.png
+    - ./website/img/recording.png
+    - ./website/img/action-editor.png
+    - ./website/img/notification.png
+    - ./website/img/settings.png
+release_notes: ./docs/RELEASE_NOTES_0.1.0.md
