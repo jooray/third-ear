@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_launcher_name">Rejestrator głosu</string>
     <string name="recording_saved_successfully">Nagranie zostało zapisane</string>
     <string name="recording">Nagrywanie</string>
     <string name="no_recordings_found">Nie znaleziono nagrań utworzonych\nprzez tę aplikację</string>

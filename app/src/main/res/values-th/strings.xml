@@ -15,7 +15,6 @@
     <string name="delete_recordings_confirmation">ลบ %s?</string>
     <string name="discard_recording_confirmation">คุณแน่ใจหรือไม่ว่าต้องการยกเลิกการบันทึกปัจจุบัน สิ่งนี้ไม่สามารถยกเลิกได้</string>
     <string name="discard_recording">ยกเลิกการบันทึก</string>
-    <string name="app_launcher_name">เครื่องบันทึกเสียง</string>
     <string name="confirm_recording_folder">คุณต้องยืนยันโฟลเดอร์ที่คุณต้องการบันทึกการบันทึกของคุณ กรุณากดตกลงเพื่อดำเนินการต่อ</string>
     <string name="move_recordings">ย้ายการบันทึก</string>
     <string name="move_recordings_to_new_folder_desc">คุณมีการบันทึกที่มีอยู่ คุณต้องการย้ายไปยังโฟลเดอร์ใหม่ของคุณหรือไม่?</string>

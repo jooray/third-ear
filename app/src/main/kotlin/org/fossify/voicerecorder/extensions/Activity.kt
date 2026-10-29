@@ -11,6 +11,8 @@ import org.fossify.commons.extensions.createSAFDirectorySdk30
 import org.fossify.commons.extensions.deleteFile
 import org.fossify.commons.extensions.getDoesFilePathExistSdk30
 import org.fossify.commons.extensions.hasProperStoredFirstParentUri
+import org.fossify.commons.extensions.hideKeyboard
+import org.fossify.commons.extensions.isShowingSAFDialogSdk30
 import org.fossify.commons.extensions.toFileDirItem
 import org.fossify.commons.helpers.DAY_SECONDS
 import org.fossify.commons.helpers.MONTH_SECONDS
@@ -57,21 +59,23 @@ fun BaseSimpleActivity.launchFolderPicker(
         showFAB = true,
         showRationale = false
     ) { path ->
-        handleSAFDialog(path) { grantedSAF ->
-            if (!grantedSAF) {
-                callback(null)
-                return@handleSAFDialog
-            }
-
-            handleSAFDialogSdk30(path, showRationale = false) { grantedSAF30 ->
-                if (!grantedSAF30) {
-                    callback(null)
-                    return@handleSAFDialogSdk30
-                }
-
-                callback(path)
-            }
+        handleSafSdk30(path) { granted ->
+            callback(if (granted) path else null)
         }
+    }
+}
+
+/**
+ * fossify-commons' `handleSAFDialogSdk30` skips the folder-permission dialog (and reports success)
+ * for any package not named `org.fossify.*`, which leaves a fork like Third Ear without write
+ * access to its folder. This does the same thing as the original without that check.
+ */
+fun BaseSimpleActivity.handleSafSdk30(path: String, callback: (granted: Boolean) -> Unit) {
+    hideKeyboard()
+    if (isShowingSAFDialogSdk30(path, showRationale = false)) {
+        BaseSimpleActivity.funAfterSdk30Action = callback
+    } else {
+        callback(true)
     }
 }
 

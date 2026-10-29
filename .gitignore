@@ -11,3 +11,6 @@ keystore.properties
 fastlane/fastlane.json
 fastlane/report.xml
 .kotlin/
+
+# MarmotKit (fetched by tools/marmotkit/fetch.sh, ~180 MB)
+app/src/marmotkit/

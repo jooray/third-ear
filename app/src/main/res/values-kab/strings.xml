@@ -2,7 +2,6 @@
 <resources>
     <string name="player">Ameɣri</string>
     <string name="recorder">Amseklas</string>
-    <string name="app_launcher_name">Amseklas n taɣect</string>
     <string name="delete_recordings_confirmation">Kkes %s?</string>
     <string name="audio_source">Aɣbalu n umeslaw</string>
     <string name="recording_saved_successfully">Asekles yettwaskelsen akken iwata</string>

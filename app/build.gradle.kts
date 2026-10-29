@@ -24,7 +24,7 @@ fun hasSigningVars(): Boolean {
 
 base {
     val versionCode = project.property("VERSION_CODE").toString().toInt()
-    archivesName = "voicerecorder-$versionCode"
+    archivesName = "thirdear-$versionCode"
 }
 
 android {
@@ -112,7 +112,7 @@ android {
         )
     }
 
-    namespace = project.property("APP_ID").toString()
+    namespace = "org.fossify.voicerecorder"
 
     lint {
         checkReleaseBuilds = false

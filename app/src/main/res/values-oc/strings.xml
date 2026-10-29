@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_launcher_name">Enregistrador de votz</string>
     <string name="player">Lector</string>
     <string name="discard_recording">Anullar l\'enregistrament</string>
     <string name="audio_source">Font àudio</string>

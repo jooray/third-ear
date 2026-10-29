@@ -17,6 +17,7 @@ import org.fossify.commons.helpers.ensureBackgroundThread
 import org.fossify.commons.helpers.isRPlus
 import org.fossify.voicerecorder.databinding.DialogRenameRecordingBinding
 import org.fossify.voicerecorder.extensions.config
+import org.fossify.voicerecorder.extensions.handleSafSdk30
 import org.fossify.voicerecorder.models.Events
 import org.fossify.voicerecorder.models.Recording
 import org.greenrobot.eventbus.EventBus
@@ -79,7 +80,7 @@ class RenameRecordingDialog(
         try {
             val path = "${activity.config.saveRecordingsFolder}/${recording.title}"
             val newPath = "${path.getParentPath()}/$newDisplayName"
-            activity.handleSAFDialogSdk30(path) {
+            activity.handleSafSdk30(path) {
                 val success = activity.renameDocumentSdk30(path, newPath)
                 if (success) {
                     EventBus.getDefault().post(Events.RecordingCompleted())

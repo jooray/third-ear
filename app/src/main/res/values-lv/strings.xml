@@ -4,7 +4,6 @@
     <string name="faq_1_title">Vai es ierakstīšanas laikā varu paslēpt paziņojuma ikonu?</string>
     <string name="confirm_recording_folder">Ir jāapstiprina mape, kurā saglabāt savus ierakstus. Lūgums spiest \"Labi\", lai turpinātu.</string>
     <string name="microphone_mode_unprocessed">Neapstrādāts</string>
-    <string name="app_launcher_name">Balss ierakstītājs</string>
     <string name="recording_saved_successfully">Ieraksts sekmīgi saglabāts</string>
     <string name="no_recordings_in_folder_found">Atlasītajā mapē netika atrasts\nneviens ieraksts</string>
     <string name="paused">Apturēts</string>

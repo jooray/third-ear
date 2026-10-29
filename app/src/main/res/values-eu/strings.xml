@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_launcher_name">Ahots grabagailua</string>
     <string name="recording_saved_successfully">Grabaketa ongi gorde da</string>
     <string name="recording">Grabatzen</string>
     <string name="no_recordings_found">Ez da aplikazio honek sorturiko grabaziorik

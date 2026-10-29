@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_launcher_name">Garso įrašytuvas</string>
     <string name="recording_saved_successfully">Įrašas sėkmingai išsaugotas</string>
     <string name="recording">Įrašoma</string>
     <string name="no_recordings_found">Nerasta įrašų, sukurtų\nšia programa.</string>

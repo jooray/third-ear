@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_launcher_name">음성 녹음</string>
     <string name="recording_saved_successfully">녹음 저장 성공</string>
     <string name="recording">녹음</string>
     <string name="no_recordings_found">이 앱에서 생성된 녹음을

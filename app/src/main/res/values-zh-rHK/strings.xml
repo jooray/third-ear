@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_launcher_name">錄音機</string>
     <string name="confirm_recording_folder">您必須確認要儲存錄音的資料夾。請按確定繼續。</string>
     <string name="move_recordings">移動錄音</string>
     <string name="move_recordings_to_new_folder_desc">您有既有的錄音。您想要將它們移動到新的資料夾嗎？</string>

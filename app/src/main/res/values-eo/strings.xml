@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_launcher_name">Sonregistrilo</string>
     <string name="no_recordings_found">No recordings created by this app
 \nhave been found</string>
     <string name="no_recordings_in_folder_found">No recordings have been found
