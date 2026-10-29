@@ -215,7 +215,8 @@
         <!-- Android Auto: templated car screens (category IOT: a grid of actions) and messaging notifications -->
         <service
             android:name=".car.ThirdEarCarAppService"
-            android:exported="true">
+            android:exported="true"
+            tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="androidx.car.app.CarAppService" />
                 <category android:name="androidx.car.app.category.IOT" />

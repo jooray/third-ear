@@ -26,7 +26,10 @@ import org.fossify.voicerecorder.pipeline.Cues
 class ReplySpeaker(private val context: Context) {
 
     companion object {
-        @Volatile private var shared: ReplySpeaker? = null
+        // holds the application context only
+        @android.annotation.SuppressLint("StaticFieldLeak")
+        @Volatile
+        private var shared: ReplySpeaker? = null
         fun get(context: Context): ReplySpeaker = shared ?: synchronized(this) {
             shared ?: ReplySpeaker(context.applicationContext).also { shared = it }
         }
