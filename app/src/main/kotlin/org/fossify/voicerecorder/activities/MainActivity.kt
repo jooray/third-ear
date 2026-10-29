@@ -85,6 +85,7 @@ class MainActivity : SimpleActivity() {
         if (config.recordAfterLaunch && !RecorderService.isRunning) {
             RecorderService.start(this, null)
         }
+        org.fossify.voicerecorder.whitenoise.WhiteNoiseService.start(this)
         // recordings the process died on (or that died mid-pipeline) are finished and saved now
         ensureBackgroundThread {
             if (!RecorderService.isRunning && NoteStore(this).unfinished().isNotEmpty()) {

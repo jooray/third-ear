@@ -61,6 +61,7 @@ import org.fossify.voicerecorder.pipeline.NotePipeline
 import org.fossify.voicerecorder.pipeline.NoteState
 import org.fossify.voicerecorder.pipeline.NoteStore
 import org.greenrobot.eventbus.EventBus
+import org.fossify.voicerecorder.tiles.ActionTileService
 
 /**
  * Records (through [RecordingEngine]) and then runs the [NotePipeline] for each finished
@@ -233,6 +234,7 @@ class RecorderService : Service() {
             engine = e
             e.start()
             updateWidgets(true)
+            ActionTileService.refreshAll(this)
             Log.i(TAG, "recording ${note.id} with action ${action.name}")
         } catch (t: Throwable) {
             Log.e(TAG, "could not start recording", t)
@@ -321,6 +323,7 @@ class RecorderService : Service() {
         releaseWakeLock()
         notifications().cancel(WARNING_NOTIF_ID)
         updateWidgets(false)
+        ActionTileService.refreshAll(this)
         broadcastStopped()
         val toResume = pausedPlayers.also { pausedPlayers = emptyList() }
         val note = store.get(noteId)

@@ -120,7 +120,7 @@ class NoteStore(root: File) {
     fun unfinished(): List<Note> = reload().filter { it.state == NoteState.RECORDING || it.state == NoteState.PROCESSING }
 
     /** The note that saved a recording with this file name, for "Copy transcript" in the list. */
-    fun bySavedName(name: String): Note? = all.value.firstOrNull { it.savedName == name }
+    fun bySavedName(name: String): Note? = all.value.ifEmpty { reload() }.firstOrNull { it.savedName == name }
 
     fun delete(id: String) {
         File(root, id).deleteRecursively()

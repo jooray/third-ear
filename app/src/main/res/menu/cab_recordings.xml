@@ -24,6 +24,16 @@
         android:title="@string/open_with"
         app:showAsAction="never" />
     <item
+        android:id="@+id/cab_copy_transcript"
+        android:showAsAction="never"
+        android:title="@string/te_copy_transcript"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/cab_show_transcript"
+        android:showAsAction="never"
+        android:title="@string/te_show_transcript"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/cab_select_all"
         android:icon="@drawable/ic_select_all_vector"
         android:title="@string/select_all"

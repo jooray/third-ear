@@ -17,6 +17,7 @@ import org.fossify.commons.helpers.ensureBackgroundThread
 import org.fossify.commons.views.MyRecyclerView
 import org.fossify.voicerecorder.BuildConfig
 import org.fossify.voicerecorder.R
+import org.fossify.commons.extensions.toast
 import org.fossify.voicerecorder.activities.SimpleActivity
 import org.fossify.voicerecorder.databinding.ItemRecordingBinding
 import org.fossify.voicerecorder.dialogs.DeleteConfirmationDialog
@@ -51,6 +52,9 @@ class RecordingsAdapter(
         menu.apply {
             findItem(R.id.cab_rename).isVisible = isOneItemSelected()
             findItem(R.id.cab_open_with).isVisible = isOneItemSelected()
+            val transcript = isOneItemSelected() && selectedTranscript() != null
+            findItem(R.id.cab_copy_transcript).isVisible = transcript
+            findItem(R.id.cab_show_transcript).isVisible = transcript
         }
     }
 
@@ -65,6 +69,21 @@ class RecordingsAdapter(
             R.id.cab_delete -> askConfirmDelete()
             R.id.cab_select_all -> selectAll()
             R.id.cab_open_with -> openRecordingWith()
+            R.id.cab_copy_transcript -> selectedTranscript()?.let {
+                org.fossify.voicerecorder.pipeline.NotePipeline(activity).copyToClipboard(it)
+                activity.toast(R.string.te_transcript_copied)
+            }
+
+            R.id.cab_show_transcript -> selectedTranscript()?.let { text ->
+                com.google.android.material.dialog.MaterialAlertDialogBuilder(activity)
+                    .setTitle(R.string.te_transcript)
+                    .setMessage(text)
+                    .setPositiveButton(R.string.te_copy_transcript) { _, _ ->
+                        org.fossify.voicerecorder.pipeline.NotePipeline(activity).copyToClipboard(text)
+                    }
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show()
+            }
         }
     }
 
@@ -133,6 +152,14 @@ class RecordingsAdapter(
             applicationId = BuildConfig.APPLICATION_ID,
             forceMimeType = "audio/*"
         )
+    }
+
+    /** The transcript Third Ear made for the selected recording (matched by its saved file name). */
+    private fun selectedTranscript(): String? {
+        val r = getSelectedItems().firstOrNull() ?: return null
+        val store = org.fossify.voicerecorder.pipeline.NoteStore(activity)
+        val note = store.bySavedName(r.title) ?: return null
+        return store.transcript(note.id)
     }
 
     private fun shareRecordings() {

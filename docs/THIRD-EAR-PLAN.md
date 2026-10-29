@@ -55,14 +55,14 @@ spoken cues, pause media, White Noise (own screen), Android Auto notes.
 
 - [x] M0 Move repo to `~/projects/third-ear`, `upstream` remote, `main` branch, plan file
 - [x] M0 Rename: app id, name, minSdk 31, commons fork workarounds, version 0.1.0 — builds
-- [ ] M1 Recording engine (phone source, AAC/Opus/MP3 sinks, frame journal, finaliser, recovery), new RecorderService, tests
-- [ ] M2 Bluetooth source (route, primer, first-sound wait, fallback once with cue, follow disconnects), source button + switch dialog, setting, tests
-- [ ] M3 Actions (model, store, editor UI), recorder screen with action buttons, stop-with-destination, tests
-- [ ] M4 Pipeline: export, transcription (file API + fallback + retry), progress notification, cues, clipboard, share, webhook, last-recording card, copy/transcribe in player, tests
-- [ ] M5 Quick Settings tiles (3 slots), widget uses default action, boot/update receiver
-- [ ] M6 White Noise: MarmotKit fetch, host, identity, npub (copy + QR), invites, groups, send voice/text, nsec export/import
-- [ ] M7 Replies: per-group settings, ReplyPolicy, speaker, recent messages screen, MessagingStyle notifications with Reply / Mark read / Read, tests
-- [ ] M8 Android Auto: car app screens, CarConnection → ask, tests, DHU if available
+- [x] M1 Recording engine (phone source, AAC/Opus/MP3 sinks, frame journal, finaliser, recovery), new RecorderService, tests
+- [x] M2 Bluetooth source (route, primer, first-sound wait, fallback once with cue, follow disconnects), source button + switch dialog, setting, tests
+- [x] M3 Actions (model, store, editor UI), recorder screen with action buttons, stop-with-destination, tests
+- [x] M4 Pipeline: export, transcription (file API + fallback + retry), progress notification, cues, clipboard, share, webhook, last-recording card, copy/transcribe in player, tests
+- [x] M5 Quick Settings tiles (3 slots), widget uses default action, boot/update receiver
+- [x] M6 White Noise: MarmotKit fetch, host, identity, npub (copy + QR), invites, groups, send voice/text, nsec export/import
+- [x] M7 Replies: per-group settings, ReplyPolicy, speaker, recent messages screen, MessagingStyle notifications with Reply / Mark read / Read, tests
+- [x] M8 Android Auto: car app screens, CarConnection → ask, tests, DHU if available
 - [ ] M9 Slovak strings, README, testing guide, lint, device verification
 
 ## Notes while building
