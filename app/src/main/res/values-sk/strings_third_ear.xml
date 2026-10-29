@@ -219,4 +219,5 @@
     <string name="resume_recording">Pokračovať</string>
     <string name="microphone_silent_title">Žiadny zvuk</string>
     <string name="microphone_silent_text">Mikrofón je už chvíľu úplne tichý. Môže ho používať iná aplikácia alebo je vypnutý systémový prepínač mikrofónu. Nahrávanie pokračuje.</string>
+    <string name="te_wn_restored">Third Ear bol obnovený zo zálohy. Nastavenia sa vrátili, ale identita vo White Noise sa nikdy nezálohuje (jej kľúč ostáva na starom telefóne). Zapni White Noise, vytvorí sa nová identita, a ak máš starý kľúč, použi Importovať nsec; v oboch prípadoch musia skupiny Third Ear pozvať znova.</string>
 </resources>

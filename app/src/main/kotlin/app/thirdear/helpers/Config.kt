@@ -132,4 +132,9 @@ class Config(context: Context) : BaseConfig(context) {
     var whiteNoiseEnabled: Boolean
         get() = prefs.getBoolean(WHITE_NOISE_ENABLED, false)
         set(v) = prefs.edit { putBoolean(WHITE_NOISE_ENABLED, v) }
+
+    /** White Noise was on in a restored backup, but its identity (never backed up) is not here. */
+    var whiteNoiseRestored: Boolean
+        get() = prefs.getBoolean(WHITE_NOISE_RESTORED, false)
+        set(v) = prefs.edit { putBoolean(WHITE_NOISE_RESTORED, v) }
 }

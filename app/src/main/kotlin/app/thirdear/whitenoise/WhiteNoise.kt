@@ -3,6 +3,7 @@ package app.thirdear.whitenoise
 import android.content.Context
 import android.util.Log
 import java.io.File
+import app.thirdear.extensions.config
 import app.thirdear.services.RecorderService
 
 /** Whether the phone is connected to Android Auto (set by the car module's CarConnection observer). */
@@ -19,6 +20,22 @@ object WhiteNoise {
 
     /** Messages older than this process's runtime start are history replayed on start, not news. */
     private val startedAt = System.currentTimeMillis()
+
+    /**
+     * Settings come back from a backup, the White Noise key and MDK state do not. Starting the
+     * runtime then would silently create a new identity; instead White Noise is switched off and
+     * the White Noise screen explains: import the nsec, or create a new identity and have the
+     * groups invite it again.
+     */
+    fun checkRestored(context: Context) {
+        val c = context.config
+        if (restoredWithoutIdentity(c.whiteNoiseEnabled, File(context.noBackupFilesDir, "marmot").exists())) {
+            c.whiteNoiseEnabled = false
+            c.whiteNoiseRestored = true
+        }
+    }
+
+    fun restoredWithoutIdentity(enabled: Boolean, localState: Boolean) = enabled && !localState
 
     fun joinedGroups(): List<GroupInfo> =
         MarmotHost.groups.value.filter { it.member && !it.pending }.map { GroupInfo(it.id, it.name) }

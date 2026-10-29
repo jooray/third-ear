@@ -209,4 +209,5 @@
     <string name="te_car_open_phone">Open Third Ear on the phone once: Android starts the microphone only after that.</string>
     <string name="te_car_no_actions">No actions. Add them in Third Ear on the phone.</string>
     <string name="te_car_messages">Messages</string>
+    <string name="te_wn_restored">Third Ear was restored from a backup. Settings came back, but the White Noise identity is never backed up (its key stays on the old phone). Turn White Noise on to create a new identity, then use Import nsec if you have the old key; either way, groups have to invite Third Ear again.</string>
 </resources>

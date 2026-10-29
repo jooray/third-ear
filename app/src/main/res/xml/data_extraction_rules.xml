@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Android 12+: what Third Ear puts into cloud backups and device-to-device transfers.
+    Settings only (actions, tiles, per-group reply settings, Fossify's preferences, the folder
+    choice; the folder's access grant is not restorable and is asked again on first use).
+    Not included: the White Noise key store (encrypted under a Keystore key that never leaves the
+    phone), MarmotKit's MDK database (no_backup), recordings in progress and pipeline working
+    files (files/notes), cached incoming messages (files/incoming).
+    Keep in sync with backup_rules.xml.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <include domain="sharedpref" path="." />
+        <exclude domain="sharedpref" path="marmot_secrets.xml" />
+    </cloud-backup>
+    <device-transfer>
+        <include domain="sharedpref" path="." />
+        <exclude domain="sharedpref" path="marmot_secrets.xml" />
+    </device-transfer>
+</data-extraction-rules>

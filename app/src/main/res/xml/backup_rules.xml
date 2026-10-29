@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- fullBackupContent (older backup transports); the same rules as data_extraction_rules.xml -->
+<full-backup-content>
+    <include domain="sharedpref" path="." />
+    <exclude domain="sharedpref" path="marmot_secrets.xml" />
+</full-backup-content>

@@ -46,6 +46,7 @@ class WhiteNoiseService : Service() {
         fun intent(context: Context, action: String): Intent = Intent(context, WhiteNoiseService::class.java).setAction(action)
 
         fun start(context: Context) {
+            WhiteNoise.checkRestored(context)
             if (!context.config.whiteNoiseEnabled || !MarmotHost.supported()) return
             runCatching { ContextCompat.startForegroundService(context, intent(context, ACTION_START)) }
                 .onFailure { Log.w(TAG, "could not start: ${it.message}") }

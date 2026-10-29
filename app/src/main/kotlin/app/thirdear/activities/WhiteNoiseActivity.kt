@@ -68,6 +68,11 @@ class WhiteNoiseActivity : SimpleActivity() {
             binding.wnEnabled.toggle()
             config.whiteNoiseEnabled = binding.wnEnabled.isChecked
             if (config.whiteNoiseEnabled) {
+                config.whiteNoiseRestored = false
+                // the user's choice: from here on a missing MDK directory is not a restored backup
+                java.io.File(noBackupFilesDir, "marmot").mkdirs()
+            }
+            if (config.whiteNoiseEnabled) {
                 WhiteNoiseService.start(this)
                 lifecycleScope.launch { MarmotHost.start(this@WhiteNoiseActivity) }
             } else {
@@ -118,6 +123,7 @@ class WhiteNoiseActivity : SimpleActivity() {
         val ready = MarmotHost.phase.value == MarmotHost.Phase.READY
         binding.wnStatus.text = when {
             !MarmotHost.supported() -> getString(R.string.te_wn_unsupported)
+            !on && config.whiteNoiseRestored -> getString(R.string.te_wn_restored)
             !on -> getString(R.string.te_wn_intro)
             MarmotHost.phase.value == MarmotHost.Phase.STARTING -> getString(R.string.te_wn_starting)
             MarmotHost.phase.value == MarmotHost.Phase.FAILED -> getString(R.string.te_wn_failed, MarmotHost.error.value ?: "?")
