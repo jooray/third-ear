@@ -41,6 +41,7 @@ import app.thirdear.extensions.config
 import app.thirdear.extensions.describe
 import app.thirdear.extensions.ensureStoragePermission
 import app.thirdear.extensions.inputLabel
+import app.thirdear.extensions.openOsttPage
 import app.thirdear.extensions.recordActions
 import app.thirdear.extensions.setKeepScreenAwake
 import app.thirdear.pipeline.Note
@@ -80,6 +81,7 @@ class RecorderFragment(context: Context, attributeSet: AttributeSet) : MyViewPag
         binding.toggleRecordingButton.setOnClickListener { RecorderService.togglePause(context) }
         binding.cancelRecordingButton.setOnClickListener { confirmDiscard() }
         binding.sourceButton.setOnClickListener { onSourceTapped() }
+        binding.osttHint.setOnClickListener { context.openOsttPage() }
         binding.lastNoteRetry.setOnClickListener { lastNotes.firstOrNull()?.let { RecorderService.retry(context, it.id) } }
         binding.lastNoteCopy.setOnClickListener { lastNotes.firstOrNull()?.let { copyTranscript(it) } }
         binding.lastNoteTranscript.setOnClickListener { lastNotes.firstOrNull()?.let { showTranscript(it) } }
@@ -128,6 +130,10 @@ class RecorderFragment(context: Context, attributeSet: AttributeSet) : MyViewPag
 
     private fun reloadActions() {
         actions = context.recordActions()
+        // an action wants a transcript but no transcription app is installed: say where to get one
+        val needsTranscriber = actions.any { app.thirdear.actions.ActionPlan.of(it).transcribe }
+        binding.osttHint.beVisibleIf(needsTranscriber && !app.thirdear.pipeline.Transcriber(context).available(context.config.transcriber))
+        binding.osttHint.setTextColor(context.getProperPrimaryColor())
         renderedKey = null
         renderActions()
     }

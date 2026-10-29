@@ -89,6 +89,18 @@
             tools:visibility="visible" />
 
         <org.fossify.commons.views.MyTextView
+            android:id="@+id/ostt_hint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/small_margin"
+            android:background="?attr/selectableItemBackground"
+            android:paddingTop="@dimen/small_margin"
+            android:paddingBottom="@dimen/small_margin"
+            android:text="@string/te_ostt_missing"
+            android:textSize="@dimen/smaller_text_size"
+            android:visibility="gone" />
+
+        <org.fossify.commons.views.MyTextView
             android:id="@+id/action_hint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -9,6 +9,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import app.thirdear.actions.ActionStore
 import app.thirdear.extensions.recordActions
+import app.thirdear.extensions.openOsttPage
 import app.thirdear.pipeline.MediaPauser
 import app.thirdear.pipeline.Transcriber
 import app.thirdear.tiles.ActionTileService
@@ -435,9 +436,12 @@ class SettingsActivity : SimpleActivity() {
         val transcriber = Transcriber(this)
         val providers = transcriber.providers()
         val current = transcriber.resolve(config.transcriber)
-        binding.settingsTranscriber.text = current?.let { providerLabel(transcriber, it) } ?: getString(R.string.te_setting_transcriber_none)
+        binding.settingsTranscriber.text = current?.let { providerLabel(transcriber, it) } ?: getString(R.string.te_ostt_missing)
         binding.settingsTranscriberHolder.setOnClickListener {
-            if (providers.isEmpty()) return@setOnClickListener
+            if (providers.isEmpty() || current == null || transcriber.contractFor(current) == null) {
+                openOsttPage()
+                return@setOnClickListener
+            }
             val items = providers.mapIndexed { i, c -> RadioItem(i, providerLabel(transcriber, c)) }
             RadioGroupDialog(this, ArrayList(items), providers.indexOf(current)) {
                 config.transcriber = providers[it as Int].flattenToString()
