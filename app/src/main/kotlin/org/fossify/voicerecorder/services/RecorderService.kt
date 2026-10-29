@@ -1,267 +1,440 @@
 package org.fossify.voicerecorder.services
 
-import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.content.Context
 import android.content.Intent
-import android.media.MediaScannerConnection
-import android.net.Uri
+import android.content.pm.ServiceInfo
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.os.PowerManager
-import android.provider.DocumentsContract
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import androidx.core.content.FileProvider
-import org.fossify.commons.extensions.createDocumentUriUsingFirstParentTreeUri
-import org.fossify.commons.extensions.createSAFFileSdk30
-import org.fossify.commons.extensions.getDocumentFile
-import org.fossify.commons.extensions.getFilenameFromPath
-import org.fossify.commons.extensions.getLaunchIntent
-import org.fossify.commons.extensions.getMimeType
-import org.fossify.commons.extensions.getParentPath
-import org.fossify.commons.extensions.isPathOnSD
-import org.fossify.commons.extensions.showErrorToast
+import androidx.core.content.ContextCompat
+import java.util.UUID
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import org.fossify.commons.extensions.toast
-import org.fossify.commons.helpers.ensureBackgroundThread
-import org.fossify.commons.helpers.isRPlus
-import org.fossify.voicerecorder.BuildConfig
 import org.fossify.voicerecorder.R
+import org.fossify.voicerecorder.actions.ActionPlan
+import org.fossify.voicerecorder.actions.ActionStore
+import org.fossify.voicerecorder.actions.RecordAction
 import org.fossify.voicerecorder.activities.SplashActivity
+import org.fossify.voicerecorder.audio.AndroidSources
+import org.fossify.voicerecorder.audio.BluetoothMics
+import org.fossify.voicerecorder.audio.Container
+import org.fossify.voicerecorder.audio.DefaultSinks
+import org.fossify.voicerecorder.audio.EncoderSettings
+import org.fossify.voicerecorder.audio.EngineStatus
+import org.fossify.voicerecorder.audio.RecordingEngine
+import org.fossify.voicerecorder.audio.Source
+import org.fossify.voicerecorder.audio.SourcePolicy
 import org.fossify.voicerecorder.extensions.config
+import org.fossify.voicerecorder.extensions.defaultActions
 import org.fossify.voicerecorder.extensions.getFormattedFilename
+import org.fossify.voicerecorder.extensions.inputLabel
 import org.fossify.voicerecorder.extensions.updateWidgets
 import org.fossify.voicerecorder.helpers.CANCEL_RECORDING
 import org.fossify.voicerecorder.helpers.EXTENSION_MP3
+import org.fossify.voicerecorder.helpers.EXTENSION_OGG
 import org.fossify.voicerecorder.helpers.GET_RECORDER_INFO
 import org.fossify.voicerecorder.helpers.RECORDER_RUNNING_NOTIF_ID
-import org.fossify.voicerecorder.helpers.RECORDING_PAUSED
-import org.fossify.voicerecorder.helpers.RECORDING_RUNNING
 import org.fossify.voicerecorder.helpers.RECORDING_STOPPED
 import org.fossify.voicerecorder.helpers.STOP_AMPLITUDE_UPDATE
 import org.fossify.voicerecorder.helpers.STOP_RECORDING
 import org.fossify.voicerecorder.helpers.TOGGLE_PAUSE
 import org.fossify.voicerecorder.models.Events
-import org.fossify.voicerecorder.recorder.MediaRecorderWrapper
-import org.fossify.voicerecorder.recorder.Mp3Recorder
-import org.fossify.voicerecorder.recorder.Recorder
+import org.fossify.voicerecorder.pipeline.Cues
+import org.fossify.voicerecorder.pipeline.MediaPauser
+import org.fossify.voicerecorder.pipeline.Note
+import org.fossify.voicerecorder.pipeline.NotePipeline
+import org.fossify.voicerecorder.pipeline.NoteState
+import org.fossify.voicerecorder.pipeline.NoteStore
 import org.greenrobot.eventbus.EventBus
-import java.io.File
-import java.util.Timer
-import java.util.TimerTask
 
+/**
+ * Records (through [RecordingEngine]) and then runs the [NotePipeline] for each finished
+ * recording. One foreground service for both, typed microphone|dataSync: started while the app
+ * is visible it may keep the microphone for the transcription that follows (the recognition
+ * service checks our microphone access), and the pipeline keeps the process alive.
+ */
 class RecorderService : Service() {
+
     companion object {
-        var isRunning = false
+        private const val TAG = "ThirdEarRecorder"
+        private const val P = "app.thirdear.action."
+        const val ACTION_START = P + "START"
+        const val ACTION_STOP = P + "STOP"
+        const val ACTION_DISCARD = P + "DISCARD"
+        const val ACTION_SWITCH_SOURCE = P + "SWITCH_SOURCE"
+        const val ACTION_RETRY = P + "RETRY"
+        const val ACTION_RECOVER = P + "RECOVER"
+        const val EXTRA_ACTION_ID = "action_id"
+        const val EXTRA_NOTE_ID = "note_id"
+        const val EXTRA_SOURCE = "source"
 
-        private const val AMPLITUDE_UPDATE_MS = 75L
-        private const val WATCHDOG_INTERVAL_MS = 1000L
-
-        // How long the input may deliver nothing but digital silence before the user is warned.
-        // A muted system microphone, another app holding the input and a dead route all look
-        // exactly like this, and none of them raise an error from MediaRecorder.
-        private const val SILENT_SECONDS_FOR_WARNING = 8
-
-        // Hard cap so a leaked lock cannot drain the battery if the service dies badly.
         private const val WAKE_LOCK_TIMEOUT_MS = 12 * 60 * 60 * 1000L
-        private const val WAKE_LOCK_TAG = "voicerecorder:recording"
-
         private const val WARNING_CHANNEL_ID = "recorder_warning"
         private const val WARNING_NOTIF_ID = 2
-        private const val TAG = "RecorderService"
+        private const val RECORDING_CHANNEL = "simple_recorder"
+        /** After the stop confirmation, before paused players resume: a headset leaves call mode first. */
+        private const val RESUME_DELAY_MS = 1_500L
+
+        /** Fossify's flag: a recording is running (or starting). */
+        @Volatile
+        var isRunning = false
+
+        /** The recording in progress, for the recorder screen, tiles, widget and car screen. */
+        data class Live(val noteId: String, val action: RecordAction, val startedAt: Long, val status: EngineStatus)
+
+        private val liveState = MutableStateFlow<Live?>(null)
+        val live: StateFlow<Live?> get() = liveState
+
+        fun intent(context: Context, action: String): Intent = Intent(context, RecorderService::class.java).setAction(action)
+
+        /** From a visible activity (Android lets only a visible app start a microphone service). */
+        fun start(context: Context, actionId: String?) = launch(context, intent(context, ACTION_START).putExtra(EXTRA_ACTION_ID, actionId))
+
+        /** Ends the recording and runs [actionId]'s action (null: the one it was started with). */
+        fun stop(context: Context, actionId: String?) = launch(context, intent(context, ACTION_STOP).putExtra(EXTRA_ACTION_ID, actionId))
+
+        fun discard(context: Context) = launch(context, intent(context, ACTION_DISCARD))
+
+        fun togglePause(context: Context) = launch(context, intent(context, TOGGLE_PAUSE))
+
+        fun switchSource(context: Context, source: Source) =
+            launch(context, intent(context, ACTION_SWITCH_SOURCE).putExtra(EXTRA_SOURCE, source.name))
+
+        fun retry(context: Context, noteId: String) = launch(context, intent(context, ACTION_RETRY).putExtra(EXTRA_NOTE_ID, noteId))
+
+        fun recover(context: Context) = launch(context, intent(context, ACTION_RECOVER))
+
+        private fun launch(context: Context, intent: Intent): Boolean = try {
+            ContextCompat.startForegroundService(context, intent)
+            true
+        } catch (t: Throwable) {
+            Log.w(TAG, "could not start the service: ${t.message}")
+            false
+        }
     }
 
-
-    private var recordingPath = ""
-    private var resultUri: Uri? = null
-
-    private var duration = 0
-    private var status = RECORDING_STOPPED
-    private var durationTimer = Timer()
-    private var amplitudeTimer = Timer()
-    private var watchdogTimer = Timer()
-    private var recorder: Recorder? = null
-
+    private val main = Handler(Looper.getMainLooper())
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private lateinit var store: NoteStore
+    private lateinit var actions: ActionStore
+    private lateinit var pipeline: NotePipeline
+    private var engine: RecordingEngine? = null
+    private var stopAction: RecordAction? = null
+    private var discarding = false
     private var wakeLock: PowerManager.WakeLock? = null
-    private var silentSeconds = 0
-    private var silenceWarningShown = false
-    private val mainHandler by lazy { Handler(Looper.getMainLooper()) }
+    private var pausedPlayers: List<String> = emptyList()
+    private var jobs = 0
+    private var lastNotified: EngineStatus? = null
+    private var silenceShown = false
+    private var goAheadPlayed = false
+    private var foregroundId = 0
 
     override fun onBind(intent: Intent?): IBinder? = null
 
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        super.onStartCommand(intent, flags, startId)
+    override fun onCreate() {
+        super.onCreate()
+        store = NoteStore(this)
+        actions = ActionStore(this)
+        pipeline = NotePipeline(this, store)
+        createChannels()
+    }
 
-        when (intent.action) {
-            GET_RECORDER_INFO -> broadcastRecorderInfo()
-            STOP_AMPLITUDE_UPDATE -> amplitudeTimer.cancel()
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        when (intent?.action) {
+            ACTION_STOP, STOP_RECORDING -> stopRecording(intent.getStringExtra(EXTRA_ACTION_ID))
+            ACTION_DISCARD, CANCEL_RECORDING -> discardRecording()
             TOGGLE_PAUSE -> togglePause()
-            CANCEL_RECORDING -> cancelRecording()
-            STOP_RECORDING -> {
-                stopRecording()
-                stopSelf()
-            }
+            ACTION_SWITCH_SOURCE -> intent.getStringExtra(EXTRA_SOURCE)
+                ?.let { s -> Source.entries.firstOrNull { it.name == s } }
+                ?.let { engine?.switchTo(it) }
 
-            else -> startRecording()
+            ACTION_RETRY -> intent.getStringExtra(EXTRA_NOTE_ID)?.let { runPipeline(it, retry = true) }
+            ACTION_RECOVER -> recover()
+            GET_RECORDER_INFO, STOP_AMPLITUDE_UPDATE -> {}
+            else -> startRecording(intent?.getStringExtra(EXTRA_ACTION_ID))
         }
-
+        // a foreground-service start must reach startForeground, even when there is nothing to do
+        if (foregroundId == 0) {
+            goForeground(NotePipeline.NOTIF_PROGRESS, idleNotification(), microphone = false)
+            maybeStop()
+        }
         return START_NOT_STICKY
     }
 
     override fun onDestroy() {
-        super.onDestroy()
-        stopRecording()
+        engine?.stop()
+        releaseWakeLock()
         isRunning = false
-        updateWidgets(false)
+        liveState.value = null
+        scope.cancel()
+        super.onDestroy()
     }
 
-    // mp4 output format with aac encoding should produce good enough m4a files according to https://stackoverflow.com/a/33054794/1967672
-    @SuppressLint("DiscouragedApi")
-    private fun startRecording() {
-        isRunning = true
-        updateWidgets(true)
-        if (status == RECORDING_RUNNING) {
+    // ------------------------------------------------------------------ recording
+
+    private fun startRecording(actionId: String?) {
+        if (engine != null) return
+        val all = actions.all { defaultActions() }
+        val action = all.firstOrNull { it.id == actionId } ?: actions.defaultAction() ?: all.first()
+        val container = when (config.extension) {
+            EXTENSION_MP3 -> Container.MP3
+            EXTENSION_OGG -> Container.OGG
+            else -> Container.MPEG_4
+        }
+        val note = Note(
+            id = UUID.randomUUID().toString().take(8) + "-" + System.currentTimeMillis(),
+            startedAt = System.currentTimeMillis(),
+            action = action,
+            container = container,
+            baseName = getFormattedFilename(),
+        )
+        val live = Live(note.id, action, note.startedAt, EngineStatus(sampleRate = config.samplingRate))
+        if (!goForeground(RECORDER_RUNNING_NOTIF_ID, recordingNotification(live), microphone = true)) {
+            // Android 14+: the microphone service starts only while Third Ear is visible
+            toast(R.string.te_error_background_start)
+            maybeStop()
             return
         }
-
-        val defaultFolder = File(config.saveRecordingsFolder)
-        if (!defaultFolder.exists()) {
-            defaultFolder.mkdir()
-        }
-
-        val recordingFolder = defaultFolder.absolutePath
-        recordingPath = "$recordingFolder/${getFormattedFilename()}.${config.getExtension()}"
-        resultUri = null
-
         try {
+            store.put(note)
+            val sink = DefaultSinks.create(EncoderSettings(container, config.samplingRate, config.bitrate), store.work(note))
+            stopAction = null
+            discarding = false
+            silenceShown = false
+            goAheadPlayed = false
+            lastNotified = null
+            isRunning = true
+            liveState.value = live
             acquireWakeLock()
-
-            recorder = if (recordMp3()) {
-                Mp3Recorder(this)
-            } else {
-                MediaRecorderWrapper(this) { what, extra -> onRecorderError(what, extra) }
-            }
-
-            if (isRPlus()) {
-                val fileUri = createDocumentUriUsingFirstParentTreeUri(recordingPath)
-                createSAFFileSdk30(recordingPath)
-                resultUri = fileUri
-                contentResolver.openFileDescriptor(fileUri, "w")!!
-                    .use { recorder?.setOutputFile(it) }
-            } else if (isPathOnSD(recordingPath)) {
-                var document = getDocumentFile(recordingPath.getParentPath())
-                document = document?.createFile("", recordingPath.getFilenameFromPath())
-                check(document != null) { "Failed to create document on SD Card" }
-                resultUri = document.uri
-                contentResolver.openFileDescriptor(document.uri, "w")!!
-                    .use { recorder?.setOutputFile(it) }
-            } else {
-                recorder?.setOutputFile(recordingPath)
-                resultUri = FileProvider.getUriForFile(
-                    this, "${BuildConfig.APPLICATION_ID}.provider", File(recordingPath)
-                )
-            }
-
-            // Show the notification before anything can fail: on Android 12+ a microphone
-            // foreground service started while the app is in the background must post it
-            // immediately, and a recorder that runs without one is invisible to the user.
-            startForeground(RECORDER_RUNNING_NOTIF_ID, showNotification())
-
-            recorder?.prepare()
-            recorder?.start()
-            duration = 0
-            status = RECORDING_RUNNING
-            broadcastRecorderInfo()
-
-            durationTimer = Timer()
-            durationTimer.scheduleAtFixedRate(getDurationUpdateTask(), 1000, 1000)
-
-            startAmplitudeUpdates()
-            startWatchdog()
-        } catch (e: Exception) {
-            showErrorToast(e)
-            releaseRecorderQuietly()
-            cancelTimers()
-            status = RECORDING_STOPPED
-            broadcastStoppedState()
+            if (config.pauseMedia) pausedPlayers = (pausedPlayers + runCatching { MediaPauser.pausePlaying() }.getOrDefault(emptyList())).distinct()
+            val e = RecordingEngine(
+                sources = AndroidSources(this) { config.microphoneMode },
+                sink = sink,
+                sampleRate = config.samplingRate,
+                preferBluetooth = config.preferBluetooth,
+                bluetoothAvailable = { BluetoothMics.available(this) },
+                listener = EngineListener(note.id),
+            )
+            engine = e
+            e.start()
+            updateWidgets(true)
+            Log.i(TAG, "recording ${note.id} with action ${action.name}")
+        } catch (t: Throwable) {
+            Log.e(TAG, "could not start recording", t)
+            toast(getString(R.string.te_error_start, t.message ?: t.javaClass.simpleName))
+            store.delete(note.id)
+            engine = null
+            isRunning = false
+            liveState.value = null
             releaseWakeLock()
-            stopForeground(STOP_FOREGROUND_REMOVE)
-            stopSelf()
+            broadcastStopped()
+            notifications().cancel(RECORDER_RUNNING_NOTIF_ID)
+            maybeStop()
         }
     }
+
+    private inner class EngineListener(private val noteId: String) : RecordingEngine.Listener {
+        override fun onStatus(status: EngineStatus) {
+            val l = liveState.value ?: return
+            if (l.noteId != noteId) return
+            liveState.value = l.copy(status = status)
+            main.post { onStatusMain(status) }
+        }
+
+        override fun onCue(cue: SourcePolicy.Cue) {
+            // always audible: in a headset or a car nobody watches the screen
+            Thread({ Cues.play(Cues.Tone.FALLBACK) }, "third-ear-cue").start()
+        }
+
+        override fun onLog(message: String) {
+            Log.i(TAG, message)
+        }
+
+        override fun onFinished(samples: Long, failure: String?) {
+            main.post { finished(noteId, samples, failure) }
+        }
+    }
+
+    private fun onStatusMain(status: EngineStatus) {
+        val l = liveState.value ?: return
+        val prev = lastNotified
+        if (prev == null || prev.paused != status.paused || prev.source != status.source || prev.input != status.input ||
+            prev.waitingForBluetooth != status.waitingForBluetooth || prev.switching != status.switching || prev.starting != status.starting
+        ) {
+            lastNotified = status
+            notifications().notify(RECORDER_RUNNING_NOTIF_ID, recordingNotification(l))
+        }
+        if (!goAheadPlayed && config.spokenCues && status.source == Source.BLUETOOTH && status.input.bluetooth &&
+            !status.waitingForBluetooth && !status.switching && !status.starting
+        ) {
+            // the Bluetooth microphone delivers real audio now: "go ahead" (it can be talked over)
+            goAheadPlayed = true
+            Thread({ Cues.playGoAhead(this) }, "third-ear-cue").start()
+        }
+        val silent = status.silent && !status.paused
+        if (silent && !silenceShown) {
+            silenceShown = true
+            showSilenceWarning()
+        } else if (!silent && silenceShown) {
+            silenceShown = false
+            notifications().cancel(WARNING_NOTIF_ID)
+        }
+    }
+
+    private fun stopRecording(actionId: String?) {
+        val e = engine ?: return
+        stopAction = actions.get(actionId)
+        e.stop()
+    }
+
+    private fun discardRecording() {
+        val e = engine ?: return
+        discarding = true
+        e.stop(discardAudio = true)
+    }
+
+    private fun togglePause() {
+        val e = engine ?: return
+        e.setPaused(!(liveState.value?.status?.paused ?: false))
+    }
+
+    private fun finished(noteId: String, samples: Long, failure: String?) {
+        val l = liveState.value
+        engine = null
+        isRunning = false
+        liveState.value = null
+        releaseWakeLock()
+        notifications().cancel(WARNING_NOTIF_ID)
+        updateWidgets(false)
+        broadcastStopped()
+        val toResume = pausedPlayers.also { pausedPlayers = emptyList() }
+        val note = store.get(noteId)
+        if (note == null || discarding) {
+            store.delete(noteId)
+            discarding = false
+            resumeMedia(toResume)
+            notifications().cancel(RECORDER_RUNNING_NOTIF_ID)
+            maybeStop()
+            return
+        }
+        val action = stopAction ?: note.action
+        val status = l?.status
+        val done = note.copy(
+            action = action,
+            durationMs = samples * 1000 / config.samplingRate,
+            mic = status?.let { if (it.input.bluetooth) "bluetooth" + (it.input.name?.let { n -> ": $n" } ?: "") else "phone" },
+            state = NoteState.PROCESSING,
+        )
+        store.put(done)
+        Log.i(TAG, "stopped ${note.id} after ${done.durationMs / 1000} s -> ${action.name}${failure?.let { " (failed: $it)" } ?: ""}")
+        if (failure != null) toast(getString(R.string.te_error_mic_failed, failure))
+        // the progress notification takes over as the service's foreground notification
+        goForeground(NotePipeline.NOTIF_PROGRESS, idleNotification(), microphone = true)
+        notifications().cancel(RECORDER_RUNNING_NOTIF_ID)
+        scope.launch {
+            if (config.spokenCues) {
+                if (failure != null) Cues.play(Cues.Tone.FAILED) else Cues.playDone(this@RecorderService, ActionPlan.of(action))
+            }
+            resumeMediaNow(toResume)
+        }
+        runPipeline(done.id, retry = false)
+    }
+
+    private fun resumeMedia(list: List<String>) {
+        if (list.isEmpty()) return
+        scope.launch { resumeMediaNow(list) }
+    }
+
+    private suspend fun resumeMediaNow(list: List<String>) {
+        if (list.isEmpty()) return
+        delay(RESUME_DELAY_MS)
+        main.post {
+            // a new recording started meanwhile: its stop resumes these too
+            if (engine != null) pausedPlayers = (pausedPlayers + list).distinct() else runCatching { MediaPauser.resume(list) }
+        }
+    }
+
+    // ------------------------------------------------------------------ pipeline
+
+    private fun runPipeline(noteId: String, retry: Boolean) {
+        if (retry) {
+            notifications().cancel(NotePipeline.NOTIF_RESULT)
+            if (foregroundId == 0) goForeground(NotePipeline.NOTIF_PROGRESS, idleNotification(), microphone = true)
+        }
+        jobs++
+        scope.launch {
+            try {
+                pipeline.process(noteId)
+            } finally {
+                main.post {
+                    jobs--
+                    maybeStop()
+                }
+            }
+        }
+    }
+
+    private fun recover() {
+        jobs++
+        scope.launch {
+            try {
+                pipeline.recover(liveState.value?.noteId)
+            } finally {
+                main.post {
+                    jobs--
+                    maybeStop()
+                }
+            }
+        }
+    }
+
+    private fun maybeStop() {
+        if (engine != null || jobs > 0) return
+        stopForeground(STOP_FOREGROUND_REMOVE)
+        foregroundId = 0
+        stopSelf()
+    }
+
+    // ------------------------------------------------------------------ foreground, wake lock, notifications
 
     /**
-     * The recorder screen keeps its own optimistic copy of the recording state. When a stop
-     * does not come from that screen - the notification action, an encoder error, a failed
-     * start - it must be told, or it keeps showing a paused/recording state while nothing is
-     * running.
+     * Microphone|dataSync when allowed (started from a visible app), else dataSync only (a retry
+     * from a notification: transcription may then be refused, the rest works). Returns whether
+     * the service runs with what was asked for.
      */
-    private fun broadcastStoppedState() {
-        EventBus.getDefault().post(Events.RecordingStatus(RECORDING_STOPPED))
-        EventBus.getDefault().post(Events.RecordingDuration(0))
-    }
-
-    private fun stopRecording() {
-        cancelTimers()
-        status = RECORDING_STOPPED
-        broadcastStoppedState()
-
-        recorder?.apply {
+    private fun goForeground(id: Int, notification: Notification, microphone: Boolean): Boolean {
+        val mic = ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE or ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+        val types = if (microphone) listOf(mic, ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC) else listOf(ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
+        for (type in types) {
             try {
-                stop()
-                release()
-            } catch (
-                @Suppress(
-                    "TooGenericExceptionCaught",
-                    "SwallowedException"
-                ) e: RuntimeException
-            ) {
-                toast(R.string.recording_too_short)
-            } catch (e: Exception) {
-                showErrorToast(e)
-                e.printStackTrace()
-            }
-
-            ensureBackgroundThread {
-                scanRecording()
-                EventBus.getDefault().post(Events.RecordingCompleted())
+                startForeground(id, notification, type)
+                foregroundId = id
+                return !microphone || type == mic
+            } catch (t: Throwable) {
+                Log.w(TAG, "startForeground(type $type) refused: ${t.message}")
             }
         }
-        recorder = null
-        releaseWakeLock()
-        resetSilenceWatch()
-        stopForeground(STOP_FOREGROUND_REMOVE)
-    }
-
-    private fun cancelRecording() {
-        cancelTimers()
-        status = RECORDING_STOPPED
-        broadcastStoppedState()
-
-        releaseRecorderQuietly()
-        releaseWakeLock()
-        resetSilenceWatch()
-        stopForeground(STOP_FOREGROUND_REMOVE)
-
-        if (isRPlus()) {
-            val recordingUri = createDocumentUriUsingFirstParentTreeUri(recordingPath)
-            DocumentsContract.deleteDocument(contentResolver, recordingUri)
-        } else {
-            File(recordingPath).delete()
-        }
-
-        EventBus.getDefault().post(Events.RecordingCompleted())
-        stopSelf()
+        return false
     }
 
     private fun acquireWakeLock() {
         if (wakeLock?.isHeld == true) return
-        val powerManager = getSystemService(POWER_SERVICE) as PowerManager
-        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKE_LOCK_TAG).apply {
+        wakeLock = getSystemService(PowerManager::class.java).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "thirdear:recording").apply {
             setReferenceCounted(false)
             acquire(WAKE_LOCK_TIMEOUT_MS)
         }
@@ -272,237 +445,79 @@ class RecorderService : Service() {
         wakeLock = null
     }
 
-    private fun cancelTimers() {
-        durationTimer.cancel()
-        amplitudeTimer.cancel()
-        watchdogTimer.cancel()
+    private fun broadcastStopped() {
+        EventBus.getDefault().post(Events.RecordingStatus(RECORDING_STOPPED))
+        EventBus.getDefault().post(Events.RecordingDuration(0))
     }
 
-    private fun releaseRecorderQuietly() {
-        recorder?.apply {
-            try {
-                release()
-            } catch (ignored: Exception) {
-            }
-        }
-        recorder = null
+    private fun notifications() = getSystemService(NotificationManager::class.java)
+
+    private fun createChannels() {
+        val nm = notifications()
+        nm.createNotificationChannel(
+            NotificationChannel(RECORDING_CHANNEL, getString(R.string.app_name), NotificationManager.IMPORTANCE_DEFAULT).apply { setSound(null, null) },
+        )
+        nm.createNotificationChannel(
+            NotificationChannel(WARNING_CHANNEL_ID, getString(R.string.microphone_silent_title), NotificationManager.IMPORTANCE_DEFAULT)
+                .apply { setSound(null, null) },
+        )
+        nm.createNotificationChannel(
+            NotificationChannel(NotePipeline.CHANNEL, getString(R.string.te_channel_pipeline), NotificationManager.IMPORTANCE_LOW),
+        )
     }
 
-    /**
-     * Watches for a recording that is running but receiving pure silence. MediaRecorder never
-     * reports this as an error, so without a watchdog the user only finds out when they play
-     * back an empty file.
-     */
-    private fun startWatchdog() {
-        resetSilenceWatch()
-        watchdogTimer = Timer()
-        watchdogTimer.scheduleAtFixedRate(getWatchdogTask(), WATCHDOG_INTERVAL_MS, WATCHDOG_INTERVAL_MS)
-    }
+    private fun openApp(): PendingIntent = PendingIntent.getActivity(
+        this, RECORDER_RUNNING_NOTIF_ID,
+        Intent(this, SplashActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+    )
 
-    private fun resetSilenceWatch() {
-        silentSeconds = 0
-        silenceWarningShown = false
-        runCatching {
-            (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).cancel(WARNING_NOTIF_ID)
-        }
-    }
+    private fun serviceAction(action: String, requestCode: Int, actionId: String? = null): PendingIntent = PendingIntent.getService(
+        this, requestCode, intent(this, action).putExtra(EXTRA_ACTION_ID, actionId),
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+    )
 
-    private fun getWatchdogTask() = object : TimerTask() {
-        override fun run() {
-            // A paused recording is legitimately silent.
-            if (status != RECORDING_RUNNING) return
-
-            val amplitude = try {
-                recorder?.getMaxAmplitude() ?: 0
-            } catch (ignored: Exception) {
-                0
-            }
-
-            if (amplitude > 0) {
-                silentSeconds = 0
-                return
-            }
-
-            silentSeconds++
-            if (silentSeconds >= SILENT_SECONDS_FOR_WARNING && !silenceWarningShown) {
-                silenceWarningShown = true
-                showSilenceWarning()
-            }
-        }
-    }
-
-    private fun onRecorderError(what: Int, extra: Int) {
-        Log.e(TAG, "MediaRecorder error: what=$what extra=$extra")
-        mainHandler.post {
-            if (status == RECORDING_STOPPED) return@post
-            toast(R.string.recording_failed)
-            stopRecording()
-            stopSelf()
-        }
-    }
-
-    private fun showSilenceWarning() {
-        runCatching {
-            val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-            NotificationChannel(
-                WARNING_CHANNEL_ID,
-                getString(R.string.microphone_silent_title),
-                NotificationManager.IMPORTANCE_DEFAULT
-            ).apply {
-                setSound(null, null)
-                notificationManager.createNotificationChannel(this)
-            }
-
-            val notification = NotificationCompat.Builder(this, WARNING_CHANNEL_ID)
-                .setContentTitle(getString(R.string.microphone_silent_title))
-                .setContentText(getString(R.string.microphone_silent_text))
-                .setStyle(NotificationCompat.BigTextStyle().bigText(getString(R.string.microphone_silent_text)))
-                .setSmallIcon(R.drawable.ic_graphic_eq_vector)
-                .setContentIntent(getOpenAppIntent())
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setAutoCancel(true)
-                .build()
-
-            notificationManager.notify(WARNING_NOTIF_ID, notification)
-        }
-    }
-
-    private fun broadcastRecorderInfo() {
-        broadcastDuration()
-        broadcastStatus()
-        startAmplitudeUpdates()
-    }
-
-    @SuppressLint("DiscouragedApi")
-    private fun startAmplitudeUpdates() {
-        amplitudeTimer.cancel()
-        amplitudeTimer = Timer()
-        amplitudeTimer.scheduleAtFixedRate(getAmplitudeUpdateTask(), 0, AMPLITUDE_UPDATE_MS)
-    }
-
-    @SuppressLint("NewApi")
-    private fun togglePause() {
-        try {
-            if (status == RECORDING_RUNNING) {
-                recorder?.pause()
-                status = RECORDING_PAUSED
-            } else if (status == RECORDING_PAUSED) {
-                recorder?.resume()
-                status = RECORDING_RUNNING
-            }
-            broadcastStatus()
-            startForeground(RECORDER_RUNNING_NOTIF_ID, showNotification())
-        } catch (e: Exception) {
-            showErrorToast(e)
-        }
-    }
-
-    private fun scanRecording() {
-        MediaScannerConnection.scanFile(
-            this,
-            arrayOf(recordingPath),
-            arrayOf(recordingPath.getMimeType())
-        ) { _, uri ->
-            if (uri == null) {
-                toast(org.fossify.commons.R.string.unknown_error_occurred)
-                return@scanFile
-            }
-
-            recordingSavedSuccessfully(resultUri ?: uri)
-        }
-    }
-
-    private fun recordingSavedSuccessfully(savedUri: Uri) {
-        toast(R.string.recording_saved_successfully)
-        EventBus.getDefault().post(Events.RecordingSaved(savedUri))
-    }
-
-    private fun getDurationUpdateTask() = object : TimerTask() {
-        override fun run() {
-            if (status == RECORDING_RUNNING) {
-                duration++
-                broadcastDuration()
-            }
-        }
-    }
-
-    private fun getAmplitudeUpdateTask() = object : TimerTask() {
-        override fun run() {
-            if (recorder != null) {
-                try {
-                    EventBus.getDefault()
-                        .post(Events.RecordingAmplitude(recorder!!.getMaxAmplitude()))
-                } catch (ignored: Exception) {
-                }
-            }
-        }
-    }
-
-    private fun showNotification(): Notification {
-        val channelId = "simple_recorder"
-        val label = getString(R.string.app_name)
-        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-
-        NotificationChannel(channelId, label, NotificationManager.IMPORTANCE_DEFAULT).apply {
-            setSound(null, null)
-            notificationManager.createNotificationChannel(this)
-        }
-
-        val icon = R.drawable.ic_graphic_eq_vector
-        val title = label
-        val visibility = NotificationCompat.VISIBILITY_PUBLIC
-        var text = getString(R.string.recording)
-        if (status == RECORDING_PAUSED) {
-            text += " (${getString(R.string.paused)})"
-        }
-        val pauseLabelId = if (status == RECORDING_PAUSED) R.string.resume_recording else R.string.pause_recording
-
-        val builder = NotificationCompat.Builder(this, channelId)
-            .setContentTitle(title)
+    private fun recordingNotification(l: Live): Notification {
+        val s = l.status
+        var text = inputLabel(s)
+        if (s.paused) text = getString(R.string.paused) + " · " + text
+        val pauseLabel = if (s.paused) R.string.resume_recording else R.string.pause_recording
+        return NotificationCompat.Builder(this, RECORDING_CHANNEL)
+            .setContentTitle(getString(R.string.te_notif_recording, l.action.name))
             .setContentText(text)
-            .setSmallIcon(icon)
-            .setContentIntent(getOpenAppIntent())
-            .setPriority(NotificationManager.IMPORTANCE_DEFAULT)
-            .setVisibility(visibility)
-            .setSound(null)
+            .setSmallIcon(R.drawable.ic_graphic_eq_vector)
+            .setContentIntent(openApp())
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
+            .setSilent(true)
+            .setUsesChronometer(!s.paused)
+            .setWhen(System.currentTimeMillis() - s.durationMs)
+            .setCategory(NotificationCompat.CATEGORY_STATUS)
+            .addAction(0, getString(pauseLabel), serviceAction(TOGGLE_PAUSE, 1))
+            .addAction(0, getString(R.string.te_notif_stop_action, l.action.name), serviceAction(ACTION_STOP, 2, l.action.id))
+            .build()
+    }
+
+    private fun idleNotification(): Notification = NotificationCompat.Builder(this, NotePipeline.CHANNEL)
+        .setContentTitle(getString(R.string.te_step_saving))
+        .setSmallIcon(R.drawable.ic_graphic_eq_vector)
+        .setContentIntent(openApp())
+        .setOngoing(true)
+        .setSilent(true)
+        .setProgress(0, 0, true)
+        .build()
+
+    private fun showSilenceWarning() {
+        val notification = NotificationCompat.Builder(this, WARNING_CHANNEL_ID)
+            .setContentTitle(getString(R.string.microphone_silent_title))
+            .setContentText(getString(R.string.microphone_silent_text))
+            .setStyle(NotificationCompat.BigTextStyle().bigText(getString(R.string.microphone_silent_text)))
+            .setSmallIcon(R.drawable.ic_graphic_eq_vector)
+            .setContentIntent(openApp())
             .setAutoCancel(true)
-            .addAction(0, getString(pauseLabelId), getServiceActionIntent(TOGGLE_PAUSE, 1))
-            .addAction(0, getString(R.string.stop_recording), getServiceActionIntent(STOP_RECORDING, 2))
-
-        return builder.build()
-    }
-
-    private fun getServiceActionIntent(action: String, requestCode: Int): PendingIntent {
-        val intent = Intent(this, RecorderService::class.java).setAction(action)
-        return PendingIntent.getService(
-            this,
-            requestCode,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-    }
-
-    private fun getOpenAppIntent(): PendingIntent {
-        val intent = getLaunchIntent() ?: Intent(this, SplashActivity::class.java)
-        return PendingIntent.getActivity(
-            this,
-            RECORDER_RUNNING_NOTIF_ID,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-    }
-
-    private fun broadcastDuration() {
-        EventBus.getDefault().post(Events.RecordingDuration(duration))
-    }
-
-    private fun broadcastStatus() {
-        EventBus.getDefault().post(Events.RecordingStatus(status))
-    }
-
-    private fun recordMp3(): Boolean {
-        return config.extension == EXTENSION_MP3
+            .build()
+        notifications().notify(WARNING_NOTIF_ID, notification)
+        if (config.spokenCues) Thread({ Cues.play(Cues.Tone.WARN) }, "third-ear-cue").start()
     }
 }

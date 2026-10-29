@@ -100,4 +100,36 @@ class Config(context: Context) : BaseConfig(context) {
     var filenamePattern: String
         get() = prefs.getString(FILENAME_PATTERN, DEFAULT_FILENAME_PATTERN)!!
         set(filenamePattern) = prefs.edit { putString(FILENAME_PATTERN, filenamePattern) }
+
+    // Third Ear
+
+    /** Record from a connected Bluetooth microphone (headset, hearing aids, car) when there is one. */
+    var preferBluetooth: Boolean
+        get() = prefs.getBoolean(PREFER_BLUETOOTH, false)
+        set(v) = prefs.edit { putBoolean(PREFER_BLUETOOTH, v) }
+
+    /** "Go ahead" when a Bluetooth microphone is ready, and what happens after the stop. */
+    var spokenCues: Boolean
+        get() = prefs.getBoolean(SPOKEN_CUES, true)
+        set(v) = prefs.edit { putBoolean(SPOKEN_CUES, v) }
+
+    /** Pause other apps' playback while recording (needs notification access). */
+    var pauseMedia: Boolean
+        get() = prefs.getBoolean(PAUSE_MEDIA, false)
+        set(v) = prefs.edit { putBoolean(PAUSE_MEDIA, v) }
+
+    /** Flattened ComponentName of the recognition service; null picks OSTT or the first one. */
+    var transcriber: String?
+        get() = prefs.getString(TRANSCRIBER, null)
+        set(v) = prefs.edit { putString(TRANSCRIBER, v) }
+
+    /** Also save each transcript as a .txt next to its recording. */
+    var saveTranscriptFiles: Boolean
+        get() = prefs.getBoolean(SAVE_TRANSCRIPT_FILES, true)
+        set(v) = prefs.edit { putBoolean(SAVE_TRANSCRIPT_FILES, v) }
+
+    /** White Noise (own identity through MarmotKit) is set up and should run. */
+    var whiteNoiseEnabled: Boolean
+        get() = prefs.getBoolean(WHITE_NOISE_ENABLED, false)
+        set(v) = prefs.edit { putBoolean(WHITE_NOISE_ENABLED, v) }
 }

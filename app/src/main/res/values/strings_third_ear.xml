@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Default actions -->
+    <string name="te_default_action_save">Save</string>
+    <string name="te_default_action_transcript">Transcript to clipboard</string>
+
+    <!-- Microphone / source -->
+    <string name="te_input_starting">Starting the microphone…</string>
+    <string name="te_input_connecting_bluetooth">Connecting the Bluetooth microphone…</string>
+    <string name="te_input_waiting_bluetooth">Waiting for the Bluetooth microphone…</string>
+    <string name="te_input_bluetooth">Bluetooth microphone</string>
+    <string name="te_input_bluetooth_named">Bluetooth: %s</string>
+    <string name="te_input_bluetooth_not_routed">Bluetooth requested, phone microphone records</string>
+    <string name="te_input_phone">Phone microphone</string>
+    <string name="te_source_desc_bluetooth">Recording from the Bluetooth microphone. Tap to switch to the phone microphone.</string>
+    <string name="te_source_desc_phone">Recording from the phone microphone. Tap to switch to the Bluetooth microphone.</string>
+    <string name="te_switch_to_bluetooth_title">Record from the Bluetooth microphone?</string>
+    <string name="te_switch_to_phone_title">Record from the phone microphone?</string>
+    <string name="te_switch_message">The recording continues in the same file. While the Bluetooth microphone starts, a second or two is not recorded.</string>
+    <string name="te_switch_once">Switch for this recording</string>
+    <string name="te_switch_keep_bluetooth">Switch and keep Bluetooth</string>
+    <string name="te_switch_keep_phone">Switch and keep phone</string>
+    <string name="te_no_bluetooth_mic">No Bluetooth microphone is connected.</string>
+    <string name="te_fallback_reason">Phone microphone: %s</string>
+
+    <!-- Recorder screen -->
+    <string name="te_tap_to_start">Tap an action to start recording</string>
+    <string name="te_tap_to_stop">Tap an action to stop and do what it says</string>
+    <string name="te_stop_with">Stop → %s</string>
+    <string name="te_started_with">started with this</string>
+    <string name="te_discard">Discard</string>
+    <string name="te_last_recording">Last recording</string>
+    <string name="te_copy_transcript">Copy transcript</string>
+    <string name="te_transcribe">Transcribe</string>
+    <string name="te_show_transcript">Show transcript</string>
+    <string name="te_transcript">Transcript</string>
+    <string name="te_transcript_copied">Transcript copied</string>
+    <string name="te_no_transcript">No transcript for this recording</string>
+    <string name="te_retry">Retry</string>
+    <string name="te_edit_actions">Edit actions</string>
+    <string name="te_state_processing">Working…</string>
+    <string name="te_state_done">Done</string>
+    <string name="te_state_failed">Failed: %s</string>
+    <string name="te_state_saved_as">Saved as %s</string>
+    <string name="te_transcript_failed">Transcript: %s</string>
+    <string name="te_recording_length">%1$d:%2$02d</string>
+
+    <!-- Destinations and content -->
+    <string name="te_dest_save">Save only</string>
+    <string name="te_dest_copy">Copy transcript</string>
+    <string name="te_dest_share">Share</string>
+    <string name="te_dest_white_noise">White Noise group</string>
+    <string name="te_dest_webhook">Webhook</string>
+    <string name="te_content_audio">audio</string>
+    <string name="te_content_both">audio + transcript</string>
+    <string name="te_content_text">transcript only</string>
+    <string name="te_step_desc_save">Save</string>
+    <string name="te_step_desc_transcribe">transcribe</string>
+    <string name="te_step_desc_copy">copy transcript</string>
+    <string name="te_step_desc_share">share (%s)</string>
+    <string name="te_step_desc_white_noise">send to %1$s (%2$s)</string>
+    <string name="te_step_desc_webhook">post to webhook (%s)</string>
+    <string name="te_no_group">no group chosen</string>
+
+    <!-- Actions editor -->
+    <string name="te_actions">Actions</string>
+    <string name="te_actions_summary">Buttons on the recorder screen, tiles and the car screen</string>
+    <string name="te_add_action">Add action</string>
+    <string name="te_new_action">New action</string>
+    <string name="te_edit_action">Edit action</string>
+    <string name="te_action_name">Name</string>
+    <string name="te_action_destination">Destination</string>
+    <string name="te_action_content">What is sent</string>
+    <string name="te_action_transcribe">Make a transcript</string>
+    <string name="te_action_copy">Copy the transcript to the clipboard</string>
+    <string name="te_action_group">White Noise group</string>
+    <string name="te_action_pick_group">Pick a group</string>
+    <string name="te_action_webhook_url">Webhook URL (https://…)</string>
+    <string name="te_action_webhook_auth">Authorization header (optional, e.g. Bearer …)</string>
+    <string name="te_action_delete_confirm">Delete the action \"%s\"?</string>
+    <string name="te_action_move_up">Move up</string>
+    <string name="te_action_move_down">Move down</string>
+    <string name="te_problem_no_name">Give the action a name</string>
+    <string name="te_problem_no_group">Pick a White Noise group</string>
+    <string name="te_problem_no_webhook">Enter a webhook URL starting with https:// or http://</string>
+    <string name="te_problem_no_transcriber">No transcription app found: install Offline Speech to Text</string>
+    <string name="te_white_noise_off">Turn on White Noise in the settings first</string>
+    <string name="te_no_groups">No groups yet: invite Third Ear\'s npub to a group in White Noise and accept the invite</string>
+    <string name="te_at_least_one_action">Keep at least one action</string>
+
+    <!-- Pipeline -->
+    <string name="te_channel_pipeline">Saving and sending</string>
+    <string name="te_channel_results">Results</string>
+    <string name="te_step_saving">Saving…</string>
+    <string name="te_step_transcribing">Transcribing…</string>
+    <string name="te_step_waiting_transcriber">Waiting for the transcription app…</string>
+    <string name="te_step_sending">Sending: %s…</string>
+    <string name="te_step_body">%1$s · %2$d:%3$02d</string>
+    <plurals name="te_step_queued">
+        <item quantity="one">%d more waiting</item>
+        <item quantity="other">%d more waiting</item>
+    </plurals>
+    <string name="te_failed_title">%s: not delivered</string>
+    <string name="te_failed_body">%1$s. The recording is saved (%2$s).</string>
+    <string name="te_recovered_title">Interrupted recording saved</string>
+    <string name="te_recovered_body">Third Ear was stopped while recording; what was recorded is saved as %s.</string>
+    <string name="te_share_title">Share recording</string>
+    <string name="te_share_ready_title">Ready to share</string>
+    <string name="te_share_ready_body">Tap to choose where to share the recording.</string>
+    <string name="te_error_finalise">Could not finish the recording file: %s</string>
+    <string name="te_error_save">Could not save to the recordings folder: %s</string>
+    <string name="te_error_folder_access">No access to the recordings folder. Open Third Ear and pick the folder again.</string>
+    <string name="te_error_network">No network (on GrapheneOS check the app\'s Network permission)</string>
+    <string name="te_error_no_transcriber">no transcription app (install Offline Speech to Text)</string>
+    <string name="te_error_no_speech">no speech recognised</string>
+    <string name="te_error_no_webhook">no webhook URL set</string>
+    <string name="te_error_no_group">no White Noise group chosen</string>
+    <string name="te_error_background_start">Android lets the microphone start only while Third Ear is open. Open Third Ear and try again.</string>
+    <string name="te_error_start">Could not start recording: %s</string>
+    <string name="te_error_mic_failed">The microphone stopped (%s). What was recorded is saved.</string>
+    <string name="te_notif_recording">Recording · %s</string>
+    <string name="te_notif_stop_action">Stop → %s</string>
+
+    <!-- Settings -->
+    <string name="te_settings_third_ear">Third Ear</string>
+    <string name="te_setting_bluetooth">Use a Bluetooth microphone</string>
+    <string name="te_setting_bluetooth_desc">Record from a connected Bluetooth headset, hearing aids or the car\'s hands-free microphone. While it records, the headset is in call mode, so other sound plays at lower quality. Without one connected, the phone microphone records.</string>
+    <string name="te_setting_spoken_cues">Spoken cues</string>
+    <string name="te_setting_spoken_cues_desc">\"Go ahead\" when a Bluetooth microphone is ready, and what happens after the stop (\"Saved, transcribing.\")</string>
+    <string name="te_setting_pause_media">Pause playing media while recording</string>
+    <string name="te_setting_pause_media_desc">Needs notification access, the only way an app may pause other apps\' playback.</string>
+    <string name="te_setting_transcriber">Transcription app</string>
+    <string name="te_setting_transcriber_none">None found: install Offline Speech to Text</string>
+    <string name="te_setting_transcript_files">Save transcripts as .txt next to recordings</string>
+    <string name="te_setting_tiles">Quick Settings tiles</string>
+    <string name="te_setting_tile">Tile %d</string>
+    <string name="te_setting_widget_action">Widget action</string>
+    <string name="te_setting_white_noise">White Noise</string>
+    <string name="te_setting_white_noise_desc">Send recordings to White Noise groups and hear replies</string>
+    <string name="te_setting_android_auto">Android Auto</string>
+    <string name="te_setting_android_auto_desc">Third Ear shows its actions on the car screen and incoming White Noise messages as car notifications. Sideloaded apps need Android Auto\'s developer settings → Unknown sources.</string>
+    <string name="te_transcriber_file_api">%s (file API)</string>
+    <string name="te_transcriber_caller_audio">%s (audio stream)</string>
+
+    <!-- Tiles -->
+    <string name="te_tile_label">Record: %s</string>
+    <string name="te_tile_1">Third Ear 1</string>
+    <string name="te_tile_2">Third Ear 2</string>
+    <string name="te_tile_3">Third Ear 3</string>
+    <string name="te_tile_recording">Recording, tap to stop</string>
+    <string name="te_tile_no_action">No action set</string>
+</resources>

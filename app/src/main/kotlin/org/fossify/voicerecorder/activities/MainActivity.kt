@@ -40,6 +40,11 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
 class MainActivity : SimpleActivity() {
+    companion object {
+        /** Activities may be started (share sheet) only while Third Ear is in front. */
+        @Volatile
+        var visible = false
+    }
 
     private var bus: EventBus? = null
 
@@ -88,6 +93,7 @@ class MainActivity : SimpleActivity() {
 
     override fun onResume() {
         super.onResume()
+        visible = true
         updateMenuColors()
         if (getPagerAdapter()?.showRecycleBin != config.useRecycleBin) {
             setupViewPager()
@@ -98,6 +104,7 @@ class MainActivity : SimpleActivity() {
 
     override fun onPause() {
         super.onPause()
+        visible = false
         config.lastUsedViewPagerPage = binding.viewPager.currentItem
     }
 

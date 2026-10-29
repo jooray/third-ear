@@ -7,6 +7,27 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <queries>
+        <!-- on-device transcription providers (Offline Speech to Text) -->
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+        <!-- OSTT's file transcription contract ships with this activity; it is the capability probe -->
+        <intent>
+            <action android:name="app.offlinespeechtotext.action.TRANSCRIBE_AUDIO" />
+        </intent>
+        <package android:name="app.offlinespeechtotext" />
+        <!-- text-to-speech engines, for reading White Noise messages -->
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+    </queries>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
@@ -109,11 +130,21 @@
         <service
             android:name=".services.RecorderService"
             android:exported="false"
-            android:foregroundServiceType="microphone">
+            android:foregroundServiceType="microphone|dataSync">
             <intent-filter>
                 <action android:name="org.fossify.voicerecorder.action.GET_RECORDER_INFO" />
                 <action android:name="org.fossify.voicerecorder.action.STOP_AMPLITUDE_UPDATE" />
                 <action android:name="org.fossify.voicerecorder.action.TOGGLE_PAUSE" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".pipeline.MediaPauser"
+            android:exported="false"
+            android:label="@string/te_setting_pause_media"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service>
 

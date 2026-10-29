@@ -122,6 +122,11 @@ android {
         lintConfig = rootProject.file("lint.xml")
     }
 
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+        unitTests.isIncludeAndroidResources = true
+    }
+
     bundle {
         language {
             enableSplit = false
@@ -145,5 +150,13 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.tandroidlame)
     implementation(libs.autofittextview)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
     detektPlugins(libs.compose.detekt)
+
+    testImplementation("junit:junit:4.13.2")
+    testImplementation(kotlin("test"))
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
+    testImplementation("org.json:json:20240303")
+    testImplementation("org.robolectric:robolectric:4.17")
+    testImplementation("androidx.test:core:1.6.1")
 }

@@ -107,3 +107,11 @@ const val FILENAME_PATTERN = "filename_pattern"
 
 const val DEFAULT_RECORDINGS_FOLDER = "Recordings"
 const val DEFAULT_FILENAME_PATTERN = "%Y%M%D_%h%m%s"
+
+// Third Ear preferences
+const val PREFER_BLUETOOTH = "prefer_bluetooth"
+const val SPOKEN_CUES = "spoken_cues"
+const val PAUSE_MEDIA = "pause_media"
+const val TRANSCRIBER = "transcriber"
+const val SAVE_TRANSCRIPT_FILES = "save_transcript_files"
+const val WHITE_NOISE_ENABLED = "white_noise_enabled"
