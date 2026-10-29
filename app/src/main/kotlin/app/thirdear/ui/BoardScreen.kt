@@ -332,7 +332,8 @@ private fun RecordingPlate(live: RecorderService.Companion.Live, onPause: () -> 
         Row(Modifier.padding(start = 16.dp, end = 12.dp, top = 12.dp, bottom = 12.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Lamp(if (s.paused || s.starting) LampState.BUSY else LampState.FAULT, size = 12.dp)
+                    // red means "not delivered" everywhere; a recording in progress is the amber working lamp
+                    Lamp(LampState.BUSY, size = 12.dp)
                     Spacer(Modifier.width(4.dp))
                     Label(state, color = p.ink)
                     Spacer(Modifier.width(8.dp))

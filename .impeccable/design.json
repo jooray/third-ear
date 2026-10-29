@@ -1,0 +1,906 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-29T19:53:17+00:00",
+  "title": "Design System: Third Ear",
+  "extensions": {
+    "colorMeta": {
+      "bakelite-face": {
+        "role": "neutral",
+        "displayName": "Bakelite Face",
+        "canonical": "#16130F",
+        "tonalRamp": [
+          "#221F1B",
+          "#453E35",
+          "#695D4D",
+          "#907C63",
+          "#A99A86",
+          "#C0B7AB",
+          "#D9D5CF",
+          "#F3F2F1"
+        ]
+      },
+      "bakelite-plate": {
+        "role": "neutral",
+        "displayName": "Bakelite Plate",
+        "canonical": "#211D18",
+        "tonalRamp": [
+          "#211F1C",
+          "#433E36",
+          "#675C4F",
+          "#8C7B67",
+          "#A69989",
+          "#BEB7AD",
+          "#D8D4D0",
+          "#F3F2F1"
+        ]
+      },
+      "bakelite-plate-hi": {
+        "role": "neutral",
+        "displayName": "Bakelite Plate Hi",
+        "canonical": "#302A23",
+        "tonalRamp": [
+          "#211F1C",
+          "#433D36",
+          "#675C4F",
+          "#8C7B67",
+          "#A69989",
+          "#BEB6AD",
+          "#D8D4D0",
+          "#F3F2F1"
+        ]
+      },
+      "bakelite-recess": {
+        "role": "neutral",
+        "displayName": "Bakelite Recess",
+        "canonical": "#0E0C09",
+        "tonalRamp": [
+          "#221F1B",
+          "#463F34",
+          "#6B5E4B",
+          "#937E60",
+          "#AB9C84",
+          "#C2B8AA",
+          "#DAD5CE",
+          "#F4F3F1"
+        ]
+      },
+      "bakelite-rule": {
+        "role": "neutral",
+        "displayName": "Bakelite Rule",
+        "canonical": "#3A342B",
+        "tonalRamp": [
+          "#211F1C",
+          "#433E37",
+          "#665D50",
+          "#8B7D68",
+          "#A59A8A",
+          "#BEB7AE",
+          "#D8D5D0",
+          "#F3F2F1"
+        ]
+      },
+      "bakelite-rule-strong": {
+        "role": "neutral",
+        "displayName": "Bakelite Rule Strong",
+        "canonical": "#5A5246",
+        "tonalRamp": [
+          "#211F1D",
+          "#423E38",
+          "#655D52",
+          "#887C6B",
+          "#A39A8C",
+          "#BDB7AF",
+          "#D7D5D1",
+          "#F3F2F2"
+        ]
+      },
+      "bakelite-ink": {
+        "role": "neutral",
+        "displayName": "Bakelite Ink",
+        "canonical": "#EDE8DA",
+        "tonalRamp": [
+          "#242119",
+          "#4B442E",
+          "#756741",
+          "#A28D51",
+          "#B7A778",
+          "#C9BFA3",
+          "#DDD8CB",
+          "#F4F3F0"
+        ]
+      },
+      "bakelite-ink-muted": {
+        "role": "neutral",
+        "displayName": "Bakelite Ink Muted",
+        "canonical": "#ADA595",
+        "tonalRamp": [
+          "#211F1C",
+          "#423F38",
+          "#655E51",
+          "#887E6A",
+          "#A39B8C",
+          "#BDB8AF",
+          "#D7D5D1",
+          "#F3F2F2"
+        ]
+      },
+      "bakelite-strip": {
+        "role": "neutral",
+        "displayName": "Bakelite Strip",
+        "canonical": "#E6E0CE",
+        "tonalRamp": [
+          "#242119",
+          "#4A442F",
+          "#746743",
+          "#A08C53",
+          "#B5A67A",
+          "#C7BFA4",
+          "#DCD8CC",
+          "#F4F3F0"
+        ]
+      },
+      "bakelite-strip-ink": {
+        "role": "neutral",
+        "displayName": "Bakelite Strip Ink",
+        "canonical": "#1E1A14",
+        "tonalRamp": [
+          "#221F1B",
+          "#453F34",
+          "#6A5E4C",
+          "#917E62",
+          "#AA9B85",
+          "#C1B8AB",
+          "#D9D5CF",
+          "#F3F2F1"
+        ]
+      },
+      "bakelite-strip-rule": {
+        "role": "neutral",
+        "displayName": "Bakelite Strip Rule",
+        "canonical": "#B4AD9B",
+        "tonalRamp": [
+          "#21201C",
+          "#433F37",
+          "#666050",
+          "#8A8168",
+          "#A59D8A",
+          "#BEB9AE",
+          "#D8D6D0",
+          "#F3F3F1"
+        ]
+      },
+      "bakelite-lamp-off": {
+        "role": "neutral",
+        "displayName": "Bakelite Lamp Off",
+        "canonical": "#2E2922",
+        "tonalRamp": [
+          "#211F1C",
+          "#433E37",
+          "#665D50",
+          "#8B7C68",
+          "#A59A8A",
+          "#BEB7AE",
+          "#D8D5D0",
+          "#F3F2F1"
+        ]
+      },
+      "bakelite-lamp-bezel": {
+        "role": "neutral",
+        "displayName": "Bakelite Lamp Bezel",
+        "canonical": "#4A4337",
+        "tonalRamp": [
+          "#211F1C",
+          "#433E37",
+          "#665E50",
+          "#8B7E68",
+          "#A59B8A",
+          "#BEB8AE",
+          "#D8D5D0",
+          "#F3F2F1"
+        ]
+      },
+      "bakelite-reply": {
+        "role": "secondary",
+        "displayName": "Opal White",
+        "canonical": "#F7F4EA",
+        "tonalRamp": [
+          "#262317",
+          "#50472A",
+          "#7D6D39",
+          "#AE9645",
+          "#C1AE6E",
+          "#CEC39D",
+          "#E0DAC8",
+          "#F5F4F0"
+        ]
+      },
+      "bakelite-fault": {
+        "role": "secondary",
+        "displayName": "Fault Red (bakelite)",
+        "canonical": "#E5483A",
+        "tonalRamp": [
+          "#2B1412",
+          "#5D221D",
+          "#952B21",
+          "#D42E1F",
+          "#DE5D51",
+          "#E0938C",
+          "#E8C3C0",
+          "#F7EEEE"
+        ]
+      },
+      "bakelite-fault-ink": {
+        "role": "secondary",
+        "displayName": "Bakelite Fault Ink",
+        "canonical": "#FF8A7A",
+        "tonalRamp": [
+          "#2F120E",
+          "#671D13",
+          "#A72210",
+          "#EF2004",
+          "#F3523C",
+          "#EC8C7F",
+          "#EEC0BA",
+          "#F8EEEC"
+        ]
+      },
+      "bakelite-busy-ink": {
+        "role": "secondary",
+        "displayName": "Bakelite Busy Ink",
+        "canonical": "#F2B65E",
+        "tonalRamp": [
+          "#2D2110",
+          "#604419",
+          "#9B671B",
+          "#DD8C15",
+          "#E6A64A",
+          "#E4BF87",
+          "#EAD8BE",
+          "#F7F3ED"
+        ]
+      },
+      "paper-face": {
+        "role": "neutral",
+        "displayName": "Paper Face",
+        "canonical": "#E3DDCD",
+        "tonalRamp": [
+          "#23211A",
+          "#494231",
+          "#706546",
+          "#9B8858",
+          "#B1A37E",
+          "#C5BDA6",
+          "#DBD7CD",
+          "#F4F3F1"
+        ]
+      },
+      "paper-plate": {
+        "role": "neutral",
+        "displayName": "Paper Plate",
+        "canonical": "#F3EFE4",
+        "tonalRamp": [
+          "#252218",
+          "#4D442D",
+          "#78693E",
+          "#A78E4C",
+          "#BBA874",
+          "#CBC0A1",
+          "#DED9CA",
+          "#F5F3F0"
+        ]
+      },
+      "paper-plate-hi": {
+        "role": "neutral",
+        "displayName": "Paper Plate Hi",
+        "canonical": "#D8D1BE",
+        "tonalRamp": [
+          "#23211A",
+          "#474232",
+          "#6E6448",
+          "#97875C",
+          "#AEA281",
+          "#C3BCA8",
+          "#DAD7CE",
+          "#F4F3F1"
+        ]
+      },
+      "paper-recess": {
+        "role": "neutral",
+        "displayName": "Paper Recess",
+        "canonical": "#D9D2C0",
+        "tonalRamp": [
+          "#23201A",
+          "#474133",
+          "#6E6348",
+          "#96865C",
+          "#AEA281",
+          "#C3BCA8",
+          "#DAD7CE",
+          "#F4F3F1"
+        ]
+      },
+      "paper-rule": {
+        "role": "neutral",
+        "displayName": "Paper Rule",
+        "canonical": "#C3BBA7",
+        "tonalRamp": [
+          "#22201B",
+          "#454035",
+          "#69614D",
+          "#908363",
+          "#A99F86",
+          "#C0BAAB",
+          "#D9D6CF",
+          "#F3F3F1"
+        ]
+      },
+      "paper-rule-strong": {
+        "role": "neutral",
+        "displayName": "Paper Rule Strong",
+        "canonical": "#8C8472",
+        "tonalRamp": [
+          "#201F1D",
+          "#413E39",
+          "#635E53",
+          "#857E6D",
+          "#A19B8E",
+          "#BBB8B0",
+          "#D7D5D1",
+          "#F3F2F2"
+        ]
+      },
+      "paper-ink": {
+        "role": "neutral",
+        "displayName": "Paper Ink",
+        "canonical": "#17140F",
+        "tonalRamp": [
+          "#221F1B",
+          "#463F34",
+          "#6B5F4B",
+          "#928061",
+          "#AB9C84",
+          "#C1B9AA",
+          "#D9D5CF",
+          "#F3F3F1"
+        ]
+      },
+      "paper-ink-muted": {
+        "role": "neutral",
+        "displayName": "Paper Ink Muted",
+        "canonical": "#575045",
+        "tonalRamp": [
+          "#211F1D",
+          "#423E38",
+          "#645D52",
+          "#877C6C",
+          "#A29A8D",
+          "#BCB7AF",
+          "#D7D5D1",
+          "#F3F2F2"
+        ]
+      },
+      "paper-strip": {
+        "role": "neutral",
+        "displayName": "Paper Strip",
+        "canonical": "#1E1A15",
+        "tonalRamp": [
+          "#221F1C",
+          "#443E35",
+          "#685D4E",
+          "#8E7C65",
+          "#A89987",
+          "#BFB7AC",
+          "#D9D5CF",
+          "#F3F2F1"
+        ]
+      },
+      "paper-strip-ink": {
+        "role": "neutral",
+        "displayName": "Paper Strip Ink",
+        "canonical": "#EDE8DA",
+        "tonalRamp": [
+          "#242119",
+          "#4B442E",
+          "#756741",
+          "#A28D51",
+          "#B7A778",
+          "#C9BFA3",
+          "#DDD8CB",
+          "#F4F3F0"
+        ]
+      },
+      "paper-strip-rule": {
+        "role": "neutral",
+        "displayName": "Paper Strip Rule",
+        "canonical": "#4A4337",
+        "tonalRamp": [
+          "#211F1C",
+          "#433E37",
+          "#665E50",
+          "#8B7E68",
+          "#A59B8A",
+          "#BEB8AE",
+          "#D8D5D0",
+          "#F3F2F1"
+        ]
+      },
+      "paper-lamp-off": {
+        "role": "neutral",
+        "displayName": "Paper Lamp Off",
+        "canonical": "#DDD6C5",
+        "tonalRamp": [
+          "#23201A",
+          "#484132",
+          "#6F6347",
+          "#98865B",
+          "#AFA280",
+          "#C4BCA8",
+          "#DBD7CD",
+          "#F4F3F1"
+        ]
+      },
+      "paper-lamp-off-bezel": {
+        "role": "neutral",
+        "displayName": "Paper Lamp Off Bezel",
+        "canonical": "#A39B88",
+        "tonalRamp": [
+          "#211F1C",
+          "#423F37",
+          "#655F51",
+          "#887F6A",
+          "#A39C8C",
+          "#BDB9AF",
+          "#D7D5D1",
+          "#F3F3F1"
+        ]
+      },
+      "paper-reply": {
+        "role": "secondary",
+        "displayName": "Reply Cream",
+        "canonical": "#FFF1C2",
+        "tonalRamp": [
+          "#2F280E",
+          "#675313",
+          "#A78410",
+          "#EFB904",
+          "#F3C93C",
+          "#ECD37F",
+          "#EEE2BA",
+          "#F8F5EC"
+        ]
+      },
+      "paper-fault": {
+        "role": "secondary",
+        "displayName": "Fault Red (paper)",
+        "canonical": "#D63A2B",
+        "tonalRamp": [
+          "#2A1513",
+          "#592621",
+          "#8E3128",
+          "#C9382A",
+          "#D6645A",
+          "#DB9791",
+          "#E6C6C3",
+          "#F6EFEE"
+        ]
+      },
+      "paper-fault-ink": {
+        "role": "secondary",
+        "displayName": "Paper Fault Ink",
+        "canonical": "#A8281B",
+        "tonalRamp": [
+          "#2B1513",
+          "#5B241F",
+          "#922F25",
+          "#CE3424",
+          "#DA6155",
+          "#DD968E",
+          "#E7C5C1",
+          "#F6EFEE"
+        ]
+      },
+      "paper-busy-ink": {
+        "role": "secondary",
+        "displayName": "Paper Busy Ink",
+        "canonical": "#7E5200",
+        "tonalRamp": [
+          "#2F240E",
+          "#674913",
+          "#A77210",
+          "#EF9D04",
+          "#F3B33C",
+          "#ECC67F",
+          "#EEDCBA",
+          "#F8F4EC"
+        ]
+      },
+      "lamp-busy": {
+        "role": "secondary",
+        "displayName": "Busy Amber",
+        "canonical": "#F2A33A",
+        "tonalRamp": [
+          "#2D2110",
+          "#614218",
+          "#9D6419",
+          "#E08812",
+          "#E8A347",
+          "#E6BD86",
+          "#EBD7BD",
+          "#F7F3ED"
+        ]
+      },
+      "cord-red": {
+        "role": "primary",
+        "displayName": "Cord Red",
+        "canonical": "#C8321E",
+        "tonalRamp": [
+          "#2B1512",
+          "#5C251E",
+          "#933023",
+          "#D03722",
+          "#DB6454",
+          "#DE978D",
+          "#E7C5C1",
+          "#F7EFEE"
+        ]
+      },
+      "cord-green": {
+        "role": "primary",
+        "displayName": "Cord Green",
+        "canonical": "#2F7D4F",
+        "tonalRamp": [
+          "#17261D",
+          "#2A5039",
+          "#397D55",
+          "#44AF70",
+          "#6EC190",
+          "#9DCFB1",
+          "#C8E0D2",
+          "#F0F5F2"
+        ]
+      },
+      "cord-blue": {
+        "role": "primary",
+        "displayName": "Cord Blue",
+        "canonical": "#2C5AA0",
+        "tonalRamp": [
+          "#151D28",
+          "#253855",
+          "#305286",
+          "#366BBC",
+          "#638DCC",
+          "#97AFD5",
+          "#C5D1E3",
+          "#EFF2F6"
+        ]
+      },
+      "cord-yellow": {
+        "role": "primary",
+        "displayName": "Cord Yellow",
+        "canonical": "#D9B23A",
+        "tonalRamp": [
+          "#2A2413",
+          "#594B21",
+          "#8E7528",
+          "#C9A22A",
+          "#D6B759",
+          "#DBC991",
+          "#E6DDC2",
+          "#F6F4EE"
+        ]
+      },
+      "cord-white": {
+        "role": "primary",
+        "displayName": "Cord White",
+        "canonical": "#E6E0CE",
+        "tonalRamp": [
+          "#242119",
+          "#4A442F",
+          "#746743",
+          "#A08C53",
+          "#B5A67A",
+          "#C7BFA4",
+          "#DCD8CC",
+          "#F4F3F0"
+        ]
+      },
+      "cord-violet": {
+        "role": "primary",
+        "displayName": "Cord Violet",
+        "canonical": "#7A4FA0",
+        "tonalRamp": [
+          "#1F1924",
+          "#3E2F4B",
+          "#5D4175",
+          "#7C51A1",
+          "#9978B7",
+          "#B7A3C8",
+          "#D5CBDD",
+          "#F2F0F4"
+        ]
+      },
+      "cord-orange": {
+        "role": "primary",
+        "displayName": "Cord Orange",
+        "canonical": "#D9762B",
+        "tonalRamp": [
+          "#2A1D13",
+          "#5A3920",
+          "#905427",
+          "#CB6E27",
+          "#D78F58",
+          "#DCB190",
+          "#E6D2C2",
+          "#F6F2EE"
+        ]
+      },
+      "cord-teal": {
+        "role": "primary",
+        "displayName": "Cord Teal",
+        "canonical": "#23807F",
+        "tonalRamp": [
+          "#152828",
+          "#255554",
+          "#308685",
+          "#36BDBB",
+          "#63CCCB",
+          "#97D5D4",
+          "#C5E3E2",
+          "#EFF6F6"
+        ]
+      },
+      "cord-ink-dark": {
+        "role": "neutral",
+        "displayName": "Cord Ink Dark",
+        "canonical": "#17140F",
+        "tonalRamp": [
+          "#221F1B",
+          "#463F34",
+          "#6B5F4B",
+          "#928061",
+          "#AB9C84",
+          "#C1B9AA",
+          "#D9D5CF",
+          "#F3F3F1"
+        ]
+      },
+      "cord-ink-light": {
+        "role": "neutral",
+        "displayName": "Cord Ink Light",
+        "canonical": "#F7F4EA",
+        "tonalRamp": [
+          "#262317",
+          "#50472A",
+          "#7D6D39",
+          "#AE9645",
+          "#C1AE6E",
+          "#CEC39D",
+          "#E0DAC8",
+          "#F5F4F0"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "timer": {
+        "displayName": "Timer",
+        "purpose": "The one giant live figure while recording; 60 sp past an hour."
+      },
+      "wordmark": {
+        "displayName": "Wordmark",
+        "purpose": "THIRD EAR on the Board, 3E on the rail."
+      },
+      "screen-title": {
+        "displayName": "Screen Title",
+        "purpose": "Screen headings."
+      },
+      "key-name": {
+        "displayName": "Key Name",
+        "purpose": "Line name on keys and the widget."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "List and sheet titles."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Reading text and setting titles."
+      },
+      "small": {
+        "displayName": "Small",
+        "purpose": "Secondary lines, state words, nav labels."
+      },
+      "button": {
+        "displayName": "Button",
+        "purpose": "All buttons."
+      },
+      "figures": {
+        "displayName": "Figures",
+        "purpose": "Changing numbers, tabular."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Engraved section labels, caps."
+      },
+      "code": {
+        "displayName": "Code",
+        "purpose": "Line codes, caps."
+      },
+      "strip": {
+        "displayName": "Strip",
+        "purpose": "Designation strip cells, caps."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "relay-step",
+        "value": "steps(1), no easing",
+        "purpose": "All state changes are hard frames; no fades or eased transitions."
+      },
+      {
+        "name": "busy-flash",
+        "value": "700ms on / 300ms off",
+        "purpose": "Busy lamp supervisory flash; stays lit when animations are off."
+      },
+      {
+        "name": "patch-flash",
+        "value": "90ms",
+        "purpose": "Strip flashes the cord colour when a recording is stopped onto a line; skipped when animations are off."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "expanded",
+        "value": "600dp",
+        "purpose": "Navigation rail; Board 2-4 columns at 200 dp per column; Log, Lines, Setup capped at a 600 dp measure."
+      },
+      {
+        "name": "large-font",
+        "value": "fontScale >= 1.3",
+        "purpose": "Board drops to one column on phones."
+      }
+    ],
+    "provenance": ".impeccable/provenance.md"
+  },
+  "components": [
+    {
+      "name": "Line Key",
+      "kind": "custom",
+      "refersTo": "line-key",
+      "description": "One action on the board: code cell, lamp, name, state word, designation strip. The whole key is the target.",
+      "html": "<button class=\"ds-key\"><span class=\"ds-key-top\"><span class=\"ds-code\">HRM</span><span class=\"ds-lamp ds-lamp-reply\"></span></span><span class=\"ds-key-name\">Ask Hermes</span><span class=\"ds-key-word\">1 reply waiting</span><span class=\"ds-strip\"><span>OSTT</span><span>HERMES</span><span>TEXT</span></span></button>",
+      "css": ".ds-key{display:flex;flex-direction:column;width:200px;min-height:136px;padding:0;background:#211D18;color:#EDE8DA;border:1px solid #3A342B;border-radius:6px;overflow:hidden;text-align:left;cursor:pointer}.ds-key:active{background:#302A23}.ds-key:focus-visible{outline:2px solid #EDE8DA;outline-offset:2px}.ds-key-top{display:flex;align-items:center;justify-content:space-between;padding:10px 8px 0 12px}.ds-code{font-family:\"Saira Condensed\",sans-serif;text-transform:uppercase;font-weight:700;font-size:14px;letter-spacing:.1em;background:#C8321E;color:#F7F4EA;padding:3px 7px;border-radius:3px}.ds-lamp{width:16px;height:16px;border-radius:50%;border:2px solid #4A4337;box-sizing:border-box;background:#2E2922}.ds-lamp-reply{background:#F7F4EA;box-shadow:0 0 0 4px rgba(247,244,234,.16)}.ds-key-name{font-family:\"Atkinson Hyperlegible Next\",sans-serif;font-weight:700;font-size:19px;line-height:23px;padding:8px 12px 0}.ds-key-word{font-family:\"Atkinson Hyperlegible Next\",sans-serif;font-weight:700;font-size:14px;padding:2px 12px 0}.ds-strip{display:flex;margin-top:auto;background:#E6E0CE;color:#1E1A14}.ds-strip span{font-family:\"Saira Condensed\",sans-serif;text-transform:uppercase;font-weight:600;font-size:12px;letter-spacing:.06em;padding:5px 8px;border-left:1px solid #B4AD9B}.ds-strip span:first-child{border-left:0}"
+    },
+    {
+      "name": "Lamps",
+      "kind": "custom",
+      "refersTo": "lamp",
+      "description": "Opal lamps: off, busy (flashes 700/300 ms in hard steps), reply, fault. Always with a word.",
+      "html": "<div class=\"ds-lamps\"><span><span class=\"ds-lamp ds-lamp-off\"></span> Idle</span><span><span class=\"ds-lamp ds-lamp-busy\"></span> Transcribing</span><span><span class=\"ds-lamp ds-lamp-reply\"></span> 1 reply waiting</span><span><span class=\"ds-lamp ds-lamp-fault\"></span> Not delivered</span></div>",
+      "css": ".ds-lamps{display:flex;gap:16px;font-family:\"Atkinson Hyperlegible Next\",sans-serif;font-weight:700;font-size:14px;color:#EDE8DA;background:#16130F;padding:12px}.ds-lamps span{display:flex;align-items:center;gap:6px}.ds-lamp{width:16px;height:16px;border-radius:50%;border:2px solid #4A4337;box-sizing:border-box;background:#2E2922}.ds-lamp-busy{background:#F2A33A;animation:ds-relay 1s steps(1) infinite}.ds-lamp-reply{background:#F7F4EA}.ds-lamp-fault{background:#E5483A}@keyframes ds-relay{0%{background:#F2A33A}70%{background:#2E2922}}@media(prefers-reduced-motion:reduce){.ds-lamp-busy{animation:none}}"
+    },
+    {
+      "name": "Code Cell",
+      "kind": "chip",
+      "refersTo": "code-cell",
+      "description": "The line code in its cord colour; dark ink on yellow and white cords.",
+      "html": "<div class=\"ds-codes\"><span class=\"ds-code\" style=\"background:#C8321E\">HRM</span><span class=\"ds-code\" style=\"background:#2F7D4F\">FAM</span><span class=\"ds-code\" style=\"background:#2C5AA0\">CLP</span><span class=\"ds-code\" style=\"background:#D9B23A;color:#17140F\">MTG</span><span class=\"ds-code\" style=\"background:#E6E0CE;color:#17140F\">SAV</span><span class=\"ds-code\" style=\"background:#7A4FA0\">N8N</span><span class=\"ds-code\" style=\"background:#D9762B\">ORG</span><span class=\"ds-code\" style=\"background:#23807F\">TEA</span></div>",
+      "css": ".ds-codes{display:flex;gap:8px;background:#16130F;padding:12px}.ds-code{font-family:\"Saira Condensed\",sans-serif;text-transform:uppercase;font-weight:700;font-size:14px;letter-spacing:.1em;color:#F7F4EA;padding:3px 7px;border-radius:3px}"
+    },
+    {
+      "name": "Key Button",
+      "kind": "button",
+      "refersTo": "button-key",
+      "description": "Primary: ink fill on the face; the one strong action of a plate.",
+      "html": "<button class=\"ds-btn-key\">Retry</button>",
+      "css": ".ds-btn-key{font-family:\"Atkinson Hyperlegible Next\",sans-serif;font-weight:700;font-size:15px;min-height:48px;padding:0 16px;border:0;border-radius:6px;background:#EDE8DA;color:#16130F;cursor:pointer}.ds-btn-key:active{background:#ADA595}.ds-btn-key:focus-visible{outline:2px solid #EDE8DA;outline-offset:2px}"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Secondary: 1 dp strong rule, ink text.",
+      "html": "<button class=\"ds-btn-outline\">Pause</button>",
+      "css": ".ds-btn-outline{font-family:\"Atkinson Hyperlegible Next\",sans-serif;font-weight:700;font-size:15px;min-height:48px;padding:0 14px;border:1px solid #5A5246;border-radius:6px;background:transparent;color:#EDE8DA;cursor:pointer}.ds-btn-outline:active{background:#302A23}.ds-btn-outline:focus-visible{outline:2px solid #EDE8DA;outline-offset:2px}"
+    },
+    {
+      "name": "Plain Button",
+      "kind": "button",
+      "refersTo": "button-plain",
+      "description": "Text only; fault ink for destructive actions.",
+      "html": "<button class=\"ds-btn-plain\">Discard</button>",
+      "css": ".ds-btn-plain{font-family:\"Atkinson Hyperlegible Next\",sans-serif;font-weight:700;font-size:15px;min-height:48px;padding:0 12px;border:0;border-radius:6px;background:transparent;color:#FF8A7A;cursor:pointer}.ds-btn-plain:active{background:#302A23}.ds-btn-plain:focus-visible{outline:2px solid #EDE8DA}"
+    },
+    {
+      "name": "Notice",
+      "kind": "card",
+      "refersTo": "notice",
+      "description": "Recess band, amber or red border, lamp and a sentence of state.",
+      "html": "<div class=\"ds-notice\"><span class=\"ds-lamp\"></span><span class=\"ds-notice-text\">Offline Speech to Text is not installed.</span><button class=\"ds-btn-plain\">Get</button></div>",
+      "css": ".ds-notice{display:flex;align-items:center;gap:6px;background:#0E0C09;border:1px solid #F2A33A;border-radius:6px;padding:10px 4px 10px 12px;color:#EDE8DA;font-family:\"Atkinson Hyperlegible Next\",sans-serif;font-size:14px}.ds-notice-text{flex:1}.ds-lamp{width:12px;height:12px;border-radius:50%;border:2px solid #4A4337;background:#F2A33A}.ds-btn-plain{font-family:\"Atkinson Hyperlegible Next\",sans-serif;font-weight:700;font-size:15px;min-height:48px;padding:0 12px;border:0;background:transparent;color:#EDE8DA}"
+    },
+    {
+      "name": "Setting Row",
+      "kind": "input",
+      "refersTo": "setting-row",
+      "description": "Whole-row target, min 56 dp; title over value.",
+      "html": "<div class=\"ds-row\" tabindex=\"0\"><div><div class=\"ds-row-title\">Recording format</div><div class=\"ds-row-value\">AAC (.m4a)</div></div></div>",
+      "css": ".ds-row{display:flex;align-items:center;min-height:56px;padding:10px 16px;background:#16130F;border-bottom:1px solid #3A342B;cursor:pointer}.ds-row:active{background:#211D18}.ds-row:focus-visible{outline:2px solid #EDE8DA}.ds-row-title{font-family:\"Atkinson Hyperlegible Next\",sans-serif;font-size:16px;line-height:23px;color:#EDE8DA}.ds-row-value{font-family:\"Atkinson Hyperlegible Next\",sans-serif;font-size:14px;color:#ADA595}"
+    },
+    {
+      "name": "Navigation Bar",
+      "kind": "nav",
+      "refersTo": "nav-bar",
+      "description": "Plate-coloured bottom bar; selected item on a plate-high indicator.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-on\">Board</a><a>Log</a><a>Lines</a><a>Setup</a></nav>",
+      "css": ".ds-nav{display:flex;justify-content:space-around;background:#211D18;border-top:1px solid #3A342B;padding:12px 0}.ds-nav a{font-family:\"Atkinson Hyperlegible Next\",sans-serif;font-size:14px;color:#ADA595;padding:4px 16px;border-radius:16px;cursor:pointer}.ds-nav a:hover{color:#EDE8DA}.ds-nav a.ds-nav-on{color:#EDE8DA;background:#302A23}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Jack Field",
+    "overview": "Third Ear is a switchboard face. Every action is a line: a key with its own cord colour, a three-letter line code printed in a coloured cell, an opal lamp that reports its state, and a printed designation strip that says what happens after the stop. A power user reads the whole board at a glance: which microphone is live, which lines are busy, which have replies waiting, which failed. The category default (a round record button over a waveform, with a recordings list) is refused; recording starts by tapping a line and ends by tapping the line it should go down.\n\nThe face exists in two materials. Dark is bakelite black; light is the warm designation-strip paper itself. Both are flat: depth is a tonal step and a 1 dp rule, never a shadow. Density is whole-cell: keys are full plates with generous targets (136 dp minimum height, 48 dp minimum for every button, 56 dp setting rows) because the audience includes headset and hearing-aid wearers and drivers glancing at a mounted phone.\n\nColour is functional throughout. Cord colours identify lines and nothing else; lamp colours report state and never appear without a word; everything else is ink on face. Motion is a relay, not a fade: two hard frames, no easing.",
+    "keyCharacteristics": [
+      "Line keys in cord colours with code cell, lamp, name, state word and designation strip.",
+      "Two flat faces (bakelite and paper), tonal steps and 1 dp rules, no shadows.",
+      "Opal lamps with four states, always paired with a word.",
+      "Atkinson Hyperlegible Next for everything read; Saira Condensed caps for strips, codes and labels.",
+      "One reversed plate per screen and one giant live figure while recording.",
+      "Relay-step motion: hard frames, no easing; still when animations are off."
+    ],
+    "rules": [
+      {
+        "name": "The Cord Is Identity Rule",
+        "body": "Cord colours mark a line and nothing else: no cord colour as decoration, accent, chart colour or button fill. If it is not a line, it is ink on face.",
+        "section": "colors"
+      },
+      {
+        "name": "The Lamp Speaks Rule",
+        "body": "A lit lamp always travels with a word (\"Transcribing\", \"1 reply waiting\", \"Not delivered\"); colour alone never carries state. The same applies to Notices.",
+        "section": "colors"
+      },
+      {
+        "name": "The No Dynamic Color Rule",
+        "body": "Material Dynamic Color is off. Wallpaper-derived colour would overwrite cord identity; the Material scheme is mapped onto the face palette instead.",
+        "section": "colors"
+      },
+      {
+        "name": "The Condensed Is Engraving Rule",
+        "body": "Saira Condensed appears only in caps, only for short designations (codes, strips, labels, wordmark, timer). Sentences, names and anything read for meaning are Atkinson.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tabular Figures Rule",
+        "body": "Numbers that change while visible (timer, durations, counts) use tabular figures so they never jitter.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tonal Step Rule",
+        "body": "To separate a surface, step its tone and draw a 1 dp rule. Never a shadow, never a glow.",
+        "section": "elevation"
+      },
+      {
+        "name": "The One Reversed Plate Rule",
+        "body": "At most one plate per screen is reversed into strip colours: the line a recording started on (\"Started here\"). Reversal marks the one thing that is happening, so it is never used for emphasis elsewhere.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do give every action a cord colour, a line code, a lamp and a designation strip wherever it appears (key, tile, widget, notification, car grid).",
+      "Do pair every lit lamp and every Notice with a word.",
+      "Do separate surfaces with a tonal step and a 1 dp rule; corners are 3 dp (cells) or 6 dp (plates).",
+      "Do animate in relay steps: hard frames, no easing (busy lamp 700/300 ms, strip patch flash 90 ms), and hold lamps lit when animations are off.",
+      "Do keep targets at least 48 dp and setting rows at least 56 dp; drop the Board to one column at font scale 1.3 and above.",
+      "Do cap lists and settings at a 600 dp reading measure on wide screens while the Board takes the full width.",
+      "Do use tabular figures for anything that counts while visible."
+    ],
+    "donts": [
+      "Don't use a cord colour for anything but a line's identity.",
+      "Don't turn on Dynamic Color.",
+      "Don't add shadows, glows or Material tonal elevation.",
+      "Don't show an idle level meter on the input bar; the microphone stays closed until recording.",
+      "Don't put search or a menu on the Board; search lives in Log, settings in Setup.",
+      "Don't reverse more than one plate per screen.",
+      "Don't set sentences or names in Saira Condensed, or Saira in lower case."
+    ]
+  }
+}

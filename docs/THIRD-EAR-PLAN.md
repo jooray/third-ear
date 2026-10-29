@@ -194,3 +194,18 @@ announcements), the first-run folder grant on the phone.
 - I Hear You (`~/projects/i-hear-you`, branch `ostt-link-and-website`, worktree
   `~/projects/i-hear-you-website-wt`): the same OSTT link on the Voice screen (5 languages) and its
   own static site in `website/`. Not merged into its `main`, not installed on the phone.
+
+## Cross-app recording fixes (from an OSTT crash report, 2026-10-29)
+
+- OSTT crashed on every keyboard dictation start: its new keep-alive service (`ImeDictationService`,
+  "keep recording when the keyboard hides") acquires a wake lock but the manifest lacked `WAKE_LOCK`.
+  Not Bluetooth-specific. Fixed on OSTT branch `ime-record-while-locked` (8c3090b) and in
+  `ihy-combined` (2729db3). Third Ear declares `WAKE_LOCK`; I Hear You takes no wake lock.
+- With Android Auto connected (audio not rerouted to the car) and headphones on, all three apps
+  could pick the car's hands-free microphone: they took the first SCO device. Now the Bluetooth
+  microphone of the device media plays to comes first (`getAudioDevicesForAttributes(USAGE_MEDIA)`,
+  API 33+), then LE Audio (including Android 17's hearing-aid type 33), then SCO; LE inputs are
+  matched by family. Third Ear: `BluetoothChoice` + tests (629a787). OSTT: `BluetoothMicPolicy`
+  3-arg `choose` + host tests (pr-bluetooth-microphone e9b609a, ihy-combined 6e07630). I Hear You:
+  branch `ostt-link-and-website` (c33536e), aids stay first.
+- The android-bluetooth-microphone skill and its gist describe both.
