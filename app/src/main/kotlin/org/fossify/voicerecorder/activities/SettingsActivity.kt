@@ -1,6 +1,17 @@
 package org.fossify.voicerecorder.activities
 
+import android.Manifest
+import android.content.ComponentName
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.provider.Settings
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import org.fossify.voicerecorder.actions.ActionStore
+import org.fossify.voicerecorder.extensions.recordActions
+import org.fossify.voicerecorder.pipeline.MediaPauser
+import org.fossify.voicerecorder.pipeline.Transcriber
+import org.fossify.voicerecorder.tiles.ActionTileService
 import android.media.MediaRecorder
 import android.os.Bundle
 import org.fossify.commons.dialogs.ChangeDateTimeFormatDialog
@@ -76,10 +87,12 @@ class SettingsActivity : SimpleActivity() {
         setupKeepScreenOn()
         setupUseRecycleBin()
         setupEmptyRecycleBin()
+        setupThirdEar()
         updateTextColors(binding.settingsNestedScrollview)
 
         arrayOf(
             binding.settingsColorCustomizationSectionLabel,
+            binding.settingsThirdEarLabel,
             binding.settingsGeneralSettingsLabel,
             binding.settingsRecordingSectionLabel,
             binding.settingsAudioSectionLabel,
@@ -383,6 +396,105 @@ class SettingsActivity : SimpleActivity() {
 
             add(MediaRecorder.AudioSource.VOICE_RECOGNITION)
             add(MediaRecorder.AudioSource.UNPROCESSED)
+        }
+    }
+
+    // ------------------------------------------------------------------ Third Ear
+
+    private fun setupThirdEar() {
+        val actions = recordActions()
+        binding.settingsActions.text = actions.joinToString(", ") { it.name }
+        binding.settingsActionsHolder.setOnClickListener { startActivity(Intent(this, ActionsActivity::class.java)) }
+
+        binding.settingsPreferBluetooth.isChecked = config.preferBluetooth
+        binding.settingsPreferBluetoothHolder.setOnClickListener {
+            binding.settingsPreferBluetooth.toggle()
+            config.preferBluetooth = binding.settingsPreferBluetooth.isChecked
+            if (config.preferBluetooth &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.BLUETOOTH_CONNECT), 4711)
+            }
+        }
+
+        binding.settingsSpokenCues.isChecked = config.spokenCues
+        binding.settingsSpokenCuesHolder.setOnClickListener {
+            binding.settingsSpokenCues.toggle()
+            config.spokenCues = binding.settingsSpokenCues.isChecked
+        }
+
+        binding.settingsPauseMedia.isChecked = config.pauseMedia && MediaPauser.hasAccess(this)
+        binding.settingsPauseMediaHolder.setOnClickListener {
+            binding.settingsPauseMedia.toggle()
+            config.pauseMedia = binding.settingsPauseMedia.isChecked
+            if (config.pauseMedia && !MediaPauser.hasAccess(this)) {
+                runCatching { startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)) }
+            }
+        }
+
+        val transcriber = Transcriber(this)
+        val providers = transcriber.providers()
+        val current = transcriber.resolve(config.transcriber)
+        binding.settingsTranscriber.text = current?.let { providerLabel(transcriber, it) } ?: getString(R.string.te_setting_transcriber_none)
+        binding.settingsTranscriberHolder.setOnClickListener {
+            if (providers.isEmpty()) return@setOnClickListener
+            val items = providers.mapIndexed { i, c -> RadioItem(i, providerLabel(transcriber, c)) }
+            RadioGroupDialog(this, ArrayList(items), providers.indexOf(current)) {
+                config.transcriber = providers[it as Int].flattenToString()
+                setupThirdEar()
+            }
+        }
+
+        binding.settingsTranscriptFiles.isChecked = config.saveTranscriptFiles
+        binding.settingsTranscriptFilesHolder.setOnClickListener {
+            binding.settingsTranscriptFiles.toggle()
+            config.saveTranscriptFiles = binding.settingsTranscriptFiles.isChecked
+        }
+
+        val store = ActionStore(this)
+        listOf(
+            Triple(1, binding.settingsTile1, binding.settingsTile1Holder),
+            Triple(2, binding.settingsTile2, binding.settingsTile2Holder),
+            Triple(3, binding.settingsTile3, binding.settingsTile3Holder),
+        ).forEach { (slot, value, holder) ->
+            value.text = store.tileAction(slot)?.name ?: getString(R.string.te_tile_no_action)
+            holder.setOnClickListener {
+                pickAction(store.tileAction(slot)?.id) { id ->
+                    store.setTile(slot, id)
+                    ActionTileService.refreshAll(this)
+                    setupThirdEar()
+                }
+            }
+        }
+
+        binding.settingsWidgetAction.text = store.defaultAction()?.name
+        binding.settingsWidgetActionHolder.setOnClickListener {
+            pickAction(store.defaultAction()?.id) { id ->
+                store.widgetActionId = id
+                setupThirdEar()
+            }
+        }
+
+        binding.settingsWhiteNoise.text = getString(R.string.te_setting_white_noise_desc)
+        binding.settingsWhiteNoiseHolder.setOnClickListener { startActivity(Intent(this, WhiteNoiseActivity::class.java)) }
+        binding.settingsAndroidAuto.text = getString(R.string.te_setting_android_auto_desc)
+    }
+
+    private fun providerLabel(transcriber: Transcriber, c: ComponentName): String {
+        val name = runCatching { packageManager.getApplicationLabel(packageManager.getApplicationInfo(c.packageName, 0)).toString() }
+            .getOrDefault(c.packageName)
+        return when (transcriber.contractFor(c)) {
+            Transcriber.Contract.FILE -> getString(R.string.te_transcriber_file_api, name)
+            Transcriber.Contract.CALLER_AUDIO -> getString(R.string.te_transcriber_caller_audio, name)
+            null -> name
+        }
+    }
+
+    private fun pickAction(currentId: String?, onPick: (String) -> Unit) {
+        val actions = recordActions()
+        val items = actions.mapIndexed { i, a -> RadioItem(i, a.name) }
+        RadioGroupDialog(this, ArrayList(items), actions.indexOfFirst { it.id == currentId }) {
+            onPick(actions[it as Int].id)
         }
     }
 }
