@@ -88,6 +88,7 @@ fun BaseSimpleActivity.deleteRecordings(
             val resolver = contentResolver
             recordingsToRemove.forEach {
                 DocumentsContract.deleteDocument(resolver, it.path.toUri())
+                transcriptSibling(it.path.toUri())?.let { txt -> runCatching { DocumentsContract.deleteDocument(resolver, txt) } }
             }
         } else {
             recordingsToRemove.forEach {
@@ -160,6 +161,10 @@ private fun BaseSimpleActivity.moveRecordingsSAF(
         }
 
         recordings.forEach { recording ->
+            // Third Ear's transcript (.txt next to the recording) goes along, when there is one
+            transcriptSibling(recording.path.toUri())?.let { txt ->
+                runCatching { DocumentsContract.moveDocument(contentResolver, txt, sourceParentDocumentUri, destinationParentDocumentUri) }
+            }
             try {
                 DocumentsContract.moveDocument(
                     contentResolver,
@@ -227,3 +232,11 @@ fun BaseSimpleActivity.deleteExpiredTrashedRecordings() {
         }
     }
 }
+
+/** The document Uri of "<same name>.txt" next to a recording (SAF document ids are paths). */
+fun transcriptSibling(recording: android.net.Uri): android.net.Uri? = runCatching {
+    val id = DocumentsContract.getDocumentId(recording)
+    if (!id.contains('.')) return null
+    val tree = DocumentsContract.buildTreeDocumentUri(recording.authority, DocumentsContract.getTreeDocumentId(recording))
+    DocumentsContract.buildDocumentUriUsingTree(tree, id.substringBeforeLast('.') + ".txt")
+}.getOrNull()
