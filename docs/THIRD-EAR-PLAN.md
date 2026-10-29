@@ -2,7 +2,7 @@
 
 Third Ear is a voice recorder for everyone, a permanent fork of
 [Fossify Voice Recorder](https://github.com/FossifyOrg/Voice-Recorder) (`upstream` remote, kept for
-cherry-picking fixes; never merged back). It adds the recording, transcription and White Noise work
+reference; never merged back). It adds the recording, transcription and White Noise work
 from Juraj's I Hear You (`~/projects/i-hear-you`) and his OSTT fork
 (`~/projects/ostt-work/ostt-combined`).
 
@@ -15,7 +15,7 @@ the first unchecked item. Commits are local only (never pushed).
 |---|---|---|
 | Repo | `~/projects/third-ear`, branch `main` from `reliability/wake-lock-error-watchdog` (86bd3b5, 23fe711). Fossify's old `main` is kept as local branch `fossify-main`; remote `upstream` = FossifyOrg. | permanent fork, cherry-pick later |
 | applicationId | `app.thirdear` (`app.thirdear.debug` for debug builds) | own identity, coexists with Fossify |
-| Kotlin namespace | kept `org.fossify.voicerecorder`; new code in sub-packages (`audio`, `actions`, `pipeline`, `whitenoise`, `tiles`, `car`) | renaming touches every file and breaks cherry-picks from upstream; not cheap |
+| Kotlin namespace | `app.thirdear` (renamed from `org.fossify.voicerecorder` after the first version; Juraj's call: cherry-picking from Fossify is no longer a goal). New code in sub-packages (`audio`, `actions`, `pipeline`, `whitenoise`, `tiles`, `car`) | own identity |
 | minSdk | 31 (was 26) | `setCommunicationDevice` / `availableCommunicationDevices` (31), MediaMuxer OGG (29); OSTT caller-audio fallback needs 33 and is runtime-gated |
 | License | GPLv3 (unchanged; I Hear You code is Juraj's own) | |
 | fossify-commons | kept (look, dialogs, settings rows, storage helpers) | |

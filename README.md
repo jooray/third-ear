@@ -75,8 +75,7 @@ export JAVA_HOME=$(brew --prefix openjdk@21)
 ```
 
 Debug builds are `app.thirdear.debug` and coexist with a release (`app.thirdear`). The Kotlin
-package stays `org.fossify.voicerecorder` so upstream fixes cherry-pick cleanly (remote
-`upstream` is FossifyOrg/Voice-Recorder).
+package is `app.thirdear` too; remote `upstream` (FossifyOrg/Voice-Recorder) is kept for reference.
 
 ## Docs
 

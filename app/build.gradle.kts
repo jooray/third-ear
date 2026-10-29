@@ -122,7 +122,7 @@ android {
         )
     }
 
-    namespace = "org.fossify.voicerecorder"
+    namespace = "app.thirdear"
 
     lint {
         checkReleaseBuilds = false

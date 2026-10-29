@@ -81,7 +81,7 @@
         </receiver>
 
         <activity
-            android:name="org.fossify.voicerecorder.activities.BackgroundRecordActivity"
+            android:name="app.thirdear.activities.BackgroundRecordActivity"
             android:exported="false"
             android:theme="@style/AppTheme.NoDisplay" />
 
@@ -133,9 +133,9 @@
             android:exported="false"
             android:foregroundServiceType="microphone|dataSync">
             <intent-filter>
-                <action android:name="org.fossify.voicerecorder.action.GET_RECORDER_INFO" />
-                <action android:name="org.fossify.voicerecorder.action.STOP_AMPLITUDE_UPDATE" />
-                <action android:name="org.fossify.voicerecorder.action.TOGGLE_PAUSE" />
+                <action android:name="app.thirdear.action.GET_RECORDER_INFO" />
+                <action android:name="app.thirdear.action.STOP_AMPLITUDE_UPDATE" />
+                <action android:name="app.thirdear.action.TOGGLE_PAUSE" />
             </intent-filter>
         </service>
 

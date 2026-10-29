@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<org.fossify.voicerecorder.fragments.RecorderFragment xmlns:android="http://schemas.android.com/apk/res/android"
+<app.thirdear.fragments.RecorderFragment xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/recorder_holder"
@@ -180,4 +180,4 @@
         </ScrollView>
     </LinearLayout>
 
-</org.fossify.voicerecorder.fragments.RecorderFragment>
+</app.thirdear.fragments.RecorderFragment>

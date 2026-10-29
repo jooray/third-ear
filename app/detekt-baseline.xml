@@ -24,8 +24,8 @@
     <ID>TooGenericExceptionCaught:PlayerFragment.kt$PlayerFragment$e: Exception</ID>
     <ID>TooGenericExceptionCaught:RecorderService.kt$RecorderService$e: Exception</ID>
     <ID>TooGenericExceptionCaught:RenameRecordingDialog.kt$RenameRecordingDialog$e: Exception</ID>
-    <ID>TooManyFunctions:Activity.kt$org.fossify.voicerecorder.extensions.Activity.kt</ID>
-    <ID>TooManyFunctions:Context.kt$org.fossify.voicerecorder.extensions.Context.kt</ID>
+    <ID>TooManyFunctions:Activity.kt$app.thirdear.extensions.Activity.kt</ID>
+    <ID>TooManyFunctions:Context.kt$app.thirdear.extensions.Context.kt</ID>
     <ID>TooManyFunctions:MainActivity.kt$MainActivity : SimpleActivity</ID>
     <ID>TooManyFunctions:PlayerFragment.kt$PlayerFragment : MyViewPagerFragmentRefreshRecordingsListener</ID>
     <ID>TooManyFunctions:RecorderFragment.kt$RecorderFragment : MyViewPagerFragment</ID>
