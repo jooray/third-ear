@@ -3,4 +3,7 @@
     <dimen name="toggle_recording_button_size">64dp</dimen>
     <dimen name="player_button_margin">48dp</dimen>
     <dimen name="main_button_size">150dp</dimen>
+    <dimen name="te_visualizer_height">110dp</dimen>
+    <dimen name="te_source_button_height">56dp</dimen>
+    <dimen name="te_action_button_height">72dp</dimen>
 </resources>

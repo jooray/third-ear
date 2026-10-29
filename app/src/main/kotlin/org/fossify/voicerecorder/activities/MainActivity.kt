@@ -32,7 +32,8 @@ import org.fossify.voicerecorder.databinding.ActivityMainBinding
 import org.fossify.voicerecorder.extensions.config
 import org.fossify.voicerecorder.extensions.deleteExpiredTrashedRecordings
 import org.fossify.voicerecorder.extensions.ensureStoragePermission
-import org.fossify.voicerecorder.helpers.STOP_AMPLITUDE_UPDATE
+import org.fossify.voicerecorder.pipeline.NoteStore
+import org.fossify.commons.helpers.ensureBackgroundThread
 import org.fossify.voicerecorder.models.Events
 import org.fossify.voicerecorder.services.RecorderService
 import org.greenrobot.eventbus.EventBus
@@ -82,11 +83,12 @@ class MainActivity : SimpleActivity() {
         bus = EventBus.getDefault()
         bus!!.register(this)
         if (config.recordAfterLaunch && !RecorderService.isRunning) {
-            Intent(this@MainActivity, RecorderService::class.java).apply {
-                try {
-                    startService(this)
-                } catch (ignored: Exception) {
-                }
+            RecorderService.start(this, null)
+        }
+        // recordings the process died on (or that died mid-pipeline) are finished and saved now
+        ensureBackgroundThread {
+            if (!RecorderService.isRunning && NoteStore(this).unfinished().isNotEmpty()) {
+                runOnUiThread { RecorderService.recover(this) }
             }
         }
     }
@@ -113,13 +115,6 @@ class MainActivity : SimpleActivity() {
         bus?.unregister(this)
         getPagerAdapter()?.onDestroy()
 
-        Intent(this@MainActivity, RecorderService::class.java).apply {
-            action = STOP_AMPLITUDE_UPDATE
-            try {
-                startService(this)
-            } catch (ignored: Exception) {
-            }
-        }
     }
 
     override fun onBackPressedCompat(): Boolean {
