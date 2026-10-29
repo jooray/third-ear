@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Default actions -->
+    <string name="te_default_action_save">Uložiť</string>
+    <string name="te_default_action_transcript">Prepis do schránky</string>
+
+    <!-- Microphone / source -->
+    <string name="te_input_starting">Spúšťam mikrofón…</string>
+    <string name="te_input_connecting_bluetooth">Pripájam Bluetooth mikrofón…</string>
+    <string name="te_input_waiting_bluetooth">Čakám na Bluetooth mikrofón…</string>
+    <string name="te_input_bluetooth">Bluetooth mikrofón</string>
+    <string name="te_input_bluetooth_named">Bluetooth: %s</string>
+    <string name="te_input_bluetooth_not_routed">Vyžiadaný Bluetooth, nahráva mikrofón telefónu</string>
+    <string name="te_input_phone">Mikrofón telefónu</string>
+    <string name="te_source_desc_bluetooth">Nahráva sa z Bluetooth mikrofónu. Ťuknutím prepneš na mikrofón telefónu.</string>
+    <string name="te_source_desc_phone">Nahráva sa z mikrofónu telefónu. Ťuknutím prepneš na Bluetooth mikrofón.</string>
+    <string name="te_switch_to_bluetooth_title">Nahrávať z Bluetooth mikrofónu?</string>
+    <string name="te_switch_to_phone_title">Nahrávať z mikrofónu telefónu?</string>
+    <string name="te_switch_message">Nahrávka pokračuje v tom istom súbore. Kým sa Bluetooth mikrofón spustí, sekunda či dve sa nenahrá.</string>
+    <string name="te_switch_once">Prepnúť pre túto nahrávku</string>
+    <string name="te_switch_keep_bluetooth">Prepnúť a ostať na Bluetooth</string>
+    <string name="te_switch_keep_phone">Prepnúť a ostať na telefóne</string>
+    <string name="te_no_bluetooth_mic">Nie je pripojený žiadny Bluetooth mikrofón.</string>
+    <string name="te_fallback_reason">Mikrofón telefónu: %s</string>
+
+    <!-- Recorder screen -->
+    <string name="te_tap_to_start">Ťukni na akciu a začne sa nahrávať</string>
+    <string name="te_tap_to_stop">Ťukni na akciu, nahrávanie sa zastaví a urobí sa, čo je na nej napísané</string>
+    <string name="te_stop_with">Stop → %s</string>
+    <string name="te_started_with">spustené touto akciou</string>
+    <string name="te_discard">Zahodiť</string>
+    <string name="te_last_recording">Posledná nahrávka</string>
+    <string name="te_copy_transcript">Kopírovať prepis</string>
+    <string name="te_transcribe">Prepísať</string>
+    <string name="te_show_transcript">Zobraziť prepis</string>
+    <string name="te_transcript">Prepis</string>
+    <string name="te_transcript_copied">Prepis skopírovaný</string>
+    <string name="te_no_transcript">Táto nahrávka nemá prepis</string>
+    <string name="te_retry">Skúsiť znova</string>
+    <string name="te_edit_actions">Upraviť akcie</string>
+    <string name="te_state_processing">Pracujem…</string>
+    <string name="te_state_done">Hotovo</string>
+    <string name="te_state_failed">Zlyhalo: %s</string>
+    <string name="te_state_saved_as">Uložené ako %s</string>
+    <string name="te_transcript_failed">Prepis: %s</string>
+    <string name="te_recording_length">%1$d:%2$02d</string>
+
+    <!-- Destinations and content -->
+    <string name="te_dest_save">Iba uložiť</string>
+    <string name="te_dest_copy">Kopírovať prepis</string>
+    <string name="te_dest_share">Zdieľať</string>
+    <string name="te_dest_white_noise">Skupina vo White Noise</string>
+    <string name="te_dest_webhook">Webhook</string>
+    <string name="te_content_audio">zvuk</string>
+    <string name="te_content_both">zvuk + prepis</string>
+    <string name="te_content_text">iba prepis</string>
+    <string name="te_step_desc_save">Uložiť</string>
+    <string name="te_step_desc_transcribe">prepísať</string>
+    <string name="te_step_desc_copy">kopírovať prepis</string>
+    <string name="te_step_desc_share">zdieľať (%s)</string>
+    <string name="te_step_desc_white_noise">poslať do %1$s (%2$s)</string>
+    <string name="te_step_desc_webhook">poslať na webhook (%s)</string>
+    <string name="te_no_group">skupina nevybraná</string>
+
+    <!-- Actions editor -->
+    <string name="te_actions">Akcie</string>
+    <string name="te_actions_summary">Tlačidlá na obrazovke nahrávania, dlaždice a obrazovka v aute</string>
+    <string name="te_add_action">Pridať akciu</string>
+    <string name="te_new_action">Nová akcia</string>
+    <string name="te_edit_action">Upraviť akciu</string>
+    <string name="te_action_name">Názov</string>
+    <string name="te_action_destination">Kam</string>
+    <string name="te_action_content">Čo sa pošle</string>
+    <string name="te_action_transcribe">Urobiť prepis</string>
+    <string name="te_action_copy">Skopírovať prepis do schránky</string>
+    <string name="te_action_group">Skupina vo White Noise</string>
+    <string name="te_action_pick_group">Vyber skupinu</string>
+    <string name="te_action_webhook_url">URL webhooku (https://…)</string>
+    <string name="te_action_webhook_auth">Hlavička Authorization (nepovinná, napr. Bearer …)</string>
+    <string name="te_action_delete_confirm">Vymazať akciu „%s“?</string>
+    <string name="te_action_move_up">Posunúť vyššie</string>
+    <string name="te_action_move_down">Posunúť nižšie</string>
+    <string name="te_problem_no_name">Daj akcii názov</string>
+    <string name="te_problem_no_group">Vyber skupinu vo White Noise</string>
+    <string name="te_problem_no_webhook">Zadaj URL webhooku, ktorá začína https:// alebo http://</string>
+    <string name="te_problem_no_transcriber">Nenašla sa aplikácia na prepis: nainštaluj Offline Speech to Text</string>
+    <string name="te_white_noise_off">Najprv zapni White Noise v nastaveniach</string>
+    <string name="te_no_groups">Zatiaľ žiadne skupiny: pozvi npub Third Ear do skupiny vo White Noise a prijmi pozvánku</string>
+    <string name="te_at_least_one_action">Aspoň jedna akcia musí ostať</string>
+
+    <!-- Pipeline -->
+    <string name="te_channel_pipeline">Ukladanie a odosielanie</string>
+    <string name="te_channel_results">Výsledky</string>
+    <string name="te_step_saving">Ukladám…</string>
+    <string name="te_step_transcribing">Prepisujem…</string>
+    <string name="te_step_waiting_transcriber">Čakám na aplikáciu na prepis…</string>
+    <string name="te_step_sending">Posielam: %s…</string>
+    <string name="te_step_body">%1$s · %2$d:%3$02d</string>
+    <plurals name="te_step_queued">
+        <item quantity="one">čaká ešte %d</item>
+        <item quantity="few">čakajú ešte %d</item>
+        <item quantity="many">čaká ešte %d</item>
+        <item quantity="other">čaká ešte %d</item>
+    </plurals>
+    <string name="te_failed_title">%s: nedoručené</string>
+    <string name="te_failed_body">%1$s. Nahrávka je uložená (%2$s).</string>
+    <string name="te_recovered_title">Prerušená nahrávka uložená</string>
+    <string name="te_recovered_body">Third Ear sa počas nahrávania zastavil; čo sa nahralo, je uložené ako %s.</string>
+    <string name="te_share_title">Zdieľať nahrávku</string>
+    <string name="te_share_ready_title">Pripravené na zdieľanie</string>
+    <string name="te_share_ready_body">Ťukni a vyber, kam nahrávku zdieľať.</string>
+    <string name="te_error_finalise">Súbor nahrávky sa nepodarilo dokončiť: %s</string>
+    <string name="te_error_save">Do priečinka s nahrávkami sa nepodarilo uložiť: %s</string>
+    <string name="te_error_folder_access">Chýba prístup k priečinku s nahrávkami. Otvor Third Ear a vyber priečinok znova.</string>
+    <string name="te_error_network">Bez siete (na GrapheneOS skontroluj povolenie Sieť pre aplikáciu)</string>
+    <string name="te_error_no_transcriber">žiadna aplikácia na prepis (nainštaluj Offline Speech to Text)</string>
+    <string name="te_error_no_speech">nerozpoznala sa žiadna reč</string>
+    <string name="te_error_no_webhook">nie je zadaná URL webhooku</string>
+    <string name="te_error_no_group">nie je vybraná skupina vo White Noise</string>
+    <string name="te_error_background_start">Android spustí mikrofón, len keď je Third Ear otvorený. Otvor Third Ear a skús znova.</string>
+    <string name="te_error_start">Nahrávanie sa nepodarilo spustiť: %s</string>
+    <string name="te_error_mic_failed">Mikrofón prestal fungovať (%s). Čo sa nahralo, je uložené.</string>
+    <string name="te_notif_recording">Nahráva sa · %s</string>
+    <string name="te_notif_stop_action">Stop → %s</string>
+
+    <!-- Settings -->
+    <string name="te_settings_third_ear">Third Ear</string>
+    <string name="te_setting_bluetooth">Používať Bluetooth mikrofón</string>
+    <string name="te_setting_bluetooth_desc">Nahrávať z pripojených Bluetooth slúchadiel, načúvacích aparátov alebo hands-free mikrofónu v aute. Počas nahrávania sú slúchadlá v režime hovoru, takže ostatný zvuk hrá v horšej kvalite. Ak nie je nič pripojené, nahráva mikrofón telefónu.</string>
+    <string name="te_setting_spoken_cues">Hovorené pokyny</string>
+    <string name="te_setting_spoken_cues_desc">„Môžeš hovoriť“, keď je Bluetooth mikrofón pripravený, a čo sa stane po zastavení („Uložené, prepisujem.“)</string>
+    <string name="te_setting_pause_media">Pozastaviť prehrávanie počas nahrávania</string>
+    <string name="te_setting_pause_media_desc">Potrebuje prístup k upozorneniam, inak aplikácia nemôže pozastaviť prehrávanie iných aplikácií.</string>
+    <string name="te_setting_transcriber">Aplikácia na prepis</string>
+    <string name="te_setting_transcriber_none">Žiadna sa nenašla: nainštaluj Offline Speech to Text</string>
+    <string name="te_setting_transcript_files">Ukladať prepisy ako .txt vedľa nahrávok</string>
+    <string name="te_setting_tiles">Dlaždice rýchlych nastavení</string>
+    <string name="te_setting_tile">Dlaždica %d</string>
+    <string name="te_setting_widget_action">Akcia miniaplikácie</string>
+    <string name="te_setting_white_noise">White Noise</string>
+    <string name="te_setting_white_noise_desc">Posielať nahrávky do skupín vo White Noise a počúvať odpovede</string>
+    <string name="te_setting_android_auto">Android Auto</string>
+    <string name="te_setting_android_auto_desc">Third Ear ukazuje svoje akcie na obrazovke auta a prichádzajúce správy z White Noise ako upozornenia v aute. Aplikácie nainštalované mimo obchodu potrebujú v Android Auto nastaveniach pre vývojárov voľbu Neznáme zdroje.</string>
+    <string name="te_transcriber_file_api">%s (súborové rozhranie)</string>
+    <string name="te_transcriber_caller_audio">%s (zvukový prúd)</string>
+
+    <!-- Tiles -->
+    <string name="te_tile_label">Nahrať: %s</string>
+    <string name="te_tile_1">Third Ear 1</string>
+    <string name="te_tile_2">Third Ear 2</string>
+    <string name="te_tile_3">Third Ear 3</string>
+    <string name="te_tile_recording">Nahráva sa, ťukni pre stop</string>
+    <string name="te_tile_no_action">Akcia nie je nastavená</string>
+
+    <!-- White Noise -->
+    <string name="te_channel_messages">Správy z White Noise</string>
+    <string name="te_channel_white_noise">Spojenie s White Noise</string>
+    <string name="te_wn_connected">White Noise: čakám na správy</string>
+    <string name="te_wn_use">Používať White Noise</string>
+    <string name="te_wn_intro">Third Ear dostane vlastnú identitu vo White Noise (npub). Pozvi ju do skupiny vo White Noise, tu prijmi pozvánku a potom vyber skupinu v akcii. Správy zo skupiny sa dajú prehrať alebo prečítať nahlas.</string>
+    <string name="te_wn_unsupported">White Noise potrebuje 64-bitový ARM telefón (MarmotKit existuje len pre arm64).</string>
+    <string name="te_wn_starting">Pripájam…</string>
+    <string name="te_wn_failed">White Noise sa nepodarilo spustiť: %s</string>
+    <string name="te_wn_ready">Pripojené. Pozvi tento npub do skupiny vo White Noise.</string>
+    <string name="te_wn_identity">npub aplikácie Third Ear</string>
+    <string name="te_wn_qr">QR kód npub</string>
+    <string name="te_wn_copy_npub">Kopírovať npub</string>
+    <string name="te_wn_copied">Skopírované</string>
+    <string name="te_wn_copy">Kopírovať</string>
+    <string name="te_wn_invites">Pozvánky</string>
+    <string name="te_wn_accept">Prijať</string>
+    <string name="te_wn_decline">Odmietnuť</string>
+    <string name="te_wn_groups">Skupiny</string>
+    <string name="te_wn_create_group">Vytvoriť testovaciu skupinu</string>
+    <string name="te_wn_create_group_desc">Skupina, v ktorej je len Third Ear, na vyskúšanie odosielania bez otravovania ostatných. Ďalších členov do nej môžeš pozvať neskôr z White Noise.</string>
+    <string name="te_wn_test_group_name">Third Ear test</string>
+    <string name="te_wn_messages">Posledné správy</string>
+    <string name="te_wn_backup">Záloha kľúča</string>
+    <string name="te_wn_show_nsec">Zobraziť nsec (súkromný kľúč)</string>
+    <string name="te_wn_nsec_warning">nsec je súkromný kľúč identity, zobrazený ako čistý text. Ktokoľvek ho má, môže čítať a písať ako Third Ear. Ulož si ho do správcu hesiel.</string>
+    <string name="te_wn_reveal">Zobraziť</string>
+    <string name="te_wn_import_nsec">Importovať nsec</string>
+    <string name="te_wn_import_warning">Toto nahradí identitu Third Ear. npub sa vráti, takže kontakty a povolené zoznamy fungujú ďalej, ale členstvo v skupinách nie: každá skupina musí npub pozvať znova a staršie správy sa nedajú prečítať.</string>
+    <string name="te_wn_import">Importovať</string>
+    <string name="te_wn_not_nsec">Toto nie je nsec (začína sa na nsec1).</string>
+    <string name="te_group_replies">Správy z tejto skupiny</string>
+    <string name="te_replies_off">Vypnuté</string>
+    <string name="te_replies_voice">Prehrávať len hlasové správy</string>
+    <string name="te_replies_voice_text">Prehrávať hlasové správy a čítať text</string>
+    <string name="te_group_reading">Kedy</string>
+    <string name="te_reading_auto">Hneď, keď prídu</string>
+    <string name="te_reading_ask">Keď požiadam (Prečítať v upozornení alebo v zozname)</string>
+    <string name="te_reading_car_note">V aute (Android Auto) a počas nahrávania sa správy nikdy neprehrávajú samé: Android Auto ich ohlási a spýta sa.</string>
+    <string name="te_group_ignore">Ignorovať správy, ktoré obsahujú (jedno na riadok)</string>
+    <string name="te_me">Ja</string>
+    <string name="te_reply">Odpovedať</string>
+    <string name="te_mark_read">Označiť ako prečítané</string>
+    <string name="te_play">Prehrať</string>
+    <string name="te_read_aloud">Prečítať nahlas</string>
+    <string name="te_message_voice">🎤 Hlasová správa</string>
+    <string name="te_message_voice_with_text">🎤 %s</string>
+    <string name="te_no_messages">Zatiaľ žiadne správy</string>
+    <string name="te_ignored">ignorované (%s)</string>
+    <string name="te_unread">neprečítané</string>
+
+    <!-- Android Auto -->
+    <string name="te_car_title">Third Ear</string>
+    <string name="te_car_recording">Nahráva sa · %s</string>
+    <string name="te_car_stop">Stop → %s</string>
+    <string name="te_car_discard">Zahodiť</string>
+    <string name="te_car_open_phone">Raz otvor Third Ear v telefóne: Android spustí mikrofón až potom.</string>
+    <string name="te_car_no_actions">Žiadne akcie. Pridaj ich v Third Ear v telefóne.</string>
+    <string name="te_car_messages">Správy</string>
+
+    <!-- strings added on the reliability branch (values/strings.xml) -->
+    <string name="recording_failed">Nahrávanie zlyhalo</string>
+    <string name="stop_recording">Stop</string>
+    <string name="pause_recording">Pozastaviť</string>
+    <string name="resume_recording">Pokračovať</string>
+    <string name="microphone_silent_title">Žiadny zvuk</string>
+    <string name="microphone_silent_text">Mikrofón je už chvíľu úplne tichý. Môže ho používať iná aplikácia alebo je vypnutý systémový prepínač mikrofónu. Nahrávanie pokračuje.</string>
+</resources>
