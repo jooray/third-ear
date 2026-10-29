@@ -149,4 +149,64 @@
     <string name="te_tile_3">Third Ear 3</string>
     <string name="te_tile_recording">Recording, tap to stop</string>
     <string name="te_tile_no_action">No action set</string>
+
+    <!-- White Noise -->
+    <string name="te_channel_messages">White Noise messages</string>
+    <string name="te_channel_white_noise">White Noise connection</string>
+    <string name="te_wn_connected">White Noise: listening for messages</string>
+    <string name="te_wn_use">Use White Noise</string>
+    <string name="te_wn_intro">Third Ear gets its own White Noise identity (npub). Invite it to a group in White Noise, accept the invite here, then pick the group in an action. Messages from the group can be played or read aloud.</string>
+    <string name="te_wn_unsupported">White Noise needs a 64-bit ARM phone (MarmotKit ships only arm64).</string>
+    <string name="te_wn_starting">Connecting…</string>
+    <string name="te_wn_failed">White Noise could not start: %s</string>
+    <string name="te_wn_ready">Connected. Invite this npub to a group in White Noise.</string>
+    <string name="te_wn_identity">Third Ear\'s npub</string>
+    <string name="te_wn_qr">QR code of the npub</string>
+    <string name="te_wn_copy_npub">Copy npub</string>
+    <string name="te_wn_copied">Copied</string>
+    <string name="te_wn_copy">Copy</string>
+    <string name="te_wn_invites">Invites</string>
+    <string name="te_wn_accept">Accept</string>
+    <string name="te_wn_decline">Decline</string>
+    <string name="te_wn_groups">Groups</string>
+    <string name="te_wn_create_group">Create a test group</string>
+    <string name="te_wn_create_group_desc">A group with only Third Ear in it, to try sending without bothering anyone. You can invite others to it from White Noise later.</string>
+    <string name="te_wn_test_group_name">Third Ear test</string>
+    <string name="te_wn_messages">Recent messages</string>
+    <string name="te_wn_backup">Key backup</string>
+    <string name="te_wn_show_nsec">Show nsec (private key)</string>
+    <string name="te_wn_nsec_warning">The nsec is the identity\'s private key, shown in plain text. Anyone who has it can read and send as Third Ear. Keep it in a password manager.</string>
+    <string name="te_wn_reveal">Show</string>
+    <string name="te_wn_import_nsec">Import nsec</string>
+    <string name="te_wn_import_warning">This replaces Third Ear\'s identity. The npub comes back, so contacts and allowlists keep working, but group membership does not: every group has to invite the npub again, and older messages cannot be read.</string>
+    <string name="te_wn_import">Import</string>
+    <string name="te_wn_not_nsec">That is not an nsec (it starts with nsec1).</string>
+    <string name="te_group_replies">Messages from this group</string>
+    <string name="te_replies_off">Off</string>
+    <string name="te_replies_voice">Play voice messages only</string>
+    <string name="te_replies_voice_text">Play voice messages and read text</string>
+    <string name="te_group_reading">When</string>
+    <string name="te_reading_auto">Automatically when they arrive</string>
+    <string name="te_reading_ask">When I ask (Read in the notification or the list)</string>
+    <string name="te_reading_car_note">In the car (Android Auto) and while recording, messages are never played automatically: Android Auto announces them and asks.</string>
+    <string name="te_group_ignore">Ignore messages containing (one per line)</string>
+    <string name="te_me">Me</string>
+    <string name="te_reply">Reply</string>
+    <string name="te_mark_read">Mark as read</string>
+    <string name="te_play">Play</string>
+    <string name="te_read_aloud">Read aloud</string>
+    <string name="te_message_voice">🎤 Voice message</string>
+    <string name="te_message_voice_with_text">🎤 %s</string>
+    <string name="te_no_messages">No messages yet</string>
+    <string name="te_ignored">ignored (%s)</string>
+    <string name="te_unread">unread</string>
+
+    <!-- Android Auto -->
+    <string name="te_car_title">Third Ear</string>
+    <string name="te_car_recording">Recording · %s</string>
+    <string name="te_car_stop">Stop → %s</string>
+    <string name="te_car_discard">Discard</string>
+    <string name="te_car_open_phone">Open Third Ear on the phone once: Android starts the microphone only after that.</string>
+    <string name="te_car_no_actions">No actions. Add them in Third Ear on the phone.</string>
+    <string name="te_car_messages">Messages</string>
 </resources>

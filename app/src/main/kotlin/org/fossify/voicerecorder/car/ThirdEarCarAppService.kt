@@ -1,0 +1,195 @@
+package org.fossify.voicerecorder.car
+
+import android.content.Intent
+import android.content.pm.ApplicationInfo
+import androidx.car.app.CarAppService
+import androidx.car.app.CarContext
+import androidx.car.app.CarToast
+import androidx.car.app.Screen
+import androidx.car.app.Session
+import androidx.car.app.model.Action
+import androidx.car.app.model.CarIcon
+import androidx.car.app.model.GridItem
+import androidx.car.app.model.GridTemplate
+import androidx.car.app.model.ItemList
+import androidx.car.app.model.ListTemplate
+import androidx.car.app.model.MessageTemplate
+import androidx.car.app.model.Row
+import androidx.car.app.model.Template
+import androidx.car.app.validation.HostValidator
+import androidx.core.graphics.drawable.IconCompat
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import org.fossify.voicerecorder.R
+import org.fossify.voicerecorder.actions.ActionStore
+import org.fossify.voicerecorder.extensions.describe
+import org.fossify.voicerecorder.extensions.inputLabel
+import org.fossify.voicerecorder.extensions.recordActions
+import org.fossify.voicerecorder.services.RecorderService
+import org.fossify.voicerecorder.whitenoise.IncomingStore
+import org.fossify.voicerecorder.whitenoise.MessageNotifier
+import org.fossify.voicerecorder.whitenoise.WhiteNoiseService
+
+/**
+ * Android Auto: a grid of the user's actions (tap = record with it), a recording screen with
+ * "Stop → action" rows and the microphone in use, and the recent White Noise messages. The car's
+ * microphone is the Bluetooth hands-free one, so recording uses the engine's Bluetooth path when
+ * "Use a Bluetooth microphone" is on. Optional: the app works fully without it.
+ */
+class ThirdEarCarAppService : CarAppService() {
+    override fun createHostValidator(): HostValidator =
+        if (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0) {
+            HostValidator.ALLOW_ALL_HOSTS_VALIDATOR
+        } else {
+            HostValidator.Builder(applicationContext).addAllowedHosts(androidx.car.app.R.array.hosts_allowlist_sample).build()
+        }
+
+    override fun onCreateSession(): Session = object : Session() {
+        override fun onCreateScreen(intent: Intent): Screen =
+            if (RecorderService.isRunning) RecordingScreen(carContext) else ActionsScreen(carContext)
+    }
+}
+
+private fun micIcon(c: CarContext) = CarIcon.Builder(IconCompat.createWithResource(c, R.drawable.ic_microphone_widget_icon)).build()
+
+class ActionsScreen(carContext: CarContext) : Screen(carContext) {
+    init {
+        lifecycle.addObserver(object : DefaultLifecycleObserver {
+            override fun onStart(owner: LifecycleOwner) {
+                lifecycleScope.launch { ActionStore.changes.collect { invalidate() } }
+            }
+        })
+    }
+
+    override fun onGetTemplate(): Template {
+        val actions = carContext.recordActions()
+        if (actions.isEmpty()) {
+            return MessageTemplate.Builder(carContext.getString(R.string.te_car_no_actions)).setTitle(carContext.getString(R.string.te_car_title)).build()
+        }
+        val list = ItemList.Builder()
+        for (tile in CarModel.grid(actions)) {
+            list.addItem(
+                GridItem.Builder()
+                    .setTitle(tile.title)
+                    .setImage(micIcon(carContext))
+                    .setOnClickListener { start(tile.actionId) }
+                    .build(),
+            )
+        }
+        return GridTemplate.Builder()
+            .setTitle(carContext.getString(R.string.te_car_title))
+            .setHeaderAction(Action.APP_ICON)
+            .setSingleList(list.build())
+            .setActionStrip(
+                androidx.car.app.model.ActionStrip.Builder()
+                    .addAction(Action.Builder().setTitle(carContext.getString(R.string.te_car_messages)).setOnClickListener {
+                        screenManager.push(MessagesScreen(carContext))
+                    }.build())
+                    .build(),
+            )
+            .build()
+    }
+
+    private fun start(actionId: String) {
+        if (RecorderService.isRunning || RecorderService.start(carContext, actionId)) {
+            screenManager.push(RecordingScreen(carContext))
+        } else {
+            CarToast.makeText(carContext, R.string.te_car_open_phone, CarToast.LENGTH_LONG).show()
+        }
+    }
+}
+
+class RecordingScreen(carContext: CarContext) : Screen(carContext) {
+    private var shown: org.fossify.voicerecorder.audio.EngineStatus? = null
+    private var shownAt = 0L
+    private var job: Job? = null
+    private var sawRecording = false
+
+    init {
+        lifecycle.addObserver(object : DefaultLifecycleObserver {
+            override fun onStart(owner: LifecycleOwner) {
+                job = lifecycleScope.launch {
+                    RecorderService.live.collect { l ->
+                        if (l == null) {
+                            if (sawRecording) {
+                                CarToast.makeText(carContext, R.string.te_step_saving, CarToast.LENGTH_SHORT).show()
+                                if (screenManager.stackSize > 1) screenManager.pop() else screenManager.push(ActionsScreen(carContext))
+                            }
+                            return@collect
+                        }
+                        sawRecording = true
+                        val now = System.currentTimeMillis()
+                        if (CarModel.needsRefresh(shown, l.status, shownAt, now)) {
+                            shown = l.status
+                            shownAt = now
+                            invalidate()
+                        }
+                    }
+                }
+            }
+
+            override fun onStop(owner: LifecycleOwner) {
+                job?.cancel()
+            }
+        })
+    }
+
+    override fun onGetTemplate(): Template {
+        val l = RecorderService.live.value
+        val list = ItemList.Builder()
+        if (l == null) {
+            return MessageTemplate.Builder(carContext.getString(R.string.te_input_starting)).setTitle(carContext.getString(R.string.te_car_title))
+                .setHeaderAction(Action.BACK).build()
+        }
+        val status = l.status
+        list.addItem(
+            Row.Builder()
+                .setTitle(carContext.inputLabel(status))
+                .addText(CarModel.duration(status.durationMs) + if (status.paused) " · " + carContext.getString(R.string.paused) else "")
+                .setImage(micIcon(carContext))
+                .build(),
+        )
+        val rows = CarModel.stopRows(carContext.recordActions(), l.action.id, { carContext.describe(it) }) {
+            carContext.getString(R.string.te_car_stop, it)
+        }
+        for (r in rows.take(5)) {
+            list.addItem(Row.Builder().setTitle(r.title).addText(r.subtitle).setOnClickListener { RecorderService.stop(carContext, r.actionId) }.build())
+        }
+        return ListTemplate.Builder()
+            .setTitle(carContext.getString(R.string.te_car_recording, l.action.name))
+            .setHeaderAction(Action.APP_ICON)
+            .setSingleList(list.build())
+            .setActionStrip(
+                androidx.car.app.model.ActionStrip.Builder()
+                    .addAction(Action.Builder().setTitle(carContext.getString(if (status.paused) R.string.resume_recording else R.string.pause_recording))
+                        .setOnClickListener { RecorderService.togglePause(carContext) }.build())
+                    .build(),
+            )
+            .build()
+    }
+}
+
+class MessagesScreen(carContext: CarContext) : Screen(carContext) {
+    override fun onGetTemplate(): Template {
+        val messages = IncomingStore(carContext).load().filter { it.ignoredBy == null }.take(6)
+        val list = ItemList.Builder()
+        if (messages.isEmpty()) list.setNoItemsMessage(carContext.getString(R.string.te_no_messages))
+        for (m in messages) {
+            list.addItem(
+                Row.Builder()
+                    .setTitle("${m.groupName} · ${m.senderName ?: m.sender.take(8)}")
+                    .addText(MessageNotifier.messageLine(carContext, m))
+                    .setOnClickListener { WhiteNoiseService.playMessage(carContext, m.id) }
+                    .build(),
+            )
+        }
+        return ListTemplate.Builder()
+            .setTitle(carContext.getString(R.string.te_car_messages))
+            .setHeaderAction(Action.BACK)
+            .setSingleList(list.build())
+            .build()
+    }
+}

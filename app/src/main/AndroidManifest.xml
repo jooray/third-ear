@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_REMOTE_MESSAGING" />
 
     <queries>
         <!-- on-device transcription providers (Offline Speech to Text) -->
@@ -44,7 +45,7 @@
 
     <application
         android:name="org.fossify.commons.FossifyApp"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:appCategory="audio"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_launcher_name"
@@ -53,7 +54,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="UnusedAttribute"
-        tools:replace="android:label">
+        tools:replace="android:label,android:allowBackup">
 
         <activity
             android:name=".activities.WidgetRecordDisplayConfigureActivity"
@@ -137,6 +138,97 @@
                 <action android:name="org.fossify.voicerecorder.action.TOGGLE_PAUSE" />
             </intent-filter>
         </service>
+
+        <activity
+            android:name=".activities.ActionsActivity"
+            android:exported="false"
+            android:label="@string/te_actions"
+            android:parentActivityName=".activities.SettingsActivity" />
+
+        <activity
+            android:name=".activities.WhiteNoiseActivity"
+            android:exported="false"
+            android:label="@string/te_setting_white_noise"
+            android:parentActivityName=".activities.SettingsActivity" />
+
+        <activity
+            android:name=".activities.MessagesActivity"
+            android:exported="false"
+            android:label="@string/te_wn_messages" />
+
+        <service
+            android:name=".whitenoise.WhiteNoiseService"
+            android:exported="false"
+            android:foregroundServiceType="remoteMessaging" />
+
+        <receiver
+            android:name=".receivers.BootReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".tiles.ActionTile1"
+            android:exported="true"
+            android:icon="@drawable/ic_microphone_widget_icon"
+            android:label="@string/te_tile_1"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.service.quicksettings.TOGGLEABLE_TILE"
+                android:value="true" />
+        </service>
+
+        <service
+            android:name=".tiles.ActionTile2"
+            android:exported="true"
+            android:icon="@drawable/ic_microphone_widget_icon"
+            android:label="@string/te_tile_2"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.service.quicksettings.TOGGLEABLE_TILE"
+                android:value="true" />
+        </service>
+
+        <service
+            android:name=".tiles.ActionTile3"
+            android:exported="true"
+            android:icon="@drawable/ic_microphone_widget_icon"
+            android:label="@string/te_tile_3"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.service.quicksettings.TOGGLEABLE_TILE"
+                android:value="true" />
+        </service>
+
+        <!-- Android Auto: templated car screens (category IOT: a grid of actions) and messaging notifications -->
+        <service
+            android:name=".car.ThirdEarCarAppService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="androidx.car.app.CarAppService" />
+                <category android:name="androidx.car.app.category.IOT" />
+            </intent-filter>
+        </service>
+
+        <meta-data
+            android:name="androidx.car.app.minCarApiLevel"
+            android:value="1" />
+
+        <meta-data
+            android:name="com.google.android.gms.car.application"
+            android:resource="@xml/automotive_app_desc" />
 
         <service
             android:name=".pipeline.MediaPauser"

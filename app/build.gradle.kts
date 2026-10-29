@@ -89,6 +89,16 @@ android {
 
     sourceSets {
         getByName("main").java.directories.add("src/main/kotlin")
+        // MarmotKit (White Noise): generated bindings plus native libraries, fetched and
+        // checksum-verified by tools/marmotkit/fetch.sh into this git-ignored directory
+        getByName("main").kotlin.directories.add("src/marmotkit/kotlin")
+        getByName("main").jniLibs.directories.add("src/marmotkit/jniLibs")
+    }
+
+    packaging {
+        resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        // compressed native libraries keep the download small; MarmotKit's is ~52 MB uncompressed
+        jniLibs.useLegacyPackaging = true
     }
 
     compileOptions {
@@ -151,6 +161,10 @@ dependencies {
     implementation(libs.tandroidlame)
     implementation(libs.autofittextview)
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+    // MarmotKit's UniFFI bindings call the native library through JNA
+    implementation("net.java.dev.jna:jna:5.19.1@aar")
+    implementation("com.google.zxing:core:3.5.3")
+    implementation("androidx.car.app:app:1.4.0")
     detektPlugins(libs.compose.detekt)
 
     testImplementation("junit:junit:4.13.2")
