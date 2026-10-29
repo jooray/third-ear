@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Default actions -->
+    <string name="te_default_action_save">Uložit</string>
+    <string name="te_default_action_transcript">Přepis do schránky</string>
+
+    <!-- Microphone / source -->
+    <string name="te_input_starting">Spouštím mikrofon…</string>
+    <string name="te_input_connecting_bluetooth">Připojuji Bluetooth mikrofon…</string>
+    <string name="te_input_waiting_bluetooth">Čekám na Bluetooth mikrofon…</string>
+    <string name="te_input_bluetooth">Bluetooth mikrofon</string>
+    <string name="te_input_bluetooth_named">Bluetooth: %s</string>
+    <string name="te_input_bluetooth_not_routed">Vyžádán Bluetooth, nahrává mikrofon telefonu</string>
+    <string name="te_input_phone">Mikrofon telefonu</string>
+    <string name="te_source_desc_bluetooth">Nahrává se z Bluetooth mikrofonu. Klepnutím přepneš na mikrofon telefonu.</string>
+    <string name="te_source_desc_phone">Nahrává se z mikrofonu telefonu. Klepnutím přepneš na Bluetooth mikrofon.</string>
+    <string name="te_switch_to_bluetooth_title">Nahrávat z Bluetooth mikrofonu?</string>
+    <string name="te_switch_to_phone_title">Nahrávat z mikrofonu telefonu?</string>
+    <string name="te_switch_message">Nahrávka pokračuje ve stejném souboru. Než se Bluetooth mikrofon spustí, vteřinu nebo dvě se nenahrává.</string>
+    <string name="te_switch_once">Přepnout jen pro tuto nahrávku</string>
+    <string name="te_switch_keep_bluetooth">Přepnout a zůstat na Bluetooth</string>
+    <string name="te_switch_keep_phone">Přepnout a zůstat na telefonu</string>
+    <string name="te_no_bluetooth_mic">Není připojený žádný Bluetooth mikrofon.</string>
+    <string name="te_fallback_reason">Mikrofon telefonu: %s</string>
+
+    <!-- Recorder screen -->
+    <string name="te_tap_to_start">Klepni na akci a nahrávání začne</string>
+    <string name="te_tap_to_stop">Klepni na akci, nahrávání se zastaví a provede se, co je na ní napsáno</string>
+    <string name="te_stop_with">Stop → %s</string>
+    <string name="te_started_with">spuštěno touto akcí</string>
+    <string name="te_discard">Zahodit</string>
+    <string name="te_last_recording">Poslední nahrávka</string>
+    <string name="te_copy_transcript">Kopírovat přepis</string>
+    <string name="te_transcribe">Přepsat</string>
+    <string name="te_show_transcript">Zobrazit přepis</string>
+    <string name="te_transcript">Přepis</string>
+    <string name="te_transcript_copied">Přepis zkopírován</string>
+    <string name="te_no_transcript">Tato nahrávka nemá přepis</string>
+    <string name="te_retry">Zkusit znovu</string>
+    <string name="te_edit_actions">Upravit akce</string>
+    <string name="te_state_processing">Pracuji…</string>
+    <string name="te_state_done">Hotovo</string>
+    <string name="te_state_failed">Selhalo: %s</string>
+    <string name="te_state_saved_as">Uloženo jako %s</string>
+    <string name="te_transcript_failed">Přepis: %s</string>
+    <string name="te_recording_length">%1$d:%2$02d</string>
+
+    <!-- Destinations and content -->
+    <string name="te_dest_save">Jen uložit</string>
+    <string name="te_dest_copy">Kopírovat přepis</string>
+    <string name="te_dest_share">Sdílet</string>
+    <string name="te_dest_white_noise">Skupina ve White Noise</string>
+    <string name="te_dest_webhook">Webhook</string>
+    <string name="te_content_audio">zvuk</string>
+    <string name="te_content_both">zvuk + přepis</string>
+    <string name="te_content_text">jen přepis</string>
+    <string name="te_step_desc_save">Uložit</string>
+    <string name="te_step_desc_transcribe">přepsat</string>
+    <string name="te_step_desc_copy">kopírovat přepis</string>
+    <string name="te_step_desc_share">sdílet (%s)</string>
+    <string name="te_step_desc_white_noise">poslat do %1$s (%2$s)</string>
+    <string name="te_step_desc_webhook">poslat na webhook (%s)</string>
+    <string name="te_no_group">skupina nevybrána</string>
+
+    <!-- Actions editor -->
+    <string name="te_actions">Akce</string>
+    <string name="te_actions_summary">Tlačítka na obrazovce nahrávání, dlaždice a obrazovka v autě</string>
+    <string name="te_add_action">Přidat akci</string>
+    <string name="te_new_action">Nová akce</string>
+    <string name="te_edit_action">Upravit akci</string>
+    <string name="te_action_name">Název</string>
+    <string name="te_action_destination">Kam</string>
+    <string name="te_action_content">Co se pošle</string>
+    <string name="te_action_transcribe">Udělat přepis</string>
+    <string name="te_action_copy">Zkopírovat přepis do schránky</string>
+    <string name="te_action_group">Skupina ve White Noise</string>
+    <string name="te_action_pick_group">Vyber skupinu</string>
+    <string name="te_action_webhook_url">URL webhooku (https://…)</string>
+    <string name="te_action_webhook_auth">Hlavička Authorization (nepovinná, např. Bearer …)</string>
+    <string name="te_action_delete_confirm">Smazat akci „%s“?</string>
+    <string name="te_action_move_up">Posunout výš</string>
+    <string name="te_action_move_down">Posunout níž</string>
+    <string name="te_problem_no_name">Dej akci název</string>
+    <string name="te_problem_no_group">Vyber skupinu ve White Noise</string>
+    <string name="te_problem_no_webhook">Zadej URL webhooku, která začíná https:// nebo http://</string>
+    <string name="te_problem_no_transcriber">Nenašla se aplikace na přepis: nainstaluj Offline Speech to Text</string>
+    <string name="te_white_noise_off">Nejdřív zapni White Noise v nastavení</string>
+    <string name="te_no_groups">Zatím žádné skupiny: pozvi npub Third Ear do skupiny ve White Noise a přijmi pozvánku</string>
+    <string name="te_at_least_one_action">Aspoň jedna akce musí zůstat</string>
+
+    <!-- Pipeline -->
+    <string name="te_channel_pipeline">Ukládání a odesílání</string>
+    <string name="te_channel_results">Výsledky</string>
+    <string name="te_step_saving">Ukládám…</string>
+    <string name="te_step_transcribing">Přepisuji…</string>
+    <string name="te_step_waiting_transcriber">Čekám na aplikaci na přepis…</string>
+    <string name="te_step_sending">Posílám: %s…</string>
+    <string name="te_step_body">%1$s · %2$d:%3$02d</string>
+    <plurals name="te_step_queued">
+        <item quantity="one">čeká ještě %d</item>
+        <item quantity="few">čekají ještě %d</item>
+        <item quantity="many">čeká ještě %d</item>
+        <item quantity="other">čeká ještě %d</item>
+    </plurals>
+    <string name="te_failed_title">%s: nedoručeno</string>
+    <string name="te_failed_body">%1$s. Nahrávka je uložená (%2$s).</string>
+    <string name="te_recovered_title">Přerušená nahrávka uložena</string>
+    <string name="te_recovered_body">Third Ear se během nahrávání zastavil; co se nahrálo, je uloženo jako %s.</string>
+    <string name="te_share_title">Sdílet nahrávku</string>
+    <string name="te_share_ready_title">Připraveno ke sdílení</string>
+    <string name="te_share_ready_body">Klepni a vyber, kam nahrávku sdílet.</string>
+    <string name="te_error_finalise">Soubor nahrávky se nepodařilo dokončit: %s</string>
+    <string name="te_error_save">Do složky s nahrávkami se nepodařilo uložit: %s</string>
+    <string name="te_error_folder_access">Chybí přístup ke složce s nahrávkami. Otevři Third Ear a vyber složku znovu.</string>
+    <string name="te_error_network">Bez sítě (na GrapheneOS zkontroluj u aplikace oprávnění Síť)</string>
+    <string name="te_error_no_transcriber">žádná aplikace na přepis (nainstaluj Offline Speech to Text)</string>
+    <string name="te_error_no_speech">nerozpoznala se žádná řeč</string>
+    <string name="te_error_no_webhook">není zadaná URL webhooku</string>
+    <string name="te_error_no_group">není vybraná skupina ve White Noise</string>
+    <string name="te_error_background_start">Android spustí mikrofon, jen když je Third Ear otevřený. Otevři Third Ear a zkus to znovu.</string>
+    <string name="te_error_start">Nahrávání se nepodařilo spustit: %s</string>
+    <string name="te_error_mic_failed">Mikrofon přestal fungovat (%s). Co se nahrálo, je uloženo.</string>
+    <string name="te_notif_recording">Nahrává se · %s</string>
+    <string name="te_notif_stop_action">Stop → %s</string>
+
+    <!-- Settings -->
+    <string name="te_settings_third_ear">Third Ear</string>
+    <string name="te_setting_bluetooth">Používat Bluetooth mikrofon</string>
+    <string name="te_setting_bluetooth_desc">Nahrávat z připojených Bluetooth sluchátek, sluchadel nebo hands-free mikrofonu v autě. Během nahrávání jsou sluchátka v režimu hovoru, takže ostatní zvuk hraje v horší kvalitě. Když není nic připojeno, nahrává mikrofon telefonu.</string>
+    <string name="te_setting_spoken_cues">Mluvené pokyny</string>
+    <string name="te_setting_spoken_cues_desc">„Můžeš mluvit“, když je Bluetooth mikrofon připravený, a co se stane po zastavení („Uloženo, přepisuji.“)</string>
+    <string name="te_setting_pause_media">Pozastavit přehrávání během nahrávání</string>
+    <string name="te_setting_pause_media_desc">Potřebuje přístup k oznámením, jinak aplikace nemůže pozastavit přehrávání jiných aplikací.</string>
+    <string name="te_setting_transcriber">Aplikace na přepis</string>
+    <string name="te_setting_transcriber_none">Žádná se nenašla: nainstaluj Offline Speech to Text</string>
+    <string name="te_setting_transcript_files">Ukládat přepisy jako .txt vedle nahrávek</string>
+    <string name="te_setting_tiles">Dlaždice rychlého nastavení</string>
+    <string name="te_setting_tile">Dlaždice %d</string>
+    <string name="te_setting_widget_action">Akce widgetu</string>
+    <string name="te_setting_white_noise">White Noise</string>
+    <string name="te_setting_white_noise_desc">Posílat nahrávky do skupin ve White Noise a poslouchat odpovědi</string>
+    <string name="te_setting_android_auto">Android Auto</string>
+    <string name="te_setting_android_auto_desc">Third Ear ukazuje své akce na obrazovce auta a příchozí zprávy z White Noise jako oznámení v autě. Aplikace nainstalované mimo obchod potřebují v nastavení pro vývojáře v Android Auto zapnout Neznámé zdroje.</string>
+    <string name="te_transcriber_file_api">%s (souborové rozhraní)</string>
+    <string name="te_transcriber_caller_audio">%s (zvukový proud)</string>
+
+    <!-- Tiles -->
+    <string name="te_tile_label">Nahrát: %s</string>
+    <string name="te_tile_1">Third Ear 1</string>
+    <string name="te_tile_2">Third Ear 2</string>
+    <string name="te_tile_3">Third Ear 3</string>
+    <string name="te_tile_recording">Nahrává se, klepnutím zastavíš</string>
+    <string name="te_tile_no_action">Akce není nastavená</string>
+
+    <!-- White Noise -->
+    <string name="te_channel_messages">Zprávy z White Noise</string>
+    <string name="te_channel_white_noise">Spojení s White Noise</string>
+    <string name="te_wn_connected">White Noise: čekám na zprávy</string>
+    <string name="te_wn_use">Používat White Noise</string>
+    <string name="te_wn_intro">Third Ear dostane vlastní identitu ve White Noise (npub). Pozvi ji do skupiny ve White Noise, tady pozvánku přijmi a pak v akci vyber skupinu. Zprávy ze skupiny jde přehrát nebo nechat přečíst nahlas.</string>
+    <string name="te_wn_unsupported">White Noise potřebuje 64bitový telefon s ARM (MarmotKit existuje jen pro arm64).</string>
+    <string name="te_wn_starting">Připojuji…</string>
+    <string name="te_wn_failed">White Noise se nepodařilo spustit: %s</string>
+    <string name="te_wn_ready">Připojeno. Pozvi tento npub do skupiny ve White Noise.</string>
+    <string name="te_wn_identity">npub aplikace Third Ear</string>
+    <string name="te_wn_qr">QR kód npub</string>
+    <string name="te_wn_copy_npub">Kopírovat npub</string>
+    <string name="te_wn_copied">Zkopírováno</string>
+    <string name="te_wn_copy">Kopírovat</string>
+    <string name="te_wn_invites">Pozvánky</string>
+    <string name="te_wn_accept">Přijmout</string>
+    <string name="te_wn_decline">Odmítnout</string>
+    <string name="te_wn_groups">Skupiny</string>
+    <string name="te_wn_create_group">Vytvořit zkušební skupinu</string>
+    <string name="te_wn_create_group_desc">Skupina, ve které je jen Third Ear, na vyzkoušení odesílání bez obtěžování ostatních. Další členy do ní můžeš pozvat později z White Noise.</string>
+    <string name="te_wn_test_group_name">Third Ear test</string>
+    <string name="te_wn_messages">Poslední zprávy</string>
+    <string name="te_wn_backup">Záloha klíče</string>
+    <string name="te_wn_show_nsec">Zobrazit nsec (soukromý klíč)</string>
+    <string name="te_wn_nsec_warning">nsec je soukromý klíč identity, zobrazený jako čistý text. Kdo ho má, může číst a psát jako Third Ear. Ulož si ho do správce hesel.</string>
+    <string name="te_wn_reveal">Zobrazit</string>
+    <string name="te_wn_import_nsec">Importovat nsec</string>
+    <string name="te_wn_import_warning">Tohle nahradí identitu Third Ear. npub se vrátí, takže kontakty a seznamy povolených fungují dál, ale členství ve skupinách ne: každá skupina musí npub pozvat znovu a starší zprávy nejdou přečíst.</string>
+    <string name="te_wn_import">Importovat</string>
+    <string name="te_wn_not_nsec">To není nsec (začíná na nsec1).</string>
+    <string name="te_group_replies">Zprávy z této skupiny</string>
+    <string name="te_replies_off">Vypnuto</string>
+    <string name="te_replies_voice">Přehrávat jen hlasové zprávy</string>
+    <string name="te_replies_voice_text">Přehrávat hlasové zprávy a číst text</string>
+    <string name="te_group_reading">Kdy</string>
+    <string name="te_reading_auto">Hned, jak přijdou</string>
+    <string name="te_reading_ask">Když o to požádám (Přečíst v oznámení nebo v seznamu)</string>
+    <string name="te_reading_car_note">V autě (Android Auto) a během nahrávání se zprávy nikdy nepřehrávají samy: Android Auto je ohlásí a zeptá se.</string>
+    <string name="te_group_ignore">Ignorovat zprávy, které obsahují (jedno na řádek)</string>
+    <string name="te_me">Já</string>
+    <string name="te_reply">Odpovědět</string>
+    <string name="te_mark_read">Označit jako přečtené</string>
+    <string name="te_play">Přehrát</string>
+    <string name="te_read_aloud">Přečíst nahlas</string>
+    <string name="te_message_voice">🎤 Hlasová zpráva</string>
+    <string name="te_message_voice_with_text">🎤 %s</string>
+    <string name="te_no_messages">Zatím žádné zprávy</string>
+    <string name="te_ignored">ignorováno (%s)</string>
+    <string name="te_unread">nepřečtené</string>
+
+    <!-- Android Auto -->
+    <string name="te_car_title">Third Ear</string>
+    <string name="te_car_recording">Nahrává se · %s</string>
+    <string name="te_car_stop">Stop → %s</string>
+    <string name="te_car_discard">Zahodit</string>
+    <string name="te_car_open_phone">Jednou otevři Third Ear v telefonu: Android spustí mikrofon až potom.</string>
+    <string name="te_car_no_actions">Žádné akce. Přidej je v Third Ear v telefonu.</string>
+    <string name="te_car_messages">Zprávy</string>
+
+    <!-- strings added on the reliability branch (values/strings.xml) -->
+    <string name="recording_failed">Nahrávání selhalo</string>
+    <string name="stop_recording">Stop</string>
+    <string name="pause_recording">Pozastavit</string>
+    <string name="resume_recording">Pokračovat</string>
+    <string name="microphone_silent_title">Žádný zvuk</string>
+    <string name="microphone_silent_text">Mikrofon je už nějakou dobu úplně tichý. Možná ho používá jiná aplikace, nebo je vypnutý systémový přepínač mikrofonu. Nahrávání pokračuje.</string>
+    <string name="te_wn_restored">Third Ear byl obnoven ze zálohy. Nastavení se vrátilo, ale identita ve White Noise se nikdy nezálohuje (její klíč zůstává na starém telefonu). Zapni White Noise, vytvoří se nová identita, a pokud máš starý klíč, použij Importovat nsec; v obou případech musí skupiny Third Ear pozvat znovu.</string>
+    <!-- Offline Speech to Text -->
+    <string name="te_ostt_missing">Na přepis je potřeba Offline Speech to Text, bezplatná aplikace, která převádí řeč na text přímo v telefonu, bez internetu. Third Ear s ní funguje mnohem líp. Klepni a stáhni si ji ze Zapstore.</string>
+    <string name="te_get_ostt">Stáhnout Offline Speech to Text</string>
+</resources>

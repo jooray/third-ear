@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Default actions -->
+    <string name="te_default_action_save">Speichern</string>
+    <string name="te_default_action_transcript">Transkript in die Zwischenablage</string>
+
+    <!-- Microphone / source -->
+    <string name="te_input_starting">Mikrofon wird gestartet…</string>
+    <string name="te_input_connecting_bluetooth">Bluetooth-Mikrofon wird verbunden…</string>
+    <string name="te_input_waiting_bluetooth">Warte auf das Bluetooth-Mikrofon…</string>
+    <string name="te_input_bluetooth">Bluetooth-Mikrofon</string>
+    <string name="te_input_bluetooth_named">Bluetooth: %s</string>
+    <string name="te_input_bluetooth_not_routed">Bluetooth angefordert, das Handy-Mikrofon nimmt auf</string>
+    <string name="te_input_phone">Handy-Mikrofon</string>
+    <string name="te_source_desc_bluetooth">Aufnahme über das Bluetooth-Mikrofon. Tippen, um zum Handy-Mikrofon zu wechseln.</string>
+    <string name="te_source_desc_phone">Aufnahme über das Handy-Mikrofon. Tippen, um zum Bluetooth-Mikrofon zu wechseln.</string>
+    <string name="te_switch_to_bluetooth_title">Mit dem Bluetooth-Mikrofon aufnehmen?</string>
+    <string name="te_switch_to_phone_title">Mit dem Handy-Mikrofon aufnehmen?</string>
+    <string name="te_switch_message">Die Aufnahme läuft in derselben Datei weiter. Während das Bluetooth-Mikrofon startet, wird ein bis zwei Sekunden nichts aufgenommen.</string>
+    <string name="te_switch_once">Nur für diese Aufnahme wechseln</string>
+    <string name="te_switch_keep_bluetooth">Wechseln und bei Bluetooth bleiben</string>
+    <string name="te_switch_keep_phone">Wechseln und beim Handy bleiben</string>
+    <string name="te_no_bluetooth_mic">Es ist kein Bluetooth-Mikrofon verbunden.</string>
+    <string name="te_fallback_reason">Handy-Mikrofon: %s</string>
+
+    <!-- Recorder screen -->
+    <string name="te_tap_to_start">Tippe auf eine Aktion, um die Aufnahme zu starten</string>
+    <string name="te_tap_to_stop">Tippe auf eine Aktion, um zu stoppen und auszuführen, was darauf steht</string>
+    <string name="te_stop_with">Stopp → %s</string>
+    <string name="te_started_with">damit gestartet</string>
+    <string name="te_discard">Verwerfen</string>
+    <string name="te_last_recording">Letzte Aufnahme</string>
+    <string name="te_copy_transcript">Transkript kopieren</string>
+    <string name="te_transcribe">Transkribieren</string>
+    <string name="te_show_transcript">Transkript anzeigen</string>
+    <string name="te_transcript">Transkript</string>
+    <string name="te_transcript_copied">Transkript kopiert</string>
+    <string name="te_no_transcript">Für diese Aufnahme gibt es kein Transkript</string>
+    <string name="te_retry">Erneut versuchen</string>
+    <string name="te_edit_actions">Aktionen bearbeiten</string>
+    <string name="te_state_processing">Wird bearbeitet…</string>
+    <string name="te_state_done">Fertig</string>
+    <string name="te_state_failed">Fehlgeschlagen: %s</string>
+    <string name="te_state_saved_as">Gespeichert als %s</string>
+    <string name="te_transcript_failed">Transkript: %s</string>
+    <string name="te_recording_length">%1$d:%2$02d</string>
+
+    <!-- Destinations and content -->
+    <string name="te_dest_save">Nur speichern</string>
+    <string name="te_dest_copy">Transkript kopieren</string>
+    <string name="te_dest_share">Teilen</string>
+    <string name="te_dest_white_noise">White-Noise-Gruppe</string>
+    <string name="te_dest_webhook">Webhook</string>
+    <string name="te_content_audio">Audio</string>
+    <string name="te_content_both">Audio + Transkript</string>
+    <string name="te_content_text">nur Transkript</string>
+    <string name="te_step_desc_save">Speichern</string>
+    <string name="te_step_desc_transcribe">transkribieren</string>
+    <string name="te_step_desc_copy">Transkript kopieren</string>
+    <string name="te_step_desc_share">teilen (%s)</string>
+    <string name="te_step_desc_white_noise">an %1$s senden (%2$s)</string>
+    <string name="te_step_desc_webhook">an Webhook senden (%s)</string>
+    <string name="te_no_group">keine Gruppe gewählt</string>
+
+    <!-- Actions editor -->
+    <string name="te_actions">Aktionen</string>
+    <string name="te_actions_summary">Tasten auf dem Aufnahmebildschirm, Kacheln und der Bildschirm im Auto</string>
+    <string name="te_add_action">Aktion hinzufügen</string>
+    <string name="te_new_action">Neue Aktion</string>
+    <string name="te_edit_action">Aktion bearbeiten</string>
+    <string name="te_action_name">Name</string>
+    <string name="te_action_destination">Ziel</string>
+    <string name="te_action_content">Was gesendet wird</string>
+    <string name="te_action_transcribe">Transkript erstellen</string>
+    <string name="te_action_copy">Transkript in die Zwischenablage kopieren</string>
+    <string name="te_action_group">White-Noise-Gruppe</string>
+    <string name="te_action_pick_group">Gruppe wählen</string>
+    <string name="te_action_webhook_url">Webhook-URL (https://…)</string>
+    <string name="te_action_webhook_auth">Authorization-Header (optional, z. B. Bearer …)</string>
+    <string name="te_action_delete_confirm">Aktion „%s“ löschen?</string>
+    <string name="te_action_move_up">Nach oben</string>
+    <string name="te_action_move_down">Nach unten</string>
+    <string name="te_problem_no_name">Gib der Aktion einen Namen</string>
+    <string name="te_problem_no_group">Wähle eine White-Noise-Gruppe</string>
+    <string name="te_problem_no_webhook">Gib eine Webhook-URL ein, die mit https:// oder http:// beginnt</string>
+    <string name="te_problem_no_transcriber">Keine Transkriptions-App gefunden: Installiere Offline Speech to Text</string>
+    <string name="te_white_noise_off">Schalte zuerst White Noise in den Einstellungen ein</string>
+    <string name="te_no_groups">Noch keine Gruppen: Lade den npub von Third Ear in White Noise in eine Gruppe ein und nimm die Einladung an</string>
+    <string name="te_at_least_one_action">Mindestens eine Aktion muss bleiben</string>
+
+    <!-- Pipeline -->
+    <string name="te_channel_pipeline">Speichern und Senden</string>
+    <string name="te_channel_results">Ergebnisse</string>
+    <string name="te_step_saving">Wird gespeichert…</string>
+    <string name="te_step_transcribing">Wird transkribiert…</string>
+    <string name="te_step_waiting_transcriber">Warte auf die Transkriptions-App…</string>
+    <string name="te_step_sending">Wird gesendet: %s…</string>
+    <string name="te_step_body">%1$s · %2$d:%3$02d</string>
+    <plurals name="te_step_queued">
+        <item quantity="one">noch %d wartet</item>
+        <item quantity="other">noch %d warten</item>
+    </plurals>
+    <string name="te_failed_title">%s: nicht zugestellt</string>
+    <string name="te_failed_body">%1$s. Die Aufnahme ist gespeichert (%2$s).</string>
+    <string name="te_recovered_title">Unterbrochene Aufnahme gespeichert</string>
+    <string name="te_recovered_body">Third Ear wurde während der Aufnahme beendet; das Aufgenommene ist als %s gespeichert.</string>
+    <string name="te_share_title">Aufnahme teilen</string>
+    <string name="te_share_ready_title">Bereit zum Teilen</string>
+    <string name="te_share_ready_body">Tippen und auswählen, wohin die Aufnahme geteilt wird.</string>
+    <string name="te_error_finalise">Die Aufnahmedatei konnte nicht abgeschlossen werden: %s</string>
+    <string name="te_error_save">Im Aufnahmeordner konnte nicht gespeichert werden: %s</string>
+    <string name="te_error_folder_access">Kein Zugriff auf den Aufnahmeordner. Öffne Third Ear und wähle den Ordner erneut.</string>
+    <string name="te_error_network">Kein Netz (unter GrapheneOS die Netzwerkberechtigung der App prüfen)</string>
+    <string name="te_error_no_transcriber">keine Transkriptions-App (installiere Offline Speech to Text)</string>
+    <string name="te_error_no_speech">keine Sprache erkannt</string>
+    <string name="te_error_no_webhook">keine Webhook-URL eingestellt</string>
+    <string name="te_error_no_group">keine White-Noise-Gruppe gewählt</string>
+    <string name="te_error_background_start">Android startet das Mikrofon nur, solange Third Ear geöffnet ist. Öffne Third Ear und versuche es erneut.</string>
+    <string name="te_error_start">Die Aufnahme konnte nicht gestartet werden: %s</string>
+    <string name="te_error_mic_failed">Das Mikrofon ist ausgefallen (%s). Das Aufgenommene ist gespeichert.</string>
+    <string name="te_notif_recording">Aufnahme · %s</string>
+    <string name="te_notif_stop_action">Stopp → %s</string>
+
+    <!-- Settings -->
+    <string name="te_settings_third_ear">Third Ear</string>
+    <string name="te_setting_bluetooth">Bluetooth-Mikrofon verwenden</string>
+    <string name="te_setting_bluetooth_desc">Nimmt über ein verbundenes Bluetooth-Headset, Hörgeräte oder das Freisprechmikrofon im Auto auf. Während der Aufnahme ist das Headset im Telefonmodus, anderer Ton wird daher in schlechterer Qualität wiedergegeben. Ist nichts verbunden, nimmt das Handy-Mikrofon auf.</string>
+    <string name="te_setting_spoken_cues">Gesprochene Hinweise</string>
+    <string name="te_setting_spoken_cues_desc">„Du kannst sprechen“, sobald das Bluetooth-Mikrofon bereit ist, und was nach dem Stopp passiert („Gespeichert, wird transkribiert.“)</string>
+    <string name="te_setting_pause_media">Wiedergabe während der Aufnahme pausieren</string>
+    <string name="te_setting_pause_media_desc">Braucht Zugriff auf Benachrichtigungen, die einzige Möglichkeit, die Wiedergabe anderer Apps anzuhalten.</string>
+    <string name="te_setting_transcriber">Transkriptions-App</string>
+    <string name="te_setting_transcriber_none">Keine gefunden: Installiere Offline Speech to Text</string>
+    <string name="te_setting_transcript_files">Transkripte als .txt neben den Aufnahmen speichern</string>
+    <string name="te_setting_tiles">Schnelleinstellungs-Kacheln</string>
+    <string name="te_setting_tile">Kachel %d</string>
+    <string name="te_setting_widget_action">Widget-Aktion</string>
+    <string name="te_setting_white_noise">White Noise</string>
+    <string name="te_setting_white_noise_desc">Aufnahmen an White-Noise-Gruppen senden und Antworten hören</string>
+    <string name="te_setting_android_auto">Android Auto</string>
+    <string name="te_setting_android_auto_desc">Third Ear zeigt seine Aktionen auf dem Autobildschirm und eingehende White-Noise-Nachrichten als Benachrichtigungen im Auto. Apps, die nicht aus einem Store stammen, brauchen in den Entwickleroptionen von Android Auto die Einstellung Unbekannte Quellen.</string>
+    <string name="te_transcriber_file_api">%s (Datei-Schnittstelle)</string>
+    <string name="te_transcriber_caller_audio">%s (Audiostream)</string>
+
+    <!-- Tiles -->
+    <string name="te_tile_label">Aufnehmen: %s</string>
+    <string name="te_tile_1">Third Ear 1</string>
+    <string name="te_tile_2">Third Ear 2</string>
+    <string name="te_tile_3">Third Ear 3</string>
+    <string name="te_tile_recording">Aufnahme läuft, zum Stoppen tippen</string>
+    <string name="te_tile_no_action">Keine Aktion eingestellt</string>
+
+    <!-- White Noise -->
+    <string name="te_channel_messages">White-Noise-Nachrichten</string>
+    <string name="te_channel_white_noise">White-Noise-Verbindung</string>
+    <string name="te_wn_connected">White Noise: wartet auf Nachrichten</string>
+    <string name="te_wn_use">White Noise verwenden</string>
+    <string name="te_wn_intro">Third Ear bekommt eine eigene White-Noise-Identität (npub). Lade sie in White Noise in eine Gruppe ein, nimm die Einladung hier an und wähle die Gruppe dann in einer Aktion. Nachrichten aus der Gruppe lassen sich abspielen oder vorlesen.</string>
+    <string name="te_wn_unsupported">White Noise braucht ein 64-Bit-ARM-Handy (MarmotKit gibt es nur für arm64).</string>
+    <string name="te_wn_starting">Verbinde…</string>
+    <string name="te_wn_failed">White Noise konnte nicht gestartet werden: %s</string>
+    <string name="te_wn_ready">Verbunden. Lade diesen npub in White Noise in eine Gruppe ein.</string>
+    <string name="te_wn_identity">npub von Third Ear</string>
+    <string name="te_wn_qr">QR-Code des npub</string>
+    <string name="te_wn_copy_npub">npub kopieren</string>
+    <string name="te_wn_copied">Kopiert</string>
+    <string name="te_wn_copy">Kopieren</string>
+    <string name="te_wn_invites">Einladungen</string>
+    <string name="te_wn_accept">Annehmen</string>
+    <string name="te_wn_decline">Ablehnen</string>
+    <string name="te_wn_groups">Gruppen</string>
+    <string name="te_wn_create_group">Testgruppe erstellen</string>
+    <string name="te_wn_create_group_desc">Eine Gruppe nur mit Third Ear, um das Senden auszuprobieren, ohne jemanden zu stören. Weitere Mitglieder kannst du später in White Noise einladen.</string>
+    <string name="te_wn_test_group_name">Third Ear Test</string>
+    <string name="te_wn_messages">Letzte Nachrichten</string>
+    <string name="te_wn_backup">Schlüsselsicherung</string>
+    <string name="te_wn_show_nsec">nsec anzeigen (privater Schlüssel)</string>
+    <string name="te_wn_nsec_warning">Der nsec ist der private Schlüssel der Identität und wird im Klartext angezeigt. Wer ihn hat, kann als Third Ear lesen und schreiben. Bewahre ihn in einem Passwortmanager auf.</string>
+    <string name="te_wn_reveal">Anzeigen</string>
+    <string name="te_wn_import_nsec">nsec importieren</string>
+    <string name="te_wn_import_warning">Das ersetzt die Identität von Third Ear. Der npub kommt zurück, Kontakte und Freigabelisten funktionieren also weiter, die Gruppenmitgliedschaften aber nicht: Jede Gruppe muss den npub erneut einladen, und ältere Nachrichten lassen sich nicht lesen.</string>
+    <string name="te_wn_import">Importieren</string>
+    <string name="te_wn_not_nsec">Das ist kein nsec (er beginnt mit nsec1).</string>
+    <string name="te_group_replies">Nachrichten aus dieser Gruppe</string>
+    <string name="te_replies_off">Aus</string>
+    <string name="te_replies_voice">Nur Sprachnachrichten abspielen</string>
+    <string name="te_replies_voice_text">Sprachnachrichten abspielen und Text vorlesen</string>
+    <string name="te_group_reading">Wann</string>
+    <string name="te_reading_auto">Automatisch, sobald sie ankommen</string>
+    <string name="te_reading_ask">Wenn ich es möchte (Vorlesen in der Benachrichtigung oder in der Liste)</string>
+    <string name="te_reading_car_note">Im Auto (Android Auto) und während der Aufnahme werden Nachrichten nie automatisch abgespielt: Android Auto kündigt sie an und fragt nach.</string>
+    <string name="te_group_ignore">Nachrichten ignorieren, die enthalten (eins pro Zeile)</string>
+    <string name="te_me">Ich</string>
+    <string name="te_reply">Antworten</string>
+    <string name="te_mark_read">Als gelesen markieren</string>
+    <string name="te_play">Abspielen</string>
+    <string name="te_read_aloud">Vorlesen</string>
+    <string name="te_message_voice">🎤 Sprachnachricht</string>
+    <string name="te_message_voice_with_text">🎤 %s</string>
+    <string name="te_no_messages">Noch keine Nachrichten</string>
+    <string name="te_ignored">ignoriert (%s)</string>
+    <string name="te_unread">ungelesen</string>
+
+    <!-- Android Auto -->
+    <string name="te_car_title">Third Ear</string>
+    <string name="te_car_recording">Aufnahme · %s</string>
+    <string name="te_car_stop">Stopp → %s</string>
+    <string name="te_car_discard">Verwerfen</string>
+    <string name="te_car_open_phone">Öffne Third Ear einmal auf dem Handy: Erst danach startet Android das Mikrofon.</string>
+    <string name="te_car_no_actions">Keine Aktionen. Füge sie in Third Ear auf dem Handy hinzu.</string>
+    <string name="te_car_messages">Nachrichten</string>
+
+    <!-- strings added on the reliability branch (values/strings.xml) -->
+    <string name="recording_failed">Aufnahme fehlgeschlagen</string>
+    <string name="stop_recording">Stopp</string>
+    <string name="pause_recording">Pausieren</string>
+    <string name="resume_recording">Fortsetzen</string>
+    <string name="microphone_silent_title">Kein Ton</string>
+    <string name="microphone_silent_text">Das Mikrofon ist seit einer Weile völlig still. Vielleicht nutzt es eine andere App, oder der Mikrofonschalter des Systems ist aus. Die Aufnahme läuft weiter.</string>
+    <string name="te_wn_restored">Third Ear wurde aus einer Sicherung wiederhergestellt. Die Einstellungen sind zurück, aber die White-Noise-Identität wird nie gesichert (ihr Schlüssel bleibt auf dem alten Handy). Schalte White Noise ein, dann entsteht eine neue Identität; falls du den alten Schlüssel hast, nutze nsec importieren. In beiden Fällen müssen die Gruppen Third Ear erneut einladen.</string>
+    <!-- Offline Speech to Text -->
+    <string name="te_ostt_missing">Für die Transkription braucht es Offline Speech to Text, eine kostenlose App, die Sprache direkt auf dem Handy und ohne Internet in Text umwandelt. Mit ihr funktioniert Third Ear deutlich besser. Tippen und im Zapstore holen.</string>
+    <string name="te_get_ostt">Offline Speech to Text holen</string>
+</resources>
