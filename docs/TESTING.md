@@ -4,7 +4,7 @@ Install the debug build next to everything else (it is `app.thirdear.debug`, its
 signed release (`./gradlew :app:assembleFossRelease`, shared publisher key) is `app.thirdear`:
 
 ```sh
-adb -s 5B171FDCG000M1 install -r --user 0 app/build/outputs/apk/foss/debug/thirdear-1-foss-debug.apk
+adb -s <serial> install -r --user 0 app/build/outputs/apk/foss/debug/thirdear-1-foss-debug.apk
 ```
 
 First launch asks for the microphone, notifications and the recordings folder (Fossify's flow:

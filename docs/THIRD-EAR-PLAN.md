@@ -121,7 +121,7 @@ spoken cues, pause media, White Noise (own screen), Android Auto notes.
 
 ## Device verification
 
-The Pixel (5B171FDCG000M1) was not connected during the session (only an unauthorized
+The Pixel was not connected during the session (only an unauthorized
 JPAQ01064 showed up; nothing was installed there). Verified on the `Pixel_9` emulator
 (Android 16, arm64, headless) instead, debug build:
 
@@ -162,9 +162,9 @@ expected and the audio was checked from app storage.
   wake lock held, service foreground (microphone|dataSync). Two more 38 s runs across lock-state
   changes: 38.06 s wall → 37.95 s file, no gaps.
 - **Formats:** AAC .m4a 48 kHz, Opus .ogg 48 kHz (6.0 s), MP3 48 kHz (6.3 s), real audio.
-- **Bluetooth, LE Audio hearing aids** ("Sluchadla Juraj"): route confirmed in 530 ms, input
+- **Bluetooth, LE Audio hearing aids** (a pair of ReSound aids): route confirmed in 530 ms, input
   routed to BLE_HEADSET (type 26), first real sound 3.07 s after opening (LE Audio start), non-zero
-  audio, no zero runs; note says `bluetooth: Sluchadla Juraj`. Spoken cues were off for the test.
+  audio, no zero runs; note says `bluetooth: <aid name>`. Spoken cues were off for the test.
 - **OSTT file API:** a TTS clip ("This is a short test of the Third Ear transcription…")
   transcribed in ~3 s in the background ("…third year transcription…"), OSTT logged `service file:
   start`. Found and fixed: the file-API probe must query with a `content:` Uri (OSTT's filter needs
