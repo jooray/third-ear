@@ -43,7 +43,7 @@ tiles/      ActionTile1..3 (Quick Settings), bound to configured actions
 car/        ThirdEarCarAppService, ActionsScreen, RecordingScreen, CarModel (pure)
 ```
 
-UI (Fossify views + commons): the recorder tab shows timer, level meter, the **source button**
+UI (originally Fossify views; replaced 2026-10-29 by Third Ear's own Compose UI, see DESIGN.md): the recorder tab shows timer, level meter, the **source button**
 (verified input; "Waiting for the Bluetooth microphone…"), and the configured actions as big
 buttons. Idle: tap = start recording with that action. Recording: every action button reads
 "Stop → <name>" with a one-line description of what will happen; tap = stop and run that action

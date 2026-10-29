@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.detekt)
+    alias(libs.plugins.compose)
 }
 
 // Release signing with Juraj's shared publisher key (Zapstore binds its certificate to his
@@ -49,6 +50,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        compose = true
         buildConfig = true
     }
 
@@ -139,6 +141,11 @@ detekt {
 
 dependencies {
     implementation(libs.fossify.commons)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.ui)
+    implementation(libs.compose.icons)
+    implementation(libs.activity.compose)
+    implementation(libs.lifecycle.compose)
     implementation(libs.eventbus)
     implementation(libs.audiorecordview)
     implementation(libs.androidx.documentfile)
@@ -159,4 +166,14 @@ dependencies {
     testImplementation("org.json:json:20240303")
     testImplementation("org.robolectric:robolectric:4.17")
     testImplementation("androidx.test:core:1.6.1")
+}
+
+// AGP asks for the Compose group-mapping tool of its own built-in Kotlin (2.2.10, never published);
+// the one matching the Kotlin compiler in use is.
+configurations.matching { it.name.contains("composeMapping", ignoreCase = true) }.configureEach {
+    resolutionStrategy.eachDependency {
+        if (requested.group == "org.jetbrains.kotlin" && requested.name == "compose-group-mapping") {
+            useVersion(libs.versions.kotlin.get())
+        }
+    }
 }

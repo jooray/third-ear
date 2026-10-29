@@ -74,6 +74,7 @@ abstract class ActionTileService(private val slot: Int) : TileService() {
         tile.subtitle = when {
             recording && live?.action?.id == action?.id -> getString(R.string.te_tile_recording)
             recording -> getString(R.string.te_stop_with, action?.name ?: "")
+            action != null -> app.thirdear.actions.LineCode.of(action) + " · " + getString(R.string.app_name)
             else -> getString(R.string.app_name)
         }
         tile.state = when {

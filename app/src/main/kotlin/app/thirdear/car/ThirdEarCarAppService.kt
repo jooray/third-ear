@@ -55,6 +55,14 @@ class ThirdEarCarAppService : CarAppService() {
 
 private fun micIcon(c: CarContext) = CarIcon.Builder(IconCompat.createWithResource(c, R.drawable.ic_microphone_widget_icon)).build()
 
+/** A line's cord colour as a car icon, so the car grid matches the keys on the phone. */
+private fun lineIcon(c: CarContext, cord: Int): CarIcon {
+    val argb = app.thirdear.ui.Cords.color(cord).let { android.graphics.Color.argb((it.alpha * 255).toInt(), (it.red * 255).toInt(), (it.green * 255).toInt(), (it.blue * 255).toInt()) }
+    return CarIcon.Builder(IconCompat.createWithResource(c, R.drawable.ic_car_line))
+        .setTint(androidx.car.app.model.CarColor.createCustom(argb, argb))
+        .build()
+}
+
 class ActionsScreen(carContext: CarContext) : Screen(carContext) {
     init {
         lifecycle.addObserver(object : DefaultLifecycleObserver {
@@ -70,11 +78,22 @@ class ActionsScreen(carContext: CarContext) : Screen(carContext) {
             return MessageTemplate.Builder(carContext.getString(R.string.te_car_no_actions)).setTitle(carContext.getString(R.string.te_car_title)).build()
         }
         val list = ItemList.Builder()
-        for (tile in CarModel.grid(actions)) {
+        // one touch: record now, pick the line at the stop
+        list.addItem(
+            GridItem.Builder()
+                .setTitle(carContext.getString(R.string.te_car_record))
+                .setText(carContext.getString(R.string.te_car_record_desc))
+                .setImage(micIcon(carContext), GridItem.IMAGE_TYPE_LARGE)
+                .setOnClickListener { start(null) }
+                .build(),
+        )
+        for ((i, tile) in CarModel.grid(actions).take(CarModel.MAX_GRID - 1).withIndex()) {
+            val action = actions.first { it.id == tile.actionId }
             list.addItem(
                 GridItem.Builder()
                     .setTitle(tile.title)
-                    .setImage(micIcon(carContext))
+                    .setText(app.thirdear.actions.LineCode.of(action))
+                    .setImage(lineIcon(carContext, app.thirdear.ui.cordOf(action, i)), GridItem.IMAGE_TYPE_LARGE)
                     .setOnClickListener { start(tile.actionId) }
                     .build(),
             )
@@ -85,7 +104,7 @@ class ActionsScreen(carContext: CarContext) : Screen(carContext) {
             .setSingleList(list.build())
             .setActionStrip(
                 androidx.car.app.model.ActionStrip.Builder()
-                    .addAction(Action.Builder().setTitle(carContext.getString(R.string.te_car_messages)).setOnClickListener {
+                    .addAction(Action.Builder().setTitle(carContext.getString(R.string.te_car_messages) + unreadSuffix()).setOnClickListener {
                         screenManager.push(MessagesScreen(carContext))
                     }.build())
                     .build(),
@@ -93,13 +112,18 @@ class ActionsScreen(carContext: CarContext) : Screen(carContext) {
             .build()
     }
 
-    private fun start(actionId: String) {
+    private fun start(actionId: String?) {
         if (RecorderService.isRunning || RecorderService.start(carContext, actionId)) {
             screenManager.push(RecordingScreen(carContext))
         } else {
             CarToast.makeText(carContext, R.string.te_car_open_phone, CarToast.LENGTH_LONG).show()
         }
     }
+}
+
+private fun Screen.unreadSuffix(): String {
+    val n = IncomingStore(carContext).load().count { !it.read && it.ignoredBy == null }
+    return if (n > 0) " ($n)" else ""
 }
 
 class RecordingScreen(carContext: CarContext) : Screen(carContext) {
@@ -152,11 +176,21 @@ class RecordingScreen(carContext: CarContext) : Screen(carContext) {
                 .setImage(micIcon(carContext))
                 .build(),
         )
-        val rows = CarModel.stopRows(carContext.recordActions(), l.action.id, { carContext.describe(it) }) {
+        val all = carContext.recordActions()
+        val rows = CarModel.stopRows(all, l.action.id, { carContext.describe(it) }) {
             carContext.getString(R.string.te_car_stop, it)
         }
         for (r in rows.take(5)) {
-            list.addItem(Row.Builder().setTitle(r.title).addText(r.subtitle).setOnClickListener { RecorderService.stop(carContext, r.actionId) }.build())
+            val i = all.indexOfFirst { it.id == r.actionId }
+            val action = all.getOrNull(i)
+            list.addItem(
+                Row.Builder()
+                    .setTitle(r.title)
+                    .addText(r.subtitle)
+                    .apply { if (action != null) setImage(lineIcon(carContext, app.thirdear.ui.cordOf(action, i))) }
+                    .setOnClickListener { RecorderService.stop(carContext, r.actionId) }
+                    .build(),
+            )
         }
         return ListTemplate.Builder()
             .setTitle(carContext.getString(R.string.te_car_recording, l.action.name))

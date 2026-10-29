@@ -9,4 +9,7 @@
     <string name="bitrate_value">%d kbps</string>
     <string name="sampling_rate_value">%d Hz</string>
     <string name="te_ostt_url">https://zapstore.dev/apps/app.offlinespeechtotext</string>
+    <!-- TODO confirm the final repository URL (same as the website) -->
+    <string name="te_source_url">https://github.com/jooray/third-ear</string>
+    <string name="te_wordmark">THIRD EAR</string>
 </resources>

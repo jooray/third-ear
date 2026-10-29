@@ -42,6 +42,10 @@ data class RecordAction(
     val groupName: String? = null,
     val webhookUrl: String? = null,
     val webhookAuth: String? = null,
+    /** Cord colour (index into the line palette); null: picked from the action's position. */
+    val cord: Int? = null,
+    /** Short line code shown on the key, tile and car grid (HRM, FAM); null: made from the name. */
+    val code: String? = null,
 ) {
     fun toJson(): JSONObject = JSONObject()
         .put("id", id)
@@ -54,6 +58,8 @@ data class RecordAction(
         .putOpt("groupName", groupName)
         .putOpt("webhookUrl", webhookUrl)
         .putOpt("webhookAuth", webhookAuth)
+        .putOpt("cord", cord)
+        .putOpt("code", code)
 
     companion object {
         fun fromJson(o: JSONObject) = RecordAction(
@@ -67,6 +73,8 @@ data class RecordAction(
             groupName = o.optStringOrNull("groupName"),
             webhookUrl = o.optStringOrNull("webhookUrl"),
             webhookAuth = o.optStringOrNull("webhookAuth"),
+            cord = if (o.has("cord") && !o.isNull("cord")) o.optInt("cord") else null,
+            code = o.optStringOrNull("code"),
         )
 
         fun listToJson(list: List<RecordAction>): String = JSONArray(list.map { it.toJson() }).toString()

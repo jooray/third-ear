@@ -116,10 +116,13 @@ object MarmotHost {
                 events = scope.launch { pump(m) }
                 phase.value = Phase.READY
                 Log.i(TAG, "ready as ${npub.value}")
+                val label = acct.label
+                scope.launch { ensureKeyPackage(m, label) }
             } catch (t: Throwable) {
                 phase.value = Phase.FAILED
-                error.value = t.message ?: t.javaClass.simpleName
-                Log.w(TAG, "start failed: ${error.value}")
+                // some MarmotKit errors carry an empty message: name the error rather than show nothing
+                error.value = t.message?.takeIf { it.isNotBlank() } ?: t.javaClass.simpleName
+                Log.w(TAG, "start failed: ${error.value}", t)
                 marmot?.let { runCatching { it.close() } }
                 marmot = null
             }
@@ -160,6 +163,24 @@ object MarmotHost {
         }
         stop()
         start(context)
+    }
+
+    /**
+     * Others can invite Third Ear only when a key package of its npub is on the relays. An
+     * identity whose first start broke off after it was created (or whose package expired) has
+     * none, and White Noise then cannot check it ("couldn't finish checking whether this person can
+     * be added"). Publish one whenever the relays show none; let MarmotKit's maintenance rotate it.
+     */
+    private suspend fun ensureKeyPackage(m: Marmot, label: String) {
+        runCatching {
+            val onRelays = m.accountKeyPackages(label, RELAYS)
+            Log.i(TAG, "key packages on the relays: ${onRelays.size}")
+            if (onRelays.isEmpty()) {
+                Log.i(TAG, "no key package on the relays, publishing one")
+                m.publishNewKeyPackage(label)
+            }
+            m.runDueMaintenance(label)
+        }.onFailure { Log.w(TAG, "key package check failed", it) }
     }
 
     private suspend fun ensureAccount(m: Marmot): AccountSummaryFfi {

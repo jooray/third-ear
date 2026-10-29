@@ -59,17 +59,6 @@
         tools:ignore="UnusedAttribute"
         tools:replace="android:label,android:allowBackup">
 
-        <activity
-            android:name=".activities.WidgetRecordDisplayConfigureActivity"
-            android:exported="true"
-            android:screenOrientation="portrait"
-            android:theme="@style/MyWidgetConfigTheme"
-            tools:ignore="DiscouragedApi,LockedOrientationActivity">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
-            </intent-filter>
-        </activity>
-
         <receiver
             android:name=".helpers.MyWidgetRecordDisplayProvider"
             android:exported="true"
@@ -102,15 +91,6 @@
                 <action android:name="android.provider.MediaStore.RECORD_SOUND" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-        </activity>
-
-        <activity
-            android:name=".activities.SettingsActivity"
-            android:configChanges="orientation"
-            android:exported="false"
-            android:label="@string/settings"
-            android:parentActivityName=".activities.MainActivity">
-
             <intent-filter>
                 <action android:name="android.intent.action.APPLICATION_PREFERENCES" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -124,13 +104,6 @@
             android:label="@string/about"
             android:parentActivityName=".activities.MainActivity" />
 
-        <activity
-            android:name="org.fossify.commons.activities.CustomizationActivity"
-            android:configChanges="orientation"
-            android:exported="false"
-            android:label="@string/customize_colors"
-            android:parentActivityName=".activities.SettingsActivity" />
-
         <service
             android:name=".services.RecorderService"
             android:exported="false"
@@ -141,23 +114,6 @@
                 <action android:name="app.thirdear.action.TOGGLE_PAUSE" />
             </intent-filter>
         </service>
-
-        <activity
-            android:name=".activities.ActionsActivity"
-            android:exported="false"
-            android:label="@string/te_actions"
-            android:parentActivityName=".activities.SettingsActivity" />
-
-        <activity
-            android:name=".activities.WhiteNoiseActivity"
-            android:exported="false"
-            android:label="@string/te_setting_white_noise"
-            android:parentActivityName=".activities.SettingsActivity" />
-
-        <activity
-            android:name=".activities.MessagesActivity"
-            android:exported="false"
-            android:label="@string/te_wn_messages" />
 
         <service
             android:name=".whitenoise.WhiteNoiseService"

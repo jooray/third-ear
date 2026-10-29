@@ -6,8 +6,9 @@ play the answers back to you, also in the car.
 
 Third Ear is a permanent fork of [Fossify Voice Recorder](https://github.com/FossifyOrg/Voice-Recorder)
 (GPLv3; its README is kept in [docs/FOSSIFY-README.md](docs/FOSSIFY-README.md)) with the
-recording, transcription and White Noise work from I Hear You and the OSTT fork. It keeps
-Fossify's look, player, recycle bin and settings.
+recording, transcription and White Noise work from I Hear You and the OSTT fork. The interface is
+its own (Jetpack Compose): a **Board** of lines, a **Log** of recordings, replies and the recycle
+bin, **Lines** to edit them and **Setup**. The design system is in [DESIGN.md](DESIGN.md).
 
 ## Features
 
@@ -21,19 +22,21 @@ Fossify's look, player, recycle bin and settings.
   for the Bluetooth microphone…" until the first real sound). Tap it to switch; the recording
   continues in the same file. If the Bluetooth microphone does not come up within 8 s,
   disconnects or breaks, the recording falls back to the phone once, with an audible cue.
-- **Actions.** You define buttons: a name plus where the recording goes (save only, copy the
+- **Lines (actions).** You define keys on the Board: a name, a cord colour, a short line code, plus where the recording goes (save only, copy the
   transcript, share, a White Noise group as audio, transcript or both, a webhook) and whether to
-  transcribe. Tap one to start recording; while recording every button reads "Stop → name" with
+  transcribe. Tap one to start recording; while recording every key reads "Stop →" with
   what it will do, so one tap at the stop can still pick another destination. After the stop a
   notification says what happens (saving, transcribing, waiting for the transcription app,
-  sending…), optionally also spoken.
+  sending…), optionally also spoken. Each key has a lamp: amber while its last recording is
+  transcribed or sent, white while a reply from its group waits, red when it was not delivered,
+  always with a word beside it.
 - **Transcription on the phone** through Offline Speech to Text (OSTT): the file API of Juraj's
   OSTT fork (`app.offlinespeechtotext`), or the Android 13 audio-stream contract of a stock OSTT.
   A busy OSTT (its keyboard dictating) is retried for about ten minutes. Transcripts are saved as
   `.txt` next to the recording and kept in the app: "Copy transcript" on the last recording and in
-  the player's menu.
+  the Log.
 - **Quick Settings tiles**: three tiles, each bound to an action (start / stop). The home-screen
-  widget records with a chosen action.
+  widget is a line key for a chosen line.
 - **White Noise** (MarmotKit 0.14.0): Third Ear gets its own npub (copy, QR). Accept group
   invites, send recordings as voice notes (transcript as caption when chosen) or text,
   export/import the nsec.
@@ -59,7 +62,7 @@ Third Ear is not from the Play Store, so Android Auto ignores it until you allow
 1. Android Auto settings → tap **Version** ten times → allow **Developer settings**.
 2. ⋮ → Developer settings → **Unknown sources** → on.
 3. Android Auto settings → **Customize launcher** → make sure Third Ear is shown.
-4. In Third Ear: Settings → **Use a Bluetooth microphone** on, so recordings use the car's
+4. In Third Ear: Setup → **Use a Bluetooth microphone** on, so recordings use the car's
    microphone (hands-free over Bluetooth). Without it the phone's microphone records.
 
 Android 14+ starts a microphone only for an app the user has in front; the car screen counts while

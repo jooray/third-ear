@@ -1,6 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- A line key on the home screen: code in its cord colour, lamp, name, designation strip. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/record_display_btn"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_margin="5dp" />
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_plate"
+    android:clipToOutline="true"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="10dp">
+
+        <TextView
+            android:id="@+id/widget_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/widget_cell"
+            android:fontFamily="@font/sairacondensed_bold"
+            android:letterSpacing="0.1"
+            android:paddingStart="7dp"
+            android:paddingTop="2dp"
+            android:paddingEnd="7dp"
+            android:paddingBottom="2dp"
+            android:text="SAV"
+            android:textColor="#FF17140F"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/widget_state"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/sairacondensed_semibold"
+            android:letterSpacing="0.12"
+            android:maxLines="1"
+            android:paddingStart="8dp"
+            android:textAllCaps="true"
+            android:textColor="#FFADA595"
+            android:textSize="12sp" />
+
+        <ImageView
+            android:id="@+id/widget_lamp"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/widget_lamp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/widget_name"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:fontFamily="@font/atkinson_bold"
+        android:maxLines="2"
+        android:paddingStart="12dp"
+        android:paddingTop="6dp"
+        android:paddingEnd="12dp"
+        android:text="@string/te_default_action_save"
+        android:textColor="#FFEDE8DA"
+        android:textSize="19sp" />
+
+    <TextView
+        android:id="@+id/widget_strip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFE6E0CE"
+        android:ellipsize="end"
+        android:fontFamily="@font/sairacondensed_semibold"
+        android:letterSpacing="0.06"
+        android:maxLines="1"
+        android:paddingStart="12dp"
+        android:paddingTop="6dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="6dp"
+        android:text="@string/te_widget_tap"
+        android:textAllCaps="true"
+        android:textColor="#FF1E1A14"
+        android:textSize="12sp" />
+</LinearLayout>

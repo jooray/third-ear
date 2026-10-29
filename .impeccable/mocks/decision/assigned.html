@@ -1,0 +1,73 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=390">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Saira+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--face:#16130F;--plate:#201C17;--recess:#0E0C09;--strip:#EDE8DA;--strip-ink:#1E1A14;--ink:#EDE8DA;--muted:#A79F8F;--rule:#3A342B;
+--red:#C8321E;--green:#2F7D4F;--blue:#2C5AA0;--amber:#F2A33A;--white:#F4F1E8;--yellow:#D9B23A}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:390px;height:844px;overflow:hidden;background:var(--face);color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,sans-serif}
+.status{height:32px;display:flex;justify-content:space-between;align-items:center;padding:0 20px;font-size:13px;color:var(--muted)}
+.bar{display:flex;align-items:center;gap:12px;padding:10px 16px 12px}
+.word{font-family:"Saira Condensed";font-weight:700;font-size:22px;letter-spacing:.04em;text-transform:uppercase}
+.bar .sp{flex:1}
+.ib{width:48px;height:48px;display:grid;place-items:center;color:var(--muted);font-size:20px}
+.input{margin:0 16px;background:var(--plate);border:1px solid var(--rule);border-radius:6px;display:flex;align-items:center;gap:12px;padding:10px 12px}
+.input .lab{font-family:"Saira Condensed";font-weight:600;font-size:11px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+.input .name{font-size:16px;font-weight:700}
+.input .sub{font-size:13px;color:var(--muted)}
+.meter{display:flex;gap:2px;align-items:flex-end;height:28px;margin-left:auto}
+.meter i{display:block;width:4px;background:var(--green);border-radius:1px}
+.meter i.o{background:var(--rule)}
+.sect{display:flex;justify-content:space-between;align-items:baseline;padding:18px 16px 8px}
+.sect b{font-family:"Saira Condensed";font-weight:600;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.sect span{font-size:13px;color:var(--muted)}
+.field{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px}
+.key{position:relative;background:var(--plate);border:1px solid var(--rule);border-radius:6px;height:128px;padding:12px 12px 0 18px;display:flex;flex-direction:column;overflow:hidden}
+.key::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--c)}
+.lamp{position:absolute;top:12px;right:12px;width:16px;height:16px;border-radius:50%;border:2px solid #4A4337;background:#24201A}
+.lamp.on{background:var(--white);border-color:var(--white);box-shadow:0 0 0 4px rgba(244,241,232,.12)}
+.lamp.amb{background:var(--amber);border-color:var(--amber)}
+.code{font-family:"Saira Condensed";font-weight:700;font-size:13px;letter-spacing:.14em;color:var(--c2,var(--muted))}
+.kn{font-size:19px;font-weight:700;margin-top:6px;line-height:1.15}
+.strip{margin-top:auto;margin-left:-18px;margin-right:-12px;background:var(--strip);color:var(--strip-ink);display:flex;font-family:"Saira Condensed";font-weight:600;font-size:12px;letter-spacing:.06em;text-transform:uppercase;border-top:1px solid #000}
+.strip span{padding:5px 8px;border-right:1px solid #B9B2A0;white-space:nowrap}
+.strip span:last-child{border-right:0}
+.reply{font-size:12px;color:var(--white);font-weight:700;margin-top:2px}
+.last{margin:16px 16px 0;background:var(--recess);border:1px solid var(--rule);border-radius:6px;padding:12px}
+.last .row{display:flex;justify-content:space-between;font-family:"Saira Condensed";font-weight:600;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.last p{font-size:15px;line-height:1.4;margin-top:6px}
+.last .acts{display:flex;gap:8px;margin-top:10px}
+.btn{height:40px;padding:0 14px;border-radius:6px;border:1px solid var(--rule);display:inline-flex;align-items:center;font-size:14px;font-weight:700;color:var(--ink)}
+nav{position:absolute;left:0;right:0;bottom:0;height:80px;background:var(--plate);border-top:1px solid var(--rule);display:grid;grid-template-columns:repeat(4,1fr);padding-bottom:14px}
+nav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:12px;color:var(--muted);text-decoration:none}
+nav a .pill{width:56px;height:30px;border-radius:15px;display:grid;place-items:center;font-size:16px}
+nav a.on{color:var(--ink)}
+nav a.on .pill{background:#3A342B}
+.badge{font-family:"Saira Condensed";font-weight:700;font-size:11px;background:var(--white);color:var(--face);border-radius:8px;padding:0 5px;margin-left:4px}
+</style></head><body>
+<div class="status"><span>9:41</span><span>LTE ▮▮▮ 82%</span></div>
+<div class="bar"><span class="word">Third Ear</span><span class="sp"></span><span class="ib">⌕</span><span class="ib">⋮</span></div>
+<div class="input">
+  <div><div class="lab">Input · Bluetooth LE Audio</div><div class="name">Hearing aids (L+R)</div><div class="sub">Falls back to phone mic</div></div>
+  <div class="meter"><i style="height:8px"></i><i style="height:14px"></i><i style="height:20px"></i><i style="height:12px"></i><i class="o" style="height:24px"></i><i class="o" style="height:28px"></i></div>
+</div>
+<div class="sect"><b>Lines · tap to record</b><span>6 actions</span></div>
+<div class="field">
+  <div class="key" style="--c:var(--red)"><span class="lamp on"></span><span class="code" style="--c2:#E8806F">HRM</span><span class="kn">Ask Hermes</span><span class="reply">1 reply waiting</span>
+    <div class="strip"><span>OSTT</span><span>WN · text</span><span>read aloud</span></div></div>
+  <div class="key" style="--c:var(--green)"><span class="lamp amb"></span><span class="code" style="--c2:#7CC497">FAM</span><span class="kn">Family</span>
+    <div class="strip"><span>OSTT</span><span>WN · voice+text</span></div></div>
+  <div class="key" style="--c:var(--blue)"><span class="lamp"></span><span class="code" style="--c2:#8FB0E3">CLP</span><span class="kn">Transcript to clipboard</span>
+    <div class="strip"><span>OSTT</span><span>copy</span></div></div>
+  <div class="key" style="--c:var(--yellow)"><span class="lamp"></span><span class="code" style="--c2:#E7CB73">MTG</span><span class="kn">Meeting notes</span>
+    <div class="strip"><span>save</span><span>OSTT</span><span>.opus</span></div></div>
+  <div class="key" style="--c:var(--white)"><span class="lamp"></span><span class="code">SAV</span><span class="kn">Save</span>
+    <div class="strip"><span>save only</span><span>.m4a</span></div></div>
+  <div class="key" style="--c:#7A4FA0"><span class="lamp"></span><span class="code" style="--c2:#B597D6">HOOK</span><span class="kn">Log to n8n</span>
+    <div class="strip"><span>OSTT</span><span>webhook</span></div></div>
+</div>
+<div class="last"><div class="row"><span>FAM · sending 2/3</span><span>0:42 · today 9:38</span></div>
+<p>We land at six, can someone grab the kids from practice and start the oven?</p>
+<div class="acts"><span class="btn">▶ Play</span><span class="btn">Copy</span><span class="btn">Retry later</span></div></div>
+<nav><a class="on"><span class="pill">▦</span>Board</a><a><span class="pill">≣</span>Log<span></span></a><a><span class="pill">⇄</span><span>Lines<span class="badge">1</span></span></a><a><span class="pill">⚙</span>Setup</a></nav>
+</body></html>

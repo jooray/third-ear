@@ -1,0 +1,50 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=390">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0F2B5B;--navy2:#173A73;--white:#FFFFFF;--yellow:#FFCC00;--red:#E2231A;--ground:#E6E9EF;--ink:#0B1730;--muted:#4A5672;--rule:#C5CBD8}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:390px;height:844px;overflow:hidden;background:var(--ground);color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,sans-serif}
+header{background:var(--navy);color:var(--white);padding:0 16px 14px}
+.status{height:32px;display:flex;justify-content:space-between;align-items:center;font-size:13px;opacity:.8}
+.top{display:flex;align-items:center;height:48px}
+.top b{font-size:22px;letter-spacing:-.01em}
+.top .sp{flex:1}.top span{width:48px;text-align:center;font-size:20px}
+.src{display:flex;align-items:center;gap:10px;background:var(--navy2);border-radius:4px;padding:10px 12px;margin-top:4px}
+.pict{width:32px;height:32px;border-radius:4px;background:var(--white);color:var(--navy);display:grid;place-items:center;font-weight:700}
+.src .n{font-weight:700;font-size:16px}.src .s{font-size:13px;opacity:.75}
+.lvl{margin-left:auto;width:64px;height:6px;background:#2C4C86;border-radius:3px;overflow:hidden}.lvl i{display:block;width:45%;height:100%;background:var(--yellow)}
+h2{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;padding:18px 16px 8px}
+.signs{display:flex;flex-direction:column;gap:8px;padding:0 16px}
+.sign{background:var(--navy);color:var(--white);border-radius:4px;min-height:68px;display:flex;align-items:center;gap:12px;padding:0 14px}
+.arrow{font-size:28px;font-weight:700;width:28px}
+.sign .t{flex:1}.sign .n{font-size:20px;font-weight:700}.sign .d{font-size:13px;opacity:.75;margin-top:2px}
+.tag{background:var(--yellow);color:var(--navy);font-weight:700;font-size:13px;border-radius:3px;padding:3px 7px}
+.code{border:2px solid var(--white);border-radius:3px;font-weight:700;font-size:13px;padding:2px 6px}
+.sign.plain{background:var(--white);color:var(--navy);border:1px solid var(--rule)}
+.sign.plain .code{border-color:var(--navy)}
+.last{margin:14px 16px 0;background:var(--white);border:1px solid var(--rule);border-radius:4px;padding:12px}
+.last .h{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);font-weight:700}
+.last p{font-size:15px;line-height:1.4;margin-top:6px}
+.err{display:flex;gap:8px;align-items:center;margin-top:10px;font-size:13px;font-weight:700;color:var(--red)}
+nav{position:absolute;left:0;right:0;bottom:0;height:80px;background:var(--white);border-top:1px solid var(--rule);display:grid;grid-template-columns:repeat(4,1fr);padding-bottom:14px}
+nav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:12px;color:var(--muted)}
+nav a .p{width:56px;height:30px;border-radius:15px;display:grid;place-items:center}
+nav a.on{color:var(--navy);font-weight:700}nav a.on .p{background:#D5DEEE}
+</style></head><body>
+<header><div class="status"><span>9:41</span><span>LTE 82%</span></div>
+<div class="top"><b>Third Ear</b><span class="sp"></span><span>⌕</span><span>⋮</span></div>
+<div class="src"><span class="pict">◖◗</span><div><div class="n">Hearing aids</div><div class="s">LE Audio · fallback: phone</div></div><div class="lvl"><i></i></div></div></header>
+<h2>Tap a destination to record</h2>
+<div class="signs">
+<div class="sign"><span class="arrow">→</span><div class="t"><div class="n">Ask Hermes</div><div class="d">Transcribe · White Noise text · read reply</div></div><span class="tag">1 reply</span></div>
+<div class="sign"><span class="arrow">→</span><div class="t"><div class="n">Family</div><div class="d">Transcribe · voice + text to group</div></div><span class="code">FAM</span></div>
+<div class="sign"><span class="arrow">→</span><div class="t"><div class="n">Transcript to clipboard</div><div class="d">Transcribe · copy</div></div><span class="code">CLP</span></div>
+<div class="sign"><span class="arrow">→</span><div class="t"><div class="n">Log to n8n</div><div class="d">Transcribe · webhook</div></div><span class="code">HOOK</span></div>
+<div class="sign plain"><span class="arrow">↓</span><div class="t"><div class="n">Save</div><div class="d">Keep the recording here</div></div><span class="code">SAV</span></div>
+</div>
+<div class="last"><div class="h"><span>FAM · 0:42</span><span>9:38</span></div>
+<p>We land at six, can someone grab the kids from practice and start the oven?</p>
+<div class="err">⚠ Not sent: no network. Retrying in 2 min.</div></div>
+<nav><a class="on"><span class="p">▦</span>Board</a><a><span class="p">≣</span>Log</a><a><span class="p">⇄</span>Groups</a><a><span class="p">⚙</span>Setup</a></nav>
+</body></html>

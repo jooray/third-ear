@@ -12,16 +12,16 @@ pick or create a folder, e.g. `Recordings/Third Ear`, then *Use this folder*).
 
 ## On the phone (10 minutes)
 
-1. **Plain recording.** Recorder tab → tap **Save**. The buttons turn into "Stop → Save" /
+1. **Plain recording.** Board → tap the **Save** line. The keys turn into "Stop →" /
    "Stop → Transcript to clipboard"; the source button says *Phone microphone*. Talk 10 s, tap
-   **Stop → Save**. The *Last recording* card says *Saved as …*; the file plays in the Player tab.
+   **Stop → Save**. The *Last recording* plate says *Saved as …*; the file plays in Log → Recordings.
 2. **Transcript.** Tap **Transcript to clipboard**, talk, stop with it. The notification shows
    *Saving… → Transcribing…*; the card shows the text; paste it somewhere. With OSTT's keyboard
    dictating at the same time you should see *Waiting for the transcription app…* and then the
    transcript after the keyboard finishes.
 3. **Destination at the stop.** Start with **Save**, stop with **Stop → Transcript to clipboard**:
    the recording gets a transcript although it started as a plain save.
-4. **Bluetooth.** Settings → *Use a Bluetooth microphone*. With a headset or the aids connected the
+4. **Bluetooth.** Setup → *Use a Bluetooth microphone*. With a headset or the aids connected the
    source button shows *Connecting… → Waiting for the Bluetooth microphone… → Bluetooth: name*, and
    (spoken cues on) "go ahead" plays in the headset once real sound arrives. Tap the source button
    mid-recording → *Switch for this recording* → it continues on the phone in the same file.
@@ -36,7 +36,7 @@ pick or create a folder, e.g. `Recordings/Third Ear`, then *Use this folder*).
    open the app again: a notification *Interrupted recording saved* and the file is in the list.
 8. **Tiles.** Pull down Quick Settings → edit → add *Third Ear 1/2/3*. Tap one: recording starts
    with that action (a brief invisible activity does it). Tap again: stops with it.
-9. **Share / webhook.** Settings → Actions → Add action → *Share* (or *Webhook* with a URL). Stop
+9. **Share / webhook.** Lines → Add line → *Share* (or *Webhook* with a URL). Stop
    with it: the share sheet opens (or a *Ready to share* notification if the screen was off).
 
 ## Backup and restore
@@ -55,10 +55,10 @@ Groups have to invite Third Ear again either way.
 
 ## White Noise
 
-1. Settings → White Noise → *Use White Noise*. After *Connected* the npub and its QR show.
+1. Setup → White Noise → *Use White Noise*. After *Connected* the npub and its QR show.
 2. Either *Create a test group* (only Third Ear in it), or invite the npub to a group in White
    Noise and *Accept* it here (the list refreshes every 15 s while the screen is open).
-3. Settings → Actions → add one with destination *White Noise group*, pick the group, *audio +
+3. Lines → Add line with destination *White Noise group*, pick the group, *audio +
    transcript*. Record, stop with it: the voice note arrives in White Noise with the transcript as
    caption.
 4. Tap the group → messages *Play voice messages and read text*, *When I ask*. Send a message to the

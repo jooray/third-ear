@@ -1,5 +1,6 @@
 package app.thirdear.services
 
+import androidx.compose.ui.graphics.toArgb
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -495,6 +496,13 @@ class RecorderService : Service() {
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
     )
 
+    /** The line's cord colour, so the notification carries the same identity as its key. */
+    private fun lineColor(l: Live): Int {
+        val all = actions.all { defaultActions() }
+        val i = all.indexOfFirst { it.id == l.action.id }.coerceAtLeast(0)
+        return app.thirdear.ui.Cords.color(app.thirdear.ui.cordOf(l.action, i)).toArgb()
+    }
+
     private fun recordingNotification(l: Live): Notification {
         val s = l.status
         var text = inputLabel(s)
@@ -504,6 +512,8 @@ class RecorderService : Service() {
             .setContentTitle(getString(R.string.te_notif_recording, l.action.name))
             .setContentText(text)
             .setSmallIcon(R.drawable.ic_graphic_eq_vector)
+            .setColor(lineColor(l))
+            .setSubText(app.thirdear.actions.LineCode.of(l.action))
             .setContentIntent(openApp())
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setOngoing(true)

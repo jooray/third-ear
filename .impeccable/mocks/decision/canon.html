@@ -1,0 +1,33 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=390">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:390px;height:844px;overflow:hidden;background:#FEF7FF;color:#1D1B20;font-family:Roboto,system-ui,sans-serif}
+.status{height:32px;display:flex;justify-content:space-between;align-items:center;padding:0 20px;font-size:13px;color:#49454F}
+.top{height:64px;display:flex;align-items:center;padding:0 16px;font-size:22px}.top .sp{flex:1}.top span{width:48px;text-align:center;font-size:20px;color:#49454F}
+.src{margin:0 16px;display:inline-flex;gap:8px;align-items:center;height:32px;padding:0 12px;border:1px solid #79747E;border-radius:8px;font-size:14px;font-weight:500}
+.wave{margin:16px;height:120px;border-radius:24px;background:#F3EDF7;display:flex;align-items:center;justify-content:center;gap:3px}
+.wave i{display:block;width:3px;background:#6750A4;border-radius:2px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;padding:0 16px}
+.chip{height:40px;padding:0 16px;border-radius:12px;background:#E8DEF8;display:flex;align-items:center;font-size:14px;font-weight:500;color:#1D192B}
+.fab{margin:20px auto 0;width:96px;height:96px;border-radius:28px;background:#6750A4;color:#fff;display:grid;place-items:center;font-size:36px}
+h3{font-size:14px;font-weight:500;color:#49454F;padding:20px 16px 4px}
+.item{display:flex;gap:16px;align-items:center;padding:10px 16px}
+.av{width:40px;height:40px;border-radius:20px;background:#EADDFF;display:grid;place-items:center;color:#21005D}
+.item .n{font-size:16px}.item .d{font-size:14px;color:#49454F}
+nav{position:absolute;left:0;right:0;bottom:0;height:80px;background:#F3EDF7;display:grid;grid-template-columns:repeat(3,1fr);padding-bottom:14px}
+nav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:12px;color:#49454F}
+nav a .p{width:64px;height:32px;border-radius:16px;display:grid;place-items:center}nav a.on .p{background:#E8DEF8}nav a.on{font-weight:700;color:#1D1B20}
+</style></head><body>
+<div class="status"><span>9:41</span><span>82%</span></div>
+<div class="top">Third Ear<span class="sp"></span><span>⌕</span><span>⋮</span></div>
+<span class="src">🎧 Hearing aids</span>
+<div class="wave"><i style="height:20px"></i><i style="height:44px"></i><i style="height:30px"></i><i style="height:60px"></i><i style="height:24px"></i><i style="height:50px"></i><i style="height:16px"></i><i style="height:38px"></i></div>
+<div class="chips"><span class="chip">Ask Hermes</span><span class="chip">Family</span><span class="chip">Clipboard</span><span class="chip">Meeting notes</span></div>
+<div class="fab">●</div>
+<h3>Recent</h3>
+<div class="item"><span class="av">H</span><div><div class="n">When is my train home?</div><div class="d">Ask Hermes · 0:18 · reply waiting</div></div></div>
+<div class="item"><span class="av">F</span><div><div class="n">We land at six…</div><div class="d">Family · 0:42 · sending</div></div></div>
+<nav><a class="on"><span class="p">●</span>Record</a><a><span class="p">≣</span>Recordings</a><a><span class="p">⚙</span>Settings</a></nav>
+</body></html>

@@ -1,4 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
-    <path
-        d="M280-280v-400q0-17 11.5-28.5T320-720q17 0 28.5 11.5T360-680v400q0 17-11.5 28.5T320-240q-17 0-28.5-11.5T280-280Zm160 160v-720q0-17 11.5-28.5T480-880q17 0 28.5 11.5T520-840v720q0 17-11.5 28.5T480-80q-17 0-28.5-11.5T440-120ZM120-440v-80q0-17 11.5-28.5T160-560q17 0 28.5 11.5T200-520v80q0 17-11.5 28.5T160-400q-17 0-28.5-11.5T120-440Zm480 160v-400q0-17 11.5-28.5T640-720q17 0 28.5 11.5T680-680v400q0 17-11.5 28.5T640-240q-17 0-28.5-11.5T600-280Zm160-160v-80q0-17 11.5-28.5T800-560q17 0 28.5 11.5T840-520v80q0 17-11.5 28.5T800-400q-17 0-28.5-11.5T760-440Z" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="18 18 72 72" width="512" height="512">
+  <!-- Third Ear: one line key on the board (same geometry as the adaptive launcher icon) -->
+  <rect x="18" y="18" width="72" height="72" rx="16" fill="#16130F"/>
+  <path fill="#2A251F" stroke="#4A4337" stroke-width="1.5" d="M28,27 h52 a4,4 0 0 1 4,4 v50 h-60 v-50 a4,4 0 0 1 4,-4 z"/>
+  <rect x="30" y="33" width="20" height="11" rx="1.5" fill="#C8321E"/>
+  <circle cx="74" cy="38.5" r="9" fill="#F7F4EA" fill-opacity="0.2"/>
+  <circle cx="74" cy="38.5" r="6.5" fill="#4A4337"/>
+  <circle cx="74" cy="38.5" r="5" fill="#F7F4EA"/>
+  <rect x="31" y="51" width="31.5" height="3" rx="1.5" fill="#EDE8DA"/>
+  <rect x="24" y="67" width="60" height="14" fill="#E6E0CE"/>
+  <path fill="#B4AD9B" d="M43,67 h1 v14 h-1 z M63,67 h1 v14 h-1 z"/>
+  <path fill="#1E1A14" d="M28,72.5 h11 v3 h-11 z M48,72.5 h11 v3 h-11 z M68,72.5 h12 v3 h-12 z"/>
 </svg>

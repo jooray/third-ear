@@ -17,9 +17,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import app.thirdear.R
-import app.thirdear.activities.WhiteNoiseActivity
+import app.thirdear.activities.MainActivity
 import app.thirdear.extensions.config
 
 /**
@@ -76,7 +77,7 @@ class WhiteNoiseService : Service() {
             .setOngoing(true)
             .setSilent(true)
             .setContentIntent(
-                PendingIntent.getActivity(this, 0, Intent(this, WhiteNoiseActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), PendingIntent.FLAG_IMMUTABLE),
+                PendingIntent.getActivity(this, 0, MainActivity.intent(this, MainActivity.OPEN_SETUP), PendingIntent.FLAG_IMMUTABLE),
             )
             .build()
         try {
@@ -132,7 +133,17 @@ class WhiteNoiseService : Service() {
             stopSelf()
             return START_NOT_STICKY
         }
-        scope.launch { MarmotHost.start(this@WhiteNoiseService) }
+        scope.launch {
+            // a first start can fail (seen right after a fresh launch) where turning White Noise off
+            // and on again works: try again a few times before leaving it failed
+            for (wait in listOf(0L, 3_000L, 10_000L, 30_000L, 60_000L)) {
+                delay(wait)
+                if (!config.whiteNoiseEnabled) return@launch
+                if (MarmotHost.phase.value == MarmotHost.Phase.READY) return@launch
+                MarmotHost.start(this@WhiteNoiseService)
+                if (MarmotHost.phase.value == MarmotHost.Phase.READY) return@launch
+            }
+        }
         return START_STICKY
     }
 

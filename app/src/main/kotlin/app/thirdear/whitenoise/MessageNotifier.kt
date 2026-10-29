@@ -9,7 +9,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.Person
 import androidx.core.app.RemoteInput
 import app.thirdear.R
-import app.thirdear.activities.MessagesActivity
+import app.thirdear.activities.MainActivity
 
 /**
  * Incoming White Noise messages as MessagingStyle notifications, one per group, with Reply
@@ -79,7 +79,7 @@ object MessageNotifier {
             .setShowsUserInterface(false)
             .build()
         val open = PendingIntent.getActivity(
-            context, code, Intent(context, MessagesActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), PendingIntent.FLAG_IMMUTABLE,
+            context, code, MainActivity.intent(context, MainActivity.OPEN_REPLIES), PendingIntent.FLAG_IMMUTABLE,
         )
         val b = NotificationCompat.Builder(context, CHANNEL)
             .setSmallIcon(R.drawable.ic_graphic_eq_vector)

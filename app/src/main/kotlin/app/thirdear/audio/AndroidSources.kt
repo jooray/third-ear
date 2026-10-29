@@ -20,8 +20,12 @@ import java.util.concurrent.TimeUnit
 
 private const val TAG = "ThirdEarMic"
 
-fun isBluetoothInput(d: AudioDeviceInfo?) =
-    d?.type == AudioDeviceInfo.TYPE_BLE_HEADSET || d?.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO
+/** Android 17 (API 37) reports LE Audio hearing aids with their own type. */
+const val TYPE_BLE_HEARING_AID = 33
+
+fun isLeAudio(type: Int) = type == AudioDeviceInfo.TYPE_BLE_HEADSET || type == TYPE_BLE_HEARING_AID
+
+fun isBluetoothInput(d: AudioDeviceInfo?) = d != null && (isLeAudio(d.type) || d.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO)
 
 /**
  * Bluetooth microphones on Android are call microphones: they exist only while the headset is
@@ -30,11 +34,26 @@ fun isBluetoothInput(d: AudioDeviceInfo?) =
  * all come through here.
  */
 object BluetoothMics {
-    /** Communication devices with a microphone, best first: LE Audio, then classic SCO. */
+    /**
+     * Communication devices with a microphone, best first: the headset media plays to (with a
+     * car's hands-free and headphones both connected, e.g. Android Auto with audio left on the
+     * phone, the user listens on the headphones and expects their microphone), then LE Audio,
+     * then classic SCO.
+     */
     fun candidates(audio: AudioManager): List<AudioDeviceInfo> {
         val comm = audio.availableCommunicationDevices
-        return (comm.filter { it.type == AudioDeviceInfo.TYPE_BLE_HEADSET } +
-            comm.filter { it.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO }).distinctBy { it.id }
+        val order = BluetoothChoice.order(comm.map { BluetoothChoice.Dev(it.type, it.address) }, mediaAddresses(audio))
+        return order.map { comm[it] }.distinctBy { it.id }
+    }
+
+    /** Where media plays now (Android 13+). */
+    private fun mediaAddresses(audio: AudioManager): Set<String> = if (android.os.Build.VERSION.SDK_INT >= 33) {
+        runCatching {
+            audio.getAudioDevicesForAttributes(AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA).build())
+                .mapNotNull { it.address?.takeIf { a -> a.isNotBlank() }?.uppercase() }.toSet()
+        }.getOrDefault(emptySet())
+    } else {
+        emptySet()
     }
 
     fun available(context: Context): Boolean =
@@ -67,7 +86,7 @@ class AndroidSources(private val context: Context, private val phoneAudioSource:
         return try {
             AudioRecordSource(
                 context, Source.BLUETOOTH, sampleRate, MediaRecorder.AudioSource.VOICE_COMMUNICATION, input, route, events,
-                prime = device.type == AudioDeviceInfo.TYPE_BLE_HEADSET,
+                prime = isLeAudio(device.type),
             )
         } catch (t: Throwable) {
             route.release()
@@ -117,8 +136,10 @@ class BluetoothRoute(private val context: Context, private val audio: AudioManag
     /** The input side of the communication device; a binaural set can expose another address. */
     fun inputFor(comm: AudioDeviceInfo): AudioDeviceInfo? {
         val inputs = audio.getDevices(AudioManager.GET_DEVICES_INPUTS)
-        return inputs.firstOrNull { it.type == comm.type && it.address.equals(comm.address, ignoreCase = true) }
-            ?: inputs.firstOrNull { it.type == comm.type }
+        // LE hearing aids may report output and input under different LE types and addresses
+        fun family(d: AudioDeviceInfo) = if (isLeAudio(comm.type)) isLeAudio(d.type) else d.type == comm.type
+        return inputs.firstOrNull { family(it) && it.address.equals(comm.address, ignoreCase = true) }
+            ?: inputs.firstOrNull { family(it) }
     }
 
     /** Leaves call mode; forgetting this keeps the headset's audio flat for other apps. */

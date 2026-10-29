@@ -35,6 +35,11 @@ androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayo
 androidx-documentfile = { module = "androidx.documentfile:documentfile", version.ref = "androidx-documentfile" }
 androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "androidx-swiperefreshlayout" }
 #Compose
+compose-material3 = { module = "androidx.compose.material3:material3", version = "1.4.0" }
+compose-ui = { module = "androidx.compose.ui:ui", version = "1.9.2" }
+compose-icons = { module = "androidx.compose.material:material-icons-extended", version = "1.7.6" }
+activity-compose = { module = "androidx.activity:activity-compose", version = "1.12.4" }
+lifecycle-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version = "2.10.0" }
 compose-detekt = { module = "io.nlopez.compose.rules:detekt", version.ref = "detektCompose" }
 #Fossify
 fossify-commons = { module = "org.fossify:commons", version.ref = "commons" }
@@ -47,6 +52,7 @@ tandroidlame = { module = "com.github.naveensingh:TAndroidLame", version.ref = "
 #AutofitTextView
 autofittextview = { module = "me.grantland:autofittextview", version.ref = "autofittextview" }
 [plugins]
+compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 android = { id = "com.android.application", version.ref = "gradlePlugins-agp" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
