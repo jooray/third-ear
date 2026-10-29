@@ -218,7 +218,7 @@ object MarmotHost {
         val acct = account ?: return
         groups.value = runCatching {
             m.chatList(acct, false).map {
-                Group(it.groupIdHex, it.title.ifBlank { it.groupName }, it.pendingConfirmation, it.selfMembership == SelfMembershipFfi.MEMBER)
+                Group(it.groupIdHex, it.groupName.ifBlank { it.title }, it.pendingConfirmation, it.selfMembership == SelfMembershipFfi.MEMBER)
             }
         }.getOrDefault(groups.value)
     }

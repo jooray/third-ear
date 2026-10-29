@@ -149,7 +149,8 @@ class RecorderFragment(context: Context, attributeSet: AttributeSet) : MyViewPag
             if (context.config.keepScreenOn) runCatching { context.getActivity().setKeepScreenAwake(recording) }
         }
         val status = l?.status
-        binding.recordingDuration.text = if (status != null) (status.durationMs / 1000).toInt().getFormattedDuration() else null
+        binding.recordingDuration.text = ((status?.durationMs ?: 0) / 1000).toInt().getFormattedDuration()
+        binding.recordingDuration.alpha = if (status == null) 0.4f else 1f
         if (status != null && !status.paused && !status.starting) binding.recorderVisualizer.update(status.amplitude)
         binding.cancelRecordingButton.beVisibleIf(recording)
         binding.toggleRecordingButton.beVisibleIf(recording)
