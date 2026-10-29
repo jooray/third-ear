@@ -85,3 +85,6 @@ h2,h3{font-weight:700}
 .lamps i{flex:none;width:14px;height:14px;border-radius:50%;border:2px solid #4a4337;transform:translateY(2px)}
 .lamps .busy{background:#f2a33a}.lamps .reply{background:var(--lamp);box-shadow:0 0 0 4px color-mix(in srgb,var(--lamp) 18%,transparent)}.lamps .fault{background:#e5483a}
 ::selection{background:var(--strip);color:var(--stripfg)}
+.steps{margin:.6rem 0 0;padding-left:1.4rem;display:grid;gap:.45rem}
+.steps li{padding-left:.2rem}
+#car-setup{margin-top:1.6rem}
