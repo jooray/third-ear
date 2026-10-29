@@ -156,7 +156,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
     // MarmotKit's UniFFI bindings call the native library through JNA
     implementation("net.java.dev.jna:jna:5.19.1@aar")
-    implementation("com.google.zxing:core:3.5.3")
+    implementation("com.google.zxing:core:3.5.4")
     implementation("androidx.car.app:app:1.4.0")
     detektPlugins(libs.compose.detekt)
 
