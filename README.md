@@ -1,53 +1,88 @@
-# Fossify Voice Recorder
+# Third Ear
 
-<img alt="Logo" src="graphics/icon.webp" width="120" />
+A voice recorder for everyone that also does something with what you said: transcribe it on the
+phone, copy the text, share it, post it to a webhook, or send it to a White Noise group — and
+play the answers back to you, also in the car.
 
-<a href="https://play.google.com/store/apps/details?id=org.fossify.voicerecorder"><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' height=80/></a> <a href="https://f-droid.org/packages/org.fossify.voicerecorder/"><img src="https://fdroid.gitlab.io/artwork/badge/get-it-on-en.svg" alt="Get it on F-Droid" height=80/></a> <a href="https://apt.izzysoft.de/fdroid/index/apk/org.fossify.voicerecorder"><img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" alt="Get it on IzzyOnDroid" height=80/></a>
+Third Ear is a permanent fork of [Fossify Voice Recorder](https://github.com/FossifyOrg/Voice-Recorder)
+(GPLv3; its README is kept in [docs/FOSSIFY-README.md](docs/FOSSIFY-README.md)) with the
+recording, transcription and White Noise work from I Hear You and the OSTT fork. It keeps
+Fossify's look, player, recycle bin and settings.
 
-Introducing Fossify Voice Recorder – where capturing crystal-clear audio and preserving precious moments is effortless and enjoyable. Seamlessly blend
-simplicity with functionality as you embark on a journey of seamless recording experiences tailored to your needs.
+## Features
 
-**🔊 HIGH-QUALITY AUDIO CAPTURE:**  
-Remember every word, every note, and every emotion with pristine audio quality. Fossify Voice Recorder empowers you to capture high-fidelity recordings
-effortlessly, ensuring that every detail is preserved with clarity and precision.
+- **Reliable long recordings.** Its own `AudioRecord` front end feeds a streaming encoder (AAC in
+  `.m4a`, Opus in `.ogg`, MP3) through a crash-safe frame journal. A killed process loses at most
+  the last second: the next launch finishes the file and saves it. Partial wake lock, silence
+  watchdog (exact digital zeros, Android silencing the app); a failing microphone ends the
+  recording and keeps what was captured.
+- **Bluetooth microphones**: headsets, LE Audio hearing aids, the car's hands-free microphone.
+  The source button on the recording screen shows the microphone that really records ("Waiting
+  for the Bluetooth microphone…" until the first real sound). Tap it to switch; the recording
+  continues in the same file. If the Bluetooth microphone does not come up within 8 s,
+  disconnects or breaks, the recording falls back to the phone once, with an audible cue.
+- **Actions.** You define buttons: a name plus where the recording goes (save only, copy the
+  transcript, share, a White Noise group as audio, transcript or both, a webhook) and whether to
+  transcribe. Tap one to start recording; while recording every button reads "Stop → name" with
+  what it will do, so one tap at the stop can still pick another destination. After the stop a
+  notification says what happens (saving, transcribing, waiting for the transcription app,
+  sending…), optionally also spoken.
+- **Transcription on the phone** through Offline Speech to Text (OSTT): the file API of Juraj's
+  OSTT fork (`app.offlinespeechtotext`), or the Android 13 audio-stream contract of a stock OSTT.
+  A busy OSTT (its keyboard dictating) is retried for about ten minutes. Transcripts are saved as
+  `.txt` next to the recording and kept in the app: "Copy transcript" on the last recording and in
+  the player's menu.
+- **Quick Settings tiles**: three tiles, each bound to an action (start / stop). The home-screen
+  widget records with a chosen action.
+- **White Noise** (MarmotKit 0.14.0): Third Ear gets its own npub (copy, QR). Accept group
+  invites, send recordings as voice notes (transcript as caption when chosen) or text,
+  export/import the nsec.
+- **Replies, per group**: off / play voice messages / play voice and read text; automatically or
+  on request ("Read aloud" in the notification or the message list); an ignore list (default 🎙️,
+  the echo of your own transcript). Text is read with Android's text-to-speech.
+- **Android Auto** (optional): a grid of your actions on the car screen, a recording screen with
+  "Stop → action" rows and the microphone in use, the recent messages; incoming White Noise
+  messages as car notifications with Reply and Mark as read, so Android Auto announces them and
+  offers to read them. In the car nothing is played automatically.
 
-**🎙️ VERSATILE RECORDING OPTIONS:**  
-From voice memos to musical inspirations, this intuitive app transforms your device into a versatile recording studio. Explore the freedom to document your
-surroundings and unleash your creativity with ease.
+## Requirements
 
-**🚀 NO-FUSS FUNCTIONALITY:**  
-Enjoy a clutter-free experience with Fossify Voice Recorder. Say goodbye to unnecessary features and hello to a streamlined interface designed for intuitive
-navigation and seamless recording.
+- Android 12 or newer (minSdk 31).
+- For transcription: Offline Speech to Text with a speech model. Juraj's fork
+  (`app.offlinespeechtotext`, file API) is used first; a stock OSTT works on Android 13+.
+- For White Noise: a 64-bit ARM phone (MarmotKit ships arm64 only) and network access.
 
-**📊 INTUITIVE VISUALIZATION:**  
-Immerse yourself in the recording process with real-time sound volume visualization. Experience the thrill of monitoring your recordings with a sleek,
-interactive display that enhances your recording experience.
+## Android Auto setup
 
-**🔒 PRIVACY-FIRST APPROACH:**  
-Rest easy knowing that your privacy is our priority. Fossify Voice Recorder operates offline, ensuring maximum privacy, security, and stability without the need
-for internet access. Your recordings remain confidential and under your control at all times.
+Third Ear is not from the Play Store, so Android Auto ignores it until you allow unknown sources:
 
-**🎨 CUSTOMIZABLE INTERFACE:**  
-Personalize your recording experience with customizable colors and themes. Embrace the sleek elegance of material design and dark theme options, offering a
-visually stunning experience tailored to your preferences.
+1. Android Auto settings → tap **Version** ten times → allow **Developer settings**.
+2. ⋮ → Developer settings → **Unknown sources** → on.
+3. Android Auto settings → **Customize launcher** → make sure Third Ear is shown.
+4. In Third Ear: Settings → **Use a Bluetooth microphone** on, so recordings use the car's
+   microphone (hands-free over Bluetooth). Without it the phone's microphone records.
 
-**🤝 USER-FRIENDLY FEATURES:**  
-Discover intuitive functionalities like customizable filename formats and practical widgets for quick recordings. With Fossify Voice Recorder, the power to
-record is in your hands.
+Android 14+ starts a microphone only for an app the user has in front; the car screen counts while
+it is shown. After a reboot, open Third Ear on the phone once.
 
-**🌐 AD-FREE & OPEN-SOURCE:**  
-Say goodbye to intrusive ads and unnecessary permissions. Fossify Voice Recorder is ad-free, fully open-source, and grants you the freedom to use the app as you
-please, without compromise.
+## Building
 
-Capture moments, preserve memories, and unleash your creativity with Fossify Voice Recorder. Download now and experience recording like never before.
+```sh
+tools/marmotkit/fetch.sh                  # MarmotKit 0.14.0, sha256-pinned, ~180 MB, git-ignored
+export JAVA_HOME=$(brew --prefix openjdk@21)
+./gradlew :app:assembleFossDebug          # app/build/outputs/apk/foss/debug/thirdear-1-foss-debug.apk
+./gradlew :app:testFossDebugUnitTest :app:lintFossDebug
+```
 
-➡️ Explore more Fossify apps: https://www.fossify.org<br>
-➡️ Open-Source Code: https://www.github.com/FossifyOrg<br>
-➡️ Join the community on Reddit: https://www.reddit.com/r/Fossify<br>
-➡️ Connect on Telegram: https://t.me/Fossify
+Debug builds are `app.thirdear.debug` and coexist with a release (`app.thirdear`). The Kotlin
+package stays `org.fossify.voicerecorder` so upstream fixes cherry-pick cleanly (remote
+`upstream` is FossifyOrg/Voice-Recorder).
 
-<div align="center">
-<img alt="App image" src="fastlane/metadata/android/en-US/images/phoneScreenshots/1_en-US.png" width="30%">
-<img alt="App image" src="fastlane/metadata/android/en-US/images/phoneScreenshots/2_en-US.png" width="30%">
-<img alt="App image" src="fastlane/metadata/android/en-US/images/phoneScreenshots/3_en-US.png" width="30%">
-</div>
+## Docs
+
+- [docs/THIRD-EAR-PLAN.md](docs/THIRD-EAR-PLAN.md): decisions, architecture, status.
+- [docs/TESTING.md](docs/TESTING.md): what to try on the phone and in the car.
+
+## License
+
+GPLv3, as Fossify Voice Recorder. The spoken cues (Lisa's voice) come from I Hear You.

@@ -63,8 +63,36 @@ spoken cues, pause media, White Noise (own screen), Android Auto notes.
 - [x] M6 White Noise: MarmotKit fetch, host, identity, npub (copy + QR), invites, groups, send voice/text, nsec export/import
 - [x] M7 Replies: per-group settings, ReplyPolicy, speaker, recent messages screen, MessagingStyle notifications with Reply / Mark read / Read, tests
 - [x] M8 Android Auto: car app screens, CarConnection → ask, tests, DHU if available
-- [ ] M9 Slovak strings, README, testing guide, lint, device verification
+- [x] M9 Slovak strings, README, testing guide, lint
+- [ ] M9 Device verification on the Pixel (see "Device verification" below)
 
 ## Notes while building
 
-(append findings here)
+- **Backup off.** `android:allowBackup="false"`: the White Noise secret is encrypted under a
+  non-exportable Keystore key, so a restored copy could never be decrypted.
+- **Foreground service types.** `RecorderService` is `microphone|dataSync`: the microphone type is
+  kept through the pipeline after the stop, because the recognition service checks the caller's
+  microphone access (while-in-use) during transcription. A retry from a notification may only get
+  `dataSync`; then transcription can be refused ("open Third Ear once"). `WhiteNoiseService` is
+  `remoteMessaging` (allowed from BOOT_COMPLETED / MY_PACKAGE_REPLACED).
+- **Starting from the background.** Tiles and the widget start recording through the invisible
+  `BackgroundRecordActivity` (Android 14+ only lets a visible app open the microphone). The car
+  screen starts the service directly (the host binds with while-in-use capabilities); if Android
+  refuses, the car shows "Open Third Ear on the phone once".
+- **OSTT file API probe.** A provider gets `AUDIO_URI` only when its package exports the
+  `app.offlinespeechtotext.action.TRANSCRIBE_AUDIO` activity; a provider that ignored the extra
+  would listen to the microphone instead. Otherwise (Android 13+) the file is decoded and
+  resampled to 16 kHz mono and streamed through `EXTRA_AUDIO_SOURCE`.
+- **"Go ahead"** is played when the Bluetooth microphone delivers its first real sound, not at the
+  press: on the phone microphone it would be recorded through the speaker, and before the first
+  sound the user cannot be heard anyway.
+- **Transcript files.** `.txt` next to the recording (setting, default on). Rename/trash of a
+  recording does not move its `.txt` yet; the in-app transcript (Copy transcript) is matched by
+  the saved file name, so it is lost on rename. Small follow-up.
+- **Not done / ideas:** a "Transcribe" menu item for recordings made before Third Ear (would run a
+  recording through the pipeline); per-action spoken-cue toggle (it is global); webhook URL is per
+  action; pause media needs notification access (Settings row opens the system screen).
+
+## Device verification
+
+(filled in when the Pixel was available)
