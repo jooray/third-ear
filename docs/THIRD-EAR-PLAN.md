@@ -68,8 +68,23 @@ spoken cues, pause media, White Noise (own screen), Android Auto notes.
 
 ## Notes while building
 
-- **Backup off.** `android:allowBackup="false"`: the White Noise secret is encrypted under a
-  non-exportable Keystore key, so a restored copy could never be decrypted.
+- **Backup on, settings only** (Juraj's call). `data_extraction_rules.xml` (Android 12+) and
+  `backup_rules.xml` (fullBackupContent) include all SharedPreferences (actions, tiles, widget
+  action, per-group reply settings, Fossify settings, the folder path) and exclude
+  `marmot_secrets.xml`; files (`files/notes` working copies, `files/incoming`) and `no_backup`
+  (MarmotKit's MDK database) are never included. The folder's SAF grant is not restorable: the
+  first action after a restore asks for it again. White Noise after a restore: `WhiteNoise.checkRestored`
+  sees the setting without the MDK directory, switches White Noise off and the White Noise screen
+  says to turn it on (new identity) and import the old nsec if available; groups must invite it
+  again. Check: `BackupRulesTest`; on a device `adb shell bmgr backupnow app.thirdear` (see TESTING.md).
+- **Recording survives the screen and the activity.** RecorderService is a microphone|dataSync
+  foreground service with a partial wake lock; nothing in activity/fragment lifecycle callbacks,
+  screen-off or keyguard stops it, the task being swiped away does not either, and only the
+  Bluetooth source's own close releases the communication device. `LifecycleRulesTest` guards it.
+- **Release signing.** `app/build.gradle.kts` reads Juraj's shared publisher properties
+  (`~/.apk-signing-keystore/signing.properties`, or `APP_SIGNING_PROPERTIES`); nothing secret is in
+  the repo. `./gradlew :app:assembleFossRelease` → `app/build/outputs/apk/foss/release/thirdear-1-foss-release.apk`,
+  certificate SHA-256 `79750fb49349ec3729be5a3e825507a15e47c6d987e854ae91d5d50a20b3a24d`. Not published.
 - **Foreground service types.** `RecorderService` is `microphone|dataSync`: the microphone type is
   kept through the pipeline after the stop, because the recognition service checks the caller's
   microphone access (while-in-use) during transcription. A retry from a notification may only get
@@ -86,15 +101,13 @@ spoken cues, pause media, White Noise (own screen), Android Auto notes.
 - **"Go ahead"** is played when the Bluetooth microphone delivers its first real sound, not at the
   press: on the phone microphone it would be recorded through the speaker, and before the first
   sound the user cannot be heard anyway.
-- **Transcript files.** `.txt` next to the recording (setting, default on). Trash, restore and delete
-  carry the `.txt` along (SAF sibling by document id); rename does not, and the in-app transcript
-  (Copy transcript) is matched by the saved file name, so it is lost on rename. Small follow-up.
+- **Transcript files.** `.txt` next to the recording (setting, default on). Trash, restore, delete and
+  rename carry the `.txt` along; rename also updates the note, so Copy transcript keeps working.
 - **APK size.** The debug APK is ~120 MB: MarmotKit's 52 MB arm64 library (compressed to 25 MB)
   plus unminified dex of its 47k-line generated bindings. An unsigned release build (R8, keep
   rules for JNA/UniFFI in `proguard-rules.pro`) is 36 MB; it was not run on a device yet.
-- **Not done / ideas:** a "Transcribe" menu item for recordings made before Third Ear (would run a
-  recording through the pipeline); per-action spoken-cue toggle (it is global); webhook URL is per
-  action; pause media needs notification access (Settings row opens the system screen).
+- **Not done / ideas:** a "Transcribe" menu item for recordings made before Third Ear (accepted as
+  missing); spoken cues are one global switch and webhook URLs are per action (both confirmed); pause media needs notification access (Settings row opens the system screen).
 
 - **commons vs forks, part 2** (found on the emulator): commons' `FilePickerDialog` OK and its
   "Create new folder" dialog also skip the SAF grant for non-`org.fossify` packages (SecurityException).

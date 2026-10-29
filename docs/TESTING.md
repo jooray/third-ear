@@ -1,6 +1,7 @@
 # Testing Third Ear
 
-Install the debug build next to everything else (it is `app.thirdear.debug`, its own app):
+Install the debug build next to everything else (it is `app.thirdear.debug`, its own app). The
+signed release (`./gradlew :app:assembleFossRelease`, shared publisher key) is `app.thirdear`:
 
 ```sh
 adb -s 5B171FDCG000M1 install -r --user 0 app/build/outputs/apk/foss/debug/thirdear-1-foss-debug.apk
@@ -26,14 +27,31 @@ pick or create a folder, e.g. `Recordings/Third Ear`, then *Use this folder*).
    mid-recording → *Switch for this recording* → it continues on the phone in the same file.
    Turn the headset off mid-recording: a falling three-note cue, the button says *Phone microphone*
    and the reason.
-5. **Silence watchdog.** Start recording, toggle the system microphone off in Quick Settings: after
+5. **Screen off.** Start recording, press power, wait 30 s, wake and unlock: the notification is
+   still counting, and the file's length matches the wall-clock time with no silent gap. Same with
+   a Bluetooth recording. Only Stop (screen, tile, notification, car) ends it.
+6. **Silence watchdog.** Start recording, toggle the system microphone off in Quick Settings: after
    ~5 s *No audio detected* (notification + warning tone); toggle it back on, the warning clears.
-6. **Crash safety.** Start recording, talk 20 s, `adb shell am force-stop app.thirdear.debug`,
+7. **Crash safety.** Start recording, talk 20 s, `adb shell am force-stop app.thirdear.debug`,
    open the app again: a notification *Interrupted recording saved* and the file is in the list.
-7. **Tiles.** Pull down Quick Settings → edit → add *Third Ear 1/2/3*. Tap one: recording starts
+8. **Tiles.** Pull down Quick Settings → edit → add *Third Ear 1/2/3*. Tap one: recording starts
    with that action (a brief invisible activity does it). Tap again: stops with it.
-8. **Share / webhook.** Settings → Actions → Add action → *Share* (or *Webhook* with a URL). Stop
+9. **Share / webhook.** Settings → Actions → Add action → *Share* (or *Webhook* with a URL). Stop
    with it: the share sheet opens (or a *Ready to share* notification if the screen was off).
+
+## Backup and restore
+
+Backups hold the settings only. To check on a phone with backups enabled:
+
+```sh
+adb shell bmgr backupnow app.thirdear            # or app.thirdear.debug
+adb shell bmgr restore <token> app.thirdear       # token from `adb shell bmgr list sets`
+```
+
+After a restore (new phone, or reinstall + restore) the actions, tiles and group settings are
+back; the first recording asks for the folder again; White Noise is off and its screen says so:
+turn it on (a new identity is created), then *Import nsec* with the backed-up key if you have one.
+Groups have to invite Third Ear again either way.
 
 ## White Noise
 
