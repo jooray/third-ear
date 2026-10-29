@@ -142,7 +142,18 @@ JPAQ01064 showed up; nothing was installed there). Verified on the `Pixel_9` emu
   (White Noise, audio) recorded and sent: note state DONE (uploaded and sent to the group that only
   Third Ear is in).
 
-Still to verify on the Pixel: Bluetooth recording (aids/headset: route, waiting state, go-ahead,
+After the rename to `app.thirdear` (emulator again): launcher alias `app.thirdear.activities.SplashActivity.Green`
+resolves; first-run folder grant works; no "fake version" nag over five launches; Customize
+appearance opens CustomizationActivity. Screen-off test: recording kept running through 30 s
+asleep and the unlock (service foreground, `thirdear:recording` wake lock held, file 39.1 s for
+~39 s); the emulator's audio HAL delivered silence throughout ("pcm_readi was late delivering
+frames, inserting silence": the headless emulator gets no host microphone), which the silence
+watchdog flagged, so audio continuity must be checked on the phone.
+
+The Pixel did not appear on USB in the second session either (30+ minutes).
+
+Still to verify on the Pixel (the lock test first: record, `input keyevent 26`, 30 s, wake, check
+duration vs wall time and no zero runs): Bluetooth recording (aids/headset: route, waiting state, go-ahead,
 non-zero samples, fallback cue, mid-recording switch), OSTT file API transcription with real
 speech and the busy retry, tiles and widget on Android 17, incoming White Noise messages
 (notification Reply / Mark as read / Read aloud, automatic vs ask), Android Auto (car screens,
