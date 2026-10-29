@@ -64,7 +64,7 @@ spoken cues, pause media, White Noise (own screen), Android Auto notes.
 - [x] M7 Replies: per-group settings, ReplyPolicy, speaker, recent messages screen, MessagingStyle notifications with Reply / Mark read / Read, tests
 - [x] M8 Android Auto: car app screens, CarConnection → ask, tests, DHU if available
 - [x] M9 Slovak strings, README, testing guide, lint
-- [ ] M9 Device verification on the Pixel (see "Device verification" below)
+- [x] M9 Device verification on the Pixel (partial, see "Device verification")
 
 ## Notes while building
 
@@ -150,11 +150,37 @@ asleep and the unlock (service foreground, `thirdear:recording` wake lock held, 
 frames, inserting silence": the headless emulator gets no host microphone), which the silence
 watchdog flagged, so audio continuity must be checked on the phone.
 
-The Pixel did not appear on USB in the second session either (30+ minutes).
+### On the Pixel 10 Pro Fold (Android 17), third session
 
-Still to verify on the Pixel (the lock test first: record, `input keyevent 26`, 30 s, wake, check
-duration vs wall time and no zero runs): Bluetooth recording (aids/headset: route, waiting state, go-ahead,
-non-zero samples, fallback cue, mid-recording switch), OSTT file API transcription with real
-speech and the busy retry, tiles and widget on Android 17, incoming White Noise messages
-(notification Reply / Mark as read / Read aloud, automatic vs ask), Android Auto (car screens,
-CarConnection → ask, message announcements), pause-media with notification access.
+The phone was locked (PIN) and in use, so checks were driven by the debug-only `DebugActivity`
+(`app/src/debug`, runs over the lock screen; commands in its KDoc). Debug build installed with
+`--user 0`; the recordings folder grant needs the screen, so saving to the folder failed as
+expected and the audio was checked from app storage.
+
+- **Screen off, locked:** recording started while the display was dozing and locked, ran 42.67 s
+  wall-clock, file 42.56 s, real room audio (mean −43 dB), no zero runs ≥ 0.5 s, `thirdear:recording`
+  wake lock held, service foreground (microphone|dataSync). Two more 38 s runs across lock-state
+  changes: 38.06 s wall → 37.95 s file, no gaps.
+- **Formats:** AAC .m4a 48 kHz, Opus .ogg 48 kHz (6.0 s), MP3 48 kHz (6.3 s), real audio.
+- **Bluetooth, LE Audio hearing aids** ("Sluchadla Juraj"): route confirmed in 530 ms, input
+  routed to BLE_HEADSET (type 26), first real sound 3.07 s after opening (LE Audio start), non-zero
+  audio, no zero runs; note says `bluetooth: Sluchadla Juraj`. Spoken cues were off for the test.
+- **OSTT file API:** a TTS clip ("This is a short test of the Third Ear transcription…")
+  transcribed in ~3 s in the background ("…third year transcription…"), OSTT logged `service file:
+  start`. Found and fixed: the file-API probe must query with a `content:` Uri (OSTT's filter needs
+  the scheme); before the fix Third Ear fell back to the audio-stream path (which also worked).
+- **White Noise:** own identity created, a group with only Third Ear in it, the TTS clip sent as a
+  voice note with its transcript as caption: delivered.
+- **Signed release:** installs on user 0 next to the debug build and starts without a crash
+  (cert SHA-256 79750fb4…a24d). Not otherwise exercised.
+- Not checked: tiles (phone locked; tiles verified on the emulator), busy retry (needs OSTT's
+  keyboard dictating), media pause (nothing was playing, and pausing Juraj's playback was not
+  wanted), Android Auto, incoming White Noise messages.
+- Cleaned up afterwards: notes, test clip, test actions deleted; White Noise switched off (its
+  test identity stays in no_backup until the app is uninstalled).
+
+Still for Juraj: Bluetooth by voice with the aids (go-ahead cue, fallback cue when the aids go
+away, switching mid-recording), tiles and widget on the phone, the busy retry (dictate with OSTT's
+keyboard while a transcript is pending), incoming White Noise messages (Reply / Mark as read /
+Read aloud, automatic vs ask), media pause, Android Auto (car screens, CarConnection → ask,
+announcements), the first-run folder grant on the phone.

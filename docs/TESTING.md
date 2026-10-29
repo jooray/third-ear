@@ -89,6 +89,20 @@ Android Auto → Developer settings → *Start head unit server*, `adb forward t
 `~/Library/Android/sdk/extras/google/auto/desktop-head-unit`). The car screens' logic is covered by
 `CarModelTest`; the reply rules (car → ask) by `ReplyPolicyTest`.
 
+## Driving it from adb (debug builds)
+
+`app.thirdear.debug/app.thirdear.debug.DebugActivity` runs commands from adb, also over the lock
+screen (it is not in release builds):
+
+```sh
+A="adb shell am start --user 0 -n app.thirdear.debug/app.thirdear.debug.DebugActivity"
+$A --es cmd start --es action save ; $A --es cmd stop --es action transcript
+$A --es cmd set --es key extension --es int 2            # 0 m4a, 1 mp3, 2 ogg
+$A --es cmd import --es path /data/user/0/app.thirdear.debug/files/clip.m4a --es action <id>
+$A --es cmd wn_enable ; $A --es cmd wn_group --es name "Third Ear test" ; $A --es cmd cleanup
+adb logcat -s ThirdEarDebug ThirdEarRecorder ThirdEarMic ThirdEarPipeline ThirdEarWN
+```
+
 ## Automated tests
 
 `./gradlew :app:testFossDebugUnitTest` — engine (fake microphones: Bluetooth that never sounds,
