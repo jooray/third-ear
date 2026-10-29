@@ -115,4 +115,20 @@ class PipelineLogicTest {
         store.delete("2")
         assertNull(store.get("2"))
     }
+
+    @Test
+    fun `renaming a recording carries its note and transcript name along`() {
+        assertEquals("2026 meeting.txt", NoteStore.transcriptName("2026 meeting.m4a"))
+        assertEquals("a.b.txt", NoteStore.transcriptName("a.b.ogg"))
+        assertEquals("noext.txt", NoteStore.transcriptName("noext"))
+        val store = NoteStore(File(tmp.root, "notes2"))
+        store.put(Note("r1", 100, RecordAction(name = "a"), Container.MPEG_4, "old", state = NoteState.DONE, savedName = "old.m4a", savedUri = "content://old"))
+        store.transcriptFile("r1").writeText("words")
+        store.renamed("old.m4a", "new name.m4a", "content://new")
+        val n = store.bySavedName("new name.m4a")!!
+        assertEquals("content://new", n.savedUri)
+        assertEquals("new name", n.baseName)
+        assertEquals("words", store.transcript(n.id))
+        assertNull(store.bySavedName("old.m4a"))
+    }
 }

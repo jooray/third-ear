@@ -4,6 +4,8 @@ import androidx.appcompat.app.AlertDialog
 import org.fossify.commons.activities.BaseSimpleActivity
 import org.fossify.commons.extensions.getAlertDialogBuilder
 import org.fossify.commons.extensions.getFilenameExtension
+import org.fossify.commons.extensions.getDoesFilePathExistSdk30
+import org.fossify.commons.extensions.createDocumentUriUsingFirstParentTreeUri
 import org.fossify.commons.extensions.getParentPath
 import org.fossify.commons.extensions.isAValidFilename
 import org.fossify.commons.extensions.renameDocumentSdk30
@@ -83,6 +85,17 @@ class RenameRecordingDialog(
             activity.handleSafSdk30(path) {
                 val success = activity.renameDocumentSdk30(path, newPath)
                 if (success) {
+                    // the transcript next to it and Third Ear's note follow the new name
+                    val folder = path.getParentPath()
+                    val oldTxt = "$folder/${app.thirdear.pipeline.NoteStore.transcriptName(recording.title)}"
+                    if (activity.getDoesFilePathExistSdk30(oldTxt)) {
+                        runCatching { activity.renameDocumentSdk30(oldTxt, "$folder/${app.thirdear.pipeline.NoteStore.transcriptName(newDisplayName)}") }
+                    }
+                    runCatching {
+                        app.thirdear.pipeline.NoteStore(activity).renamed(
+                            recording.title, newDisplayName, activity.createDocumentUriUsingFirstParentTreeUri(newPath).toString(),
+                        )
+                    }
                     EventBus.getDefault().post(Events.RecordingCompleted())
                 }
             }

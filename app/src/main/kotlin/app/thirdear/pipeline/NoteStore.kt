@@ -78,6 +78,9 @@ class NoteStore(root: File) {
         /** Notes kept for the last-recording card and transcript lookup; older ones are pruned. */
         const val KEEP = 100
         private val all = MutableStateFlow<List<Note>>(emptyList())
+
+        /** "2026 meeting.m4a" → "2026 meeting.txt": the transcript saved next to a recording. */
+        fun transcriptName(recordingName: String): String = recordingName.substringBeforeLast('.', recordingName) + ".txt"
         val notes: StateFlow<List<Note>> get() = all
     }
 
@@ -121,6 +124,13 @@ class NoteStore(root: File) {
 
     /** The note that saved a recording with this file name, for "Copy transcript" in the list. */
     fun bySavedName(name: String): Note? = all.value.ifEmpty { reload() }.firstOrNull { it.savedName == name }
+
+    /** A recording was renamed in the list: the note that saved it (and its transcript) follows. */
+    @Synchronized
+    fun renamed(oldName: String, newName: String, newUri: String?) {
+        val n = all.value.ifEmpty { reload() }.firstOrNull { it.savedName == oldName } ?: return
+        put(n.copy(savedName = newName, savedUri = newUri ?: n.savedUri, baseName = newName.substringBeforeLast('.', newName)))
+    }
 
     fun delete(id: String) {
         File(root, id).deleteRecursively()
