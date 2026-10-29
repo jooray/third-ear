@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Third Ear: Diktiergerät mit Aktionen, Bluetooth-Mikrofonen und White Noise</title>
+<meta name="description" content="Kostenloses Open-Source-Diktiergerät für Android. Eine Taste pro Ziel, Bluetooth- und Hörgeräte-Mikrofone, die wirklich funktionieren, Transkription auf dem Handy, White Noise und Android Auto.">
+<meta name="theme-color" content="#14161d">
+<meta property="og:title" content="Third Ear: Diktiergerät mit Aktionen, Bluetooth-Mikrofonen und White Noise">
+<meta property="og:description" content="Kostenloses Open-Source-Diktiergerät für Android. Eine Taste pro Ziel, Bluetooth- und Hörgeräte-Mikrofone, die wirklich funktionieren, Transkription auf dem Handy, White Noise und Android Auto.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="../img/recorder.png">
+<link rel="alternate" hreflang="en" href="../">
+<link rel="alternate" hreflang="sk" href="../sk/">
+<link rel="alternate" hreflang="cs" href="../cs/">
+<link rel="alternate" hreflang="de" href="../de/">
+<link rel="alternate" hreflang="es" href="../es/">
+<link rel="alternate" hreflang="x-default" href="../">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2314161d'/%3E%3Cpath d='M24 44c0 4 3 7 7 7 5 0 8-4 8-9 0-6 6-8 6-16 0-9-7-15-15-15s-15 6-15 14' fill='none' stroke='%238291b8' stroke-width='4' stroke-linecap='round'/%3E%3Cpath d='M30 26c0-3 2-5 5-5s5 2 5 5c0 4-4 5-4 9' fill='none' stroke='%238291b8' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<a class="skip" href="#main">Zum Inhalt springen</a>
+<header class="top">
+ <div class="wrap bar">
+  <a class="brand" href="../de/"><svg width="28" height="28" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#8291b8"/><path d="M24 44c0 4 3 7 7 7 5 0 8-4 8-9 0-6 6-8 6-16 0-9-7-15-15-15s-15 6-15 14" fill="none" stroke="#14161d" stroke-width="4" stroke-linecap="round"/><path d="M30 26c0-3 2-5 5-5s5 2 5 5c0 4-4 5-4 9" fill="none" stroke="#14161d" stroke-width="4" stroke-linecap="round"/></svg>Third Ear</a>
+  <nav class="links" aria-label="Sections"><a href="#actions">Aktionen</a><a href="#bluetooth">Bluetooth</a><a href="#ostt">Transkription</a><a href="#whitenoise">White Noise</a><a href="#car">Android Auto</a><a href="#get">Holen</a></nav>
+  <nav class="lang" aria-label="Language"><a href="../" hreflang="en" lang="en">EN</a><a href="../sk/" hreflang="sk" lang="sk">SK</a><a href="../cs/" hreflang="cs" lang="cs">CS</a><a href="../de/" hreflang="de" lang="de" aria-current="page">DE</a><a href="../es/" hreflang="es" lang="es">ES</a></nav>
+ </div>
+</header>
+<main id="main">
+<section class="hero wrap">
+ <div class="hero-text">
+  <h1>Das Diktiergerät, das weiß, wohin deine Worte gehören</h1>
+  <p class="lead">Nimm mit dem Handy auf, mit einem Bluetooth-Headset, mit LE-Audio-Hörgeräten oder im Auto. Das Transkript entsteht auf dem Handy. Das Ergebnis geht dorthin, wo die Taste hinführt, auf die du getippt hast.</p>
+  <ul class="badges"><li>Kostenlos</li><li>Open Source (GPLv3)</li><li>Kein Konto, keine Analyse</li><li>Android 12+</li></ul>
+  <p class="cta"><a class="btn primary" href="#get">Third Ear holen</a> <a class="btn" href="https://github.com/jooray/third-ear">Quellcode</a></p>
+  <!-- TODO confirm URL -->
+ </div>
+ <div class="hero-shot"><img class="shot hero-img" src="../img/recorder.webp" width="720" height="1616" alt="Aufnahmebildschirm von Third Ear mit den Aktionstasten „Meeting notes“, „Family“ und „Ask Hermes“ und der letzten Aufnahme mit Transkript" loading="lazy" decoding="async"></div>
+</section>
+
+<section id="actions" class="wrap stack">
+ <div class="copy">
+  <h2>Eine Taste für jedes Ziel</h2>
+  <p>Die meisten Rekorder haben eine Aufnahmetaste. Third Ear hat die Tasten, die du selbst festlegst: ein Name und das, was danach passiert.</p>
+  <ul class="list"><li>nur die Aufnahme speichern</li><li>das Transkript in die Zwischenablage kopieren</li><li>die Datei oder den Text teilen</li><li>Audio, Transkript oder beides an eine White-Noise-Gruppe senden</li><li>an einen Webhook senden (n8n, Home Assistant, dein eigener Server)</li></ul>
+  <p>Tippe auf eine Taste, und die Aufnahme startet. Während der Aufnahme wird jede Taste zu „Stopp → Name“ und sagt, was sie tun wird. So kannst du das Ziel im Moment des Stoppens noch ändern. Danach zeigt eine Benachrichtigung jeden Schritt (speichern, transkribieren, auf die Transkriptions-App warten, senden) und spricht ihn auf Wunsch auch aus, zum Beispiel „Gespeichert, wird transkribiert.“</p>
+ </div>
+ <div class="shots three">
+  <figure><img class="shot" src="../img/recording.webp" width="720" height="1616" alt="Bildschirm während der Aufnahme: jede Aktionstaste zeigt „Stopp → Name“ und was sie tut" loading="lazy" decoding="async"><figcaption>Während der Aufnahme steht auf jeder Taste „Stopp → Aktion“. Die Warnung über den Tasten ist der Stille-Wächter; der Screenshot stammt von einem Emulator ohne Mikrofoneingang.</figcaption></figure>
+  <figure><img class="shot" src="../img/notification.webp" width="720" height="1616" alt="Aufnahme-Benachrichtigung mit Stopp-Aktionen" loading="lazy" decoding="async"></figure>
+  <figure><img class="shot" src="../img/action-editor.webp" width="720" height="1616" alt="Aktion bearbeiten: Name, Ziel und was gesendet wird" loading="lazy" decoding="async"></figure>
+ </div>
+</section>
+
+<section id="bluetooth" class="band">
+ <div class="wrap split rev">
+  <div class="copy">
+   <h2>Bluetooth-Mikrofone, die wirklich funktionieren</h2>
+   <p>Android gibt ein Bluetooth-Mikrofon nur an Apps, die sich wie ein Telefonat verhalten. Third Ear übernimmt dieses Routing für dich. So kannst du mit Headsets, LE-Audio-Hörgeräten und der Freisprechanlage im Auto aufnehmen.</p>
+   <ul class="list"><li>Es wartet, bis LE Audio gestartet ist („Warte auf das Bluetooth-Mikrofon…“, meist 1,7 bis 3,5 Sekunden).</li><li>Sobald das Mikrofon wirklich Ton liefert, sagt eine Stimme, dass du loslegen kannst.</li><li>Die Quellentaste auf dem Aufnahmebildschirm zeigt, welches Mikrofon tatsächlich aufnimmt.</li><li>Wenn das Bluetooth-Mikrofon nicht startet oder die Verbindung abbricht, wechselt Third Ear einmal zum Handy-Mikrofon, mit hörbarem Signal.</li><li>Du kannst das Mikrofon mitten in der Aufnahme wechseln. Sie läuft in derselben Datei weiter.</li></ul>
+   <p class="note">Getestet auf einem Pixel mit LE-Audio-Hörgeräten.</p>
+  </div>
+  <div class="art"><img src="../img/hero-art.webp" width="1024" height="1024" alt="Abstrakte Illustration: ein Hörgerät, ein Auto und ein Handy, verbunden durch Schallwellen und Sprechblasen" loading="lazy" decoding="async"></div>
+ </div>
+</section>
+
+<section id="ostt" class="wrap">
+ <div class="card ostt">
+  <h2>Am besten mit Offline Speech to Text</h2>
+  <p>Third Ear bringt keine eigene Spracherkennung mit. Es übergibt die fertige Datei an Offline Speech to Text (OSTT), eine kostenlose App, die direkt auf dem Gerät und ohne Internet transkribiert. Das läuft im Hintergrund, ein gesperrter Bildschirm stört nicht.</p>
+  <ul class="list"><li>Ist OSTT gerade beschäftigt (etwa weil die Tastatur diktiert), wartet Third Ear und versucht es etwa 10 Minuten lang erneut.</li><li>Transkripte werden als .txt-Dateien neben der Aufnahme gespeichert, und du kannst sie kopieren.</li></ul>
+  <p><a class="btn primary" href="https://zapstore.dev/apps/app.offlinespeechtotext">Offline Speech to Text im Zapstore holen</a></p>
+  <h3 class="sub">Besprechungsnotizen und Diktat</h3>
+  <p>Lege dir eine Aktion „Meeting notes“ an: aufnehmen, Transkript bekommen. Oder nimm „Transkript in die Zwischenablage“ und diktiere in jede beliebige App: aufnehmen, tippen, einfügen. Die Transkripte sind einfache Textdateien neben dem Audio, du kannst also darin suchen.</p>
+ </div>
+</section>
+
+<section id="whitenoise" class="wrap split">
+ <div class="copy">
+  <h2>Sprachnachrichten in White Noise, und Antworten zurück</h2>
+  <p>White Noise ist ein Ende-zu-Ende-verschlüsselter Messenger auf Basis von nostr (Marmot/MLS). Third Ear hat dort eine eigene Identität, angezeigt als npub mit QR-Code. Lade sie in eine Gruppe ein, nimm an, und eine Aktion sendet deine Sprachnachricht mit dem Transkript als Bildunterschrift, oder nur den Text.</p>
+  <p>Antworten kommen zurück. Pro Gruppe wählst du: aus, Sprachnachrichten abspielen, oder Sprache abspielen und Text per Sprachausgabe vorlesen. Das passiert automatisch oder auf Anfrage über „Vorlesen“ in der Benachrichtigung. Eine Ignorierliste (Standard 🎙️) überspringt Nachrichten, die du nicht hören willst. Die Liste der letzten Nachrichten hat Abspielen und Vorlesen. Deinen Schlüssel sicherst du mit Export und Import des nsec.</p>
+  <h3>Mit einem KI-Agenten sprechen, freihändig</h3>
+  <p>Packe Third Ear und einen Agenten wie den Hermes agent in eine Gruppe. Hermes ist ein KI-Agent, den du in White-Noise-Gruppen über den MDK-Connector erreichst. Du sprichst, der Agent bekommt das Transkript (oder das Audio), und seine Antwort wird dir vorgelesen oder abgespielt, mit Headset oder Hörgeräten und ohne Blick auf den Bildschirm. Das Echo deines Transkripts vom Agenten überspringt der Ignorier-Eintrag 🎙️.</p>
+  <p class="note">Agenten hinter dem MDK-Connector müssen den npub von Third Ear zulassen (<code>--allow-welcomer</code> oder <code>--allow-user</code>).</p>
+ </div>
+ <div class="shots two">
+  <figure><img class="shot" src="../img/white-noise.webp" width="720" height="1616" alt="White-Noise-Bildschirm mit dem eigenen npub von Third Ear, QR-Code und Gruppen" loading="lazy" decoding="async"></figure>
+  <figure><img class="shot" src="../img/group-settings.webp" width="720" height="1616" alt="Gruppeneinstellungen: Antworten und Ignorierliste" loading="lazy" decoding="async"></figure>
+ </div>
+</section>
+
+<section id="car" class="band">
+ <div class="wrap narrow">
+  <h2>Im Auto mit Android Auto</h2>
+  <ul class="list"><li>Ein Raster deiner Aktionen auf dem Autobildschirm.</li><li>Aufnahme mit dem Mikrofon des Autos und ein Bildschirm „Stopp → Aktion“.</li><li>Eingehende White-Noise-Nachrichten erscheinen als Auto-Benachrichtigungen mit Antworten und Als gelesen markieren. Android Auto liest sie vor, wenn du darum bittest, nie von selbst.</li></ul>
+  <p class="note">Apps, die nicht aus einem Store stammen, brauchen in den Android-Auto-Entwickleroptionen „Unbekannte Quellen“.</p>
+ </div>
+</section>
+
+<section id="reliability" class="wrap grid2">
+ <div class="card">
+  <h2>Gebaut für lange Aufnahmen</h2>
+  <ul class="list"><li>Nimmt bei ausgeschaltetem Bildschirm und gesperrtem Handy weiter auf, bis du stoppst.</li><li>Absturzsicher: Wird die App beendet, wird das Aufgenommene beim nächsten Start wiederhergestellt und gespeichert. Höchstens die letzte Sekunde geht verloren.</li><li>Ein Stille-Wächter warnt dich, wenn das Mikrofon digitale Stille liefert, etwa weil der Mikrofonschalter aus ist oder eine andere App es belegt.</li><li>Formate: AAC (.m4a), Opus (.ogg) und MP3.</li></ul>
+ </div>
+ <div class="card">
+  <h3 class="sub">Überall griffbereit</h3>
+  <p>Drei Schnelleinstellungs-Kacheln, jede an eine deiner Aktionen gebunden, und ein Widget für den Startbildschirm. Die Bildschirme von Third Ear gibt es auf Englisch, Slowakisch, Tschechisch, Deutsch und Spanisch.</p>
+  <h2 class="h2b">Kostenlos, Open Source, privat</h2>
+  <p>Third Ear ist freie Software unter der GPLv3. Es gibt kein Konto und keine Analyse. Die Transkription läuft auf deinem Handy.</p>
+  <p>Es ist ein Fork von <a href="https://github.com/FossifyOrg/Voice-Recorder">Fossify Voice Recorder</a> <!-- TODO confirm URL -->, entwickelt von Juraj Bednár.</p>
+ </div>
+</section>
+
+<section id="get" class="wrap get">
+ <h2>Third Ear holen</h2>
+ <p>Third Ear ist noch nicht veröffentlicht. Es kommt bald in den Zapstore. Voraussetzung ist Android 12 oder neuer.</p>
+ <!-- TODO: Zapstore link https://zapstore.dev/apps/app.thirdear once published -->
+ <p class="cta"><span class="btn primary disabled" aria-disabled="true">Bald im Zapstore</span>
+ <!-- TODO confirm URL -->
+ <a class="btn" href="https://github.com/jooray/third-ear">Quellcode auf GitHub</a></p>
+ <p class="note"><a href="https://zapstore.dev/apps/app.offlinespeechtotext">Installiere zuerst Offline Speech to Text, die App übernimmt das Transkribieren.</a></p>
+</section>
+</main>
+<footer class="foot">
+ <div class="wrap">
+  <p>Ebenfalls von Juraj Bednár: <a href="https://jooray.github.io/i-hear-you/">I Hear You</a> <!-- TODO confirm URL -->, eine Fernbedienung für ReSound/GN-Hörgeräte, die Sprachnotizen über die Tasten der Hörgeräte aufnimmt.</p>
+  <p>Third Ear ist Open Source unter der GPLv3. Fossify Voice Recorder, Juraj Bednár.</p>
+ </div>
+</footer>
+</body>
+</html>
