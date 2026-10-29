@@ -184,3 +184,13 @@ away, switching mid-recording), tiles and widget on the phone, the busy retry (d
 keyboard while a transcript is pending), incoming White Noise messages (Reply / Mark as read /
 Read aloud, automatic vs ask), media pause, Android Auto (car screens, CarConnection → ask,
 announcements), the first-run folder grant on the phone.
+## Website and sister-app changes
+
+- `website/`: static site for GitHub Pages in en/sk/cs/de/es (screenshots from the emulator in
+  `website/img/`). URLs for GitHub, Zapstore and the I Hear You site are placeholders marked
+  `<!-- TODO -->`. To publish: Pages from `main`, folder `/website` (or copy it to a `gh-pages` branch).
+- App points to Offline Speech to Text on Zapstore (https://zapstore.dev/apps/app.offlinespeechtotext)
+  when no transcription app is found (recorder screen hint, Transcription app row in settings).
+- I Hear You (`~/projects/i-hear-you`, branch `ostt-link-and-website`, worktree
+  `~/projects/i-hear-you-website-wt`): the same OSTT link on the Voice screen (5 languages) and its
+  own static site in `website/`. Not merged into its `main`, not installed on the phone.
