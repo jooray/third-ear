@@ -41,7 +41,18 @@ object MarmotHost {
     private const val TAG = "ThirdEarWN"
 
     /** Public relays for the relay lists and key package; White Noise users reach us through these. */
-    val RELAYS = listOf("wss://relay.damus.io", "wss://relay.primal.net", "wss://nos.lol")
+    /**
+     * White Noise's own relays come first: White Noise looks people up there, and an identity
+     * whose relay lists and key packages are only on the public relays could not be invited
+     * ("couldn't find a usable chat key"). The public ones keep it reachable for other clients.
+     */
+    val RELAYS = listOf(
+        "wss://relay.eu.whitenoise.chat",
+        "wss://relay.us.whitenoise.chat",
+        "wss://relay.damus.io",
+        "wss://relay.primal.net",
+        "wss://nos.lol",
+    )
 
     data class Group(val id: String, val name: String, val pending: Boolean, val member: Boolean)
 
@@ -93,7 +104,9 @@ object MarmotHost {
                     MarmotAndroid.initialize(context.applicationContext)
                     nativeReady = true
                 }
-                val root = File(context.noBackupFilesDir, "marmot").apply { mkdirs() }
+                val root = File(context.noBackupFilesDir, "marmot")
+                startOverAfterDowngrade(context, root)
+                root.mkdirs()
                 val options = MarmotOptions(
                     clientName = "third-ear-android",
                     secretStore = KvSecretStore(SecureKv(context)),
@@ -122,7 +135,7 @@ object MarmotHost {
                 phase.value = Phase.READY
                 Log.i(TAG, "ready as ${npub.value}")
                 val label = acct.label
-                scope.launch { ensureKeyPackage(m, label) }
+                scope.launch { ensureKeyPackage(context.applicationContext, m, label) }
             } catch (t: Throwable) {
                 phase.value = Phase.FAILED
                 // some MarmotKit errors carry an empty message: name the error rather than show nothing
@@ -182,16 +195,65 @@ object MarmotHost {
      * none, and White Noise then cannot check it ("couldn't finish checking whether this person can
      * be added"). Publish one whenever the relays show none; let MarmotKit's maintenance rotate it.
      */
-    private suspend fun ensureKeyPackage(m: Marmot, label: String) {
+    private suspend fun ensureKeyPackage(context: Context, m: Marmot, label: String) {
         runCatching {
-            val onRelays = m.accountKeyPackages(label, RELAYS)
-            Log.i(TAG, "key packages on the relays: ${onRelays.size}")
-            if (onRelays.isEmpty()) {
-                Log.i(TAG, "no key package on the relays, publishing one")
-                m.publishNewKeyPackage(label)
+            val prefs = context.getSharedPreferences("third_ear_marmot", Context.MODE_PRIVATE)
+            val built = app.thirdear.BuildConfig.MARMOTKIT_VERSION
+            // identities made before White Noise's relays were in the list: publish the lists again
+            val lists = runCatching { m.accountRelayLists(label) }.getOrNull()
+            if (lists != null && !lists.nip65.relays.toSet().containsAll(RELAYS)) {
+                Log.i(TAG, "publishing relay lists with White Noise's relays")
+                m.publishRelayLists(label, RELAYS, RELAYS, RELAYS)
+                // and a key package where White Noise looks for it
+                m.rotateKeyPackage(label)
+                prefs.edit().putString(KEY_PACKAGE_BUILD, built).apply()
             }
+            val onRelays = m.accountKeyPackages(label, RELAYS)
+            Log.i(TAG, "key packages on the relays: ${onRelays.size} (MarmotKit $built)")
+            when {
+                onRelays.isEmpty() -> {
+                    Log.i(TAG, "no key package on the relays, publishing one")
+                    m.publishNewKeyPackage(label)
+                }
+                // a package from an older MDK may not be one newer White Noise apps can invite
+                prefs.getString(KEY_PACKAGE_BUILD, null) != built -> {
+                    Log.i(TAG, "MarmotKit changed, rotating the key package")
+                    m.rotateKeyPackage(label)
+                }
+            }
+            prefs.edit().putString(KEY_PACKAGE_BUILD, built).apply()
             m.runDueMaintenance(label)
         }.onFailure { Log.w(TAG, "key package check failed", it) }
+    }
+
+    private const val KEY_PACKAGE_BUILD = "key_package_marmotkit"
+
+    /**
+     * MDK migrates its store forward only. When an older MarmotKit finds a store a newer one wrote
+     * (here: back from a 0.15 nightly to 0.14.0), it cannot open it: White Noise starts over with a
+     * fresh identity, which is fine while it is in no group.
+     */
+    private fun startOverAfterDowngrade(context: Context, root: File) {
+        val prefs = context.getSharedPreferences("third_ear_marmot", Context.MODE_PRIVATE)
+        val wrote = prefs.getString(KEY_PACKAGE_BUILD, null) ?: return
+        val built = app.thirdear.BuildConfig.MARMOTKIT_VERSION
+        if (!isOlder(built, wrote)) return
+        Log.w(TAG, "MarmotKit went back from $wrote to $built: starting White Noise over with a fresh identity")
+        root.deleteRecursively()
+        SecureKv(context).clear()
+        prefs.edit().clear().commit()
+    }
+
+    /** "0.14.0" is older than "0.15.0-nightly.20261029"; pre-release suffixes are ignored. */
+    internal fun isOlder(a: String, b: String): Boolean {
+        fun parts(v: String) = v.substringBefore('-').split('.').map { it.toIntOrNull() ?: 0 }
+        val x = parts(a)
+        val y = parts(b)
+        for (i in 0 until maxOf(x.size, y.size)) {
+            val d = (x.getOrElse(i) { 0 }).compareTo(y.getOrElse(i) { 0 })
+            if (d != 0) return d < 0
+        }
+        return false
     }
 
     private suspend fun ensureAccount(m: Marmot): AccountSummaryFfi {

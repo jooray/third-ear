@@ -33,6 +33,9 @@ android {
         versionName = project.property("VERSION_NAME").toString()
         versionCode = project.property("VERSION_CODE").toString().toInt()
         vectorDrawables.useSupportLibrary = true
+        // the MarmotKit build in use (tools/marmotkit/fetch.sh stamps it); a change rotates the KeyPackage
+        val marmotkit = rootProject.file("app/src/marmotkit/.version").takeIf { it.exists() }?.readText()?.substringBefore(' ')?.trim().orEmpty()
+        buildConfigField("String", "MARMOTKIT_VERSION", "\"$marmotkit\"")
     }
 
     signingConfigs {
@@ -87,6 +90,9 @@ android {
         resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
         // compressed native libraries keep the download small; MarmotKit's is ~52 MB uncompressed
         jniLibs.useLegacyPackaging = true
+        // White Noise runs on arm64 only (MarmotHost.supported()); the other ABIs' MarmotKit
+        // libraries (~70 MB) would never load
+        jniLibs.excludes += listOf("lib/x86/libmarmot_uniffi.so", "lib/x86_64/libmarmot_uniffi.so", "lib/armeabi-v7a/libmarmot_uniffi.so")
     }
 
     compileOptions {

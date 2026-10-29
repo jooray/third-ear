@@ -62,4 +62,9 @@ class SecureKv(context: Context) {
     companion object {
         private const val ALIAS = "thirdear.marmot"
     }
+
+    /** Forgets every secret (used when White Noise starts over with a fresh identity). */
+    fun clear() {
+        prefs.edit().clear().commit()
+    }
 }

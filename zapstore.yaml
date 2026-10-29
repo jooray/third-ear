@@ -25,4 +25,4 @@ images:
     - ./website/img/action-editor.png
     - ./website/img/notification.png
     - ./website/img/settings.png
-release_notes: ./docs/RELEASE_NOTES_0.1.0.md
+release_notes: ./docs/RELEASE_NOTES_0.1.1.md
