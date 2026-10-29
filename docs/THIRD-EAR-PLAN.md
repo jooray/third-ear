@@ -96,6 +96,41 @@ spoken cues, pause media, White Noise (own screen), Android Auto notes.
   recording through the pipeline); per-action spoken-cue toggle (it is global); webhook URL is per
   action; pause media needs notification access (Settings row opens the system screen).
 
+- **commons vs forks, part 2** (found on the emulator): commons' `FilePickerDialog` OK and its
+  "Create new folder" dialog also skip the SAF grant for non-`org.fossify` packages (SecurityException).
+  First run now asks for the folder grant directly (commons' `isShowingSAFDialogSdk30`: system
+  picker preset to the top-level folder, e.g. Music, then `Recordings` is created in it); "Save
+  recordings in" uses the system folder picker (`SimpleActivity.pickFolder`) and then the same
+  grant. Commons also shows "You are using a fake version of the app" at random (and on run 0,
+  100, …) in `BaseSimpleActivity.onCreate`, and the nag instead of "Customize colors";
+  `SimpleActivity` reports a fossify-prefixed package name to commons only during `super.onCreate`
+  and the customization launch (`withCommonsIdentity`).
+
 ## Device verification
 
-(filled in when the Pixel was available)
+The Pixel (5B171FDCG000M1) was not connected during the session (only an unauthorized
+JPAQ01064 showed up; nothing was installed there). Verified on the `Pixel_9` emulator
+(Android 16, arm64, headless) instead, debug build:
+
+- First run: folder grant through the system picker → `Music/Recordings` created; no nag.
+- Recorder screen: actions as buttons, "Stop → …" while recording, the started one filled.
+- Recording on the phone microphone → valid files: AAC-LC 48 kHz mono 96 kbps `.m4a` (14.1 s),
+  Opus 48 kHz `.ogg` (5.0 s), MP3 48 kHz (5.1 s); non-zero samples (emulator input).
+- Destination changed at the stop (started with Save, stopped with Transcript to clipboard): the
+  pipeline transcribed through the caller-audio path (the emulator has Google's recognizer, not
+  OSTT; it answered "no speech" for the emulator's near-silent input) and the card showed it.
+- Foreground service types microphone|dataSync (0x81); notification "Recording · Save", input
+  line, Pause and "Stop → Save".
+- Crash safety: force-stop after 8 s → next launch recovered a valid 7.1 s `.m4a` and posted
+  "Interrupted recording saved".
+- Quick Settings tile 1 from the home screen: started recording via the trampoline, second tap
+  stopped it.
+- White Noise: identity created on enable (npub + QR), test group created, an action "Test group"
+  (White Noise, audio) recorded and sent: note state DONE (uploaded and sent to the group that only
+  Third Ear is in).
+
+Still to verify on the Pixel: Bluetooth recording (aids/headset: route, waiting state, go-ahead,
+non-zero samples, fallback cue, mid-recording switch), OSTT file API transcription with real
+speech and the busy retry, tiles and widget on Android 17, incoming White Noise messages
+(notification Reply / Mark as read / Read aloud, automatic vs ask), Android Auto (car screens,
+CarConnection → ask, message announcements), pause-media with notification access.

@@ -1,7 +1,10 @@
 package org.fossify.voicerecorder.extensions
 
 import android.app.Activity
+import android.content.Intent
 import android.provider.DocumentsContract
+import org.fossify.commons.extensions.internalStoragePath
+import org.fossify.voicerecorder.activities.SimpleActivity
 import android.view.WindowManager
 import androidx.core.net.toUri
 import org.fossify.commons.activities.BaseSimpleActivity
@@ -32,38 +35,59 @@ fun Activity.setKeepScreenAwake(keepScreenOn: Boolean) {
 }
 
 fun BaseSimpleActivity.ensureStoragePermission(callback: (result: Boolean) -> Unit) {
-    if (isRPlus() && !hasProperStoredFirstParentUri(config.saveRecordingsFolder)) {
-        StoragePermissionDialog(this) {
-            launchFolderPicker(config.saveRecordingsFolder) { newPath ->
-                if (!newPath.isNullOrEmpty()) {
-                    config.saveRecordingsFolder = newPath
-                    callback(true)
-                } else {
-                    callback(false)
-                }
-            }
-        }
-    } else {
+    val folder = config.saveRecordingsFolder
+    if (hasProperStoredFirstParentUri(folder)) {
+        ensureFolderExists(folder)
         callback(true)
+        return
+    }
+    // commons explains, then opens the system picker on the folder's top-level directory
+    handleSafSdk30(folder) { granted ->
+        val ok = granted && hasProperStoredFirstParentUri(folder)
+        if (ok) ensureFolderExists(folder)
+        callback(ok)
     }
 }
 
+private fun BaseSimpleActivity.ensureFolderExists(folder: String) {
+    runCatching { if (!getDoesFilePathExistSdk30(folder)) createSAFDirectorySdk30(folder) }
+}
+
+/**
+ * Picks the recordings folder with the system folder picker (commons' own picker and its
+ * "create folder" dialog skip the permission grant for packages not named org.fossify.*), then
+ * makes sure Third Ear holds the grant for the folder's top-level directory, which is what the
+ * Fossify storage code writes through.
+ */
 fun BaseSimpleActivity.launchFolderPicker(
     currentPath: String,
     callback: (newPath: String?) -> Unit
 ) {
-    FilePickerDialog(
-        activity = this,
-        currPath = currentPath,
-        pickFile = false,
-        showFAB = true,
-        showRationale = false
-    ) { path ->
-        handleSafSdk30(path) { granted ->
-            callback(if (granted) path else null)
+    SimpleActivity.pickFolder(this) { tree ->
+        val path = tree?.let { treeUriToPath(it) }
+        if (path == null) {
+            callback(null)
+            return@pickFolder
+        }
+        runCatching {
+            contentResolver.takePersistableUriPermission(tree, Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+        }
+        if (hasProperStoredFirstParentUri(path)) {
+            callback(path)
+        } else {
+            handleSafSdk30(path) { granted -> callback(if (granted && hasProperStoredFirstParentUri(path)) path else null) }
         }
     }
 }
+
+/** content://…externalstorage…/tree/primary:Music/Third Ear → /storage/emulated/0/Music/Third Ear */
+fun BaseSimpleActivity.treeUriToPath(tree: android.net.Uri): String? = runCatching {
+    val id = DocumentsContract.getTreeDocumentId(tree)
+    val volume = id.substringBefore(':')
+    val rel = id.substringAfter(':', "")
+    val root = if (volume == "primary") internalStoragePath else "/storage/$volume"
+    if (rel.isEmpty()) root else "$root/$rel"
+}.getOrNull()
 
 /**
  * fossify-commons' `handleSAFDialogSdk30` skips the folder-permission dialog (and reports success)
