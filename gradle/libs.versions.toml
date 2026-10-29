@@ -37,7 +37,7 @@ androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefre
 #Compose
 compose-material3 = { module = "androidx.compose.material3:material3", version = "1.4.0" }
 compose-ui = { module = "androidx.compose.ui:ui", version = "1.9.2" }
-compose-icons = { module = "androidx.compose.material:material-icons-extended", version = "1.7.6" }
+compose-icons = { module = "androidx.compose.material:material-icons-extended", version = "1.7.8" }
 activity-compose = { module = "androidx.activity:activity-compose", version = "1.12.4" }
 lifecycle-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version = "2.10.0" }
 compose-detekt = { module = "io.nlopez.compose.rules:detekt", version.ref = "detektCompose" }
