@@ -76,11 +76,17 @@ object MarmotHost {
     /** MarmotKit ships arm64 only; elsewhere White Noise is unavailable. */
     fun supported(): Boolean = android.os.Build.SUPPORTED_ABIS.contains("arm64-v8a")
 
-    suspend fun start(context: Context) = withContext(Dispatchers.IO) {
+    /**
+     * Opens the runtime. Not cancellable: a caller's scope going away mid-start (a screen closed)
+     * must not leave a runtime open but unreferenced, which holds MDK's root and makes every
+     * later start fail with RuntimeBusy until the process ends.
+     */
+    suspend fun start(context: Context) = withContext(NonCancellable + Dispatchers.IO) {
         lock.withLock {
             if (marmot != null) return@withLock
             phase.value = Phase.STARTING
             error.value = null
+            var opened: Marmot? = null
             try {
                 check(supported()) { "White Noise needs a 64-bit ARM phone" }
                 if (!nativeReady) {
@@ -95,7 +101,6 @@ object MarmotHost {
                     deployment = marmotDeploymentWhiteNoise(),
                 )
                 var attempt = 0
-                var opened: Marmot? = null
                 while (opened == null) {
                     try {
                         opened = Marmot.newWithConfiguration(root.path, RELAYS, options)
@@ -105,7 +110,7 @@ object MarmotHost {
                         delay(250)
                     }
                 }
-                val m = opened
+                val m = opened!!
                 m.start()
                 marmot = m
                 val acct = ensureAccount(m)
@@ -123,8 +128,14 @@ object MarmotHost {
                 // some MarmotKit errors carry an empty message: name the error rather than show nothing
                 error.value = t.message?.takeIf { it.isNotBlank() } ?: t.javaClass.simpleName
                 Log.w(TAG, "start failed: ${error.value}", t)
-                marmot?.let { runCatching { it.close() } }
+                // close whatever was opened, also one that never became `marmot`
+                (marmot ?: opened)?.let { r ->
+                    runCatching { r.shutdownAndClose() }
+                    runCatching { r.close() }
+                }
                 marmot = null
+                events?.cancel()
+                events = null
             }
         }
     }
