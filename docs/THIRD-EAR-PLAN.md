@@ -209,3 +209,14 @@ announcements), the first-run folder grant on the phone.
   3-arg `choose` + host tests (pr-bluetooth-microphone e9b609a, ihy-combined 6e07630). I Hear You:
   branch `ostt-link-and-website` (c33536e), aids stay first.
 - The android-bluetooth-microphone skill and its gist describe both.
+- White Noise "could not start: RuntimeBusy" (Juraj, 2026-10-29): a start launched from a UI
+  coroutine scope was cancelled mid-start after MarmotKit had opened its runtime but before it was
+  stored; the error path only closed the stored one, so the leaked runtime held MDK's root and
+  every later start failed until it was released. `MarmotHost.start` now runs NonCancellable and
+  closes any runtime it opened (0b0f0ea). Same fix in I Hear You (branch ostt-link-and-website,
+  3f782f6).
+- **Repository hygiene note:** commit 629a787 ("Bluetooth microphone: prefer the headset media
+  plays to…") also contains another agent's concurrent, unrelated work that was in the working
+  tree at that moment: a Compose redesign (`app/.../ui/*`, removal of the Fossify activities and
+  layouts, `.impeccable/`, PRODUCT.md, new fonts, website tweaks). It was swept in by `git add -A`.
+  History was not rewritten; split the commit only once that work is settled.
