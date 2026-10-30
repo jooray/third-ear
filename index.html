@@ -27,7 +27,7 @@
 <header class="top">
  <div class="wrap bar">
   <a class="brand" href="./"><svg xmlns="http://www.w3.org/2000/svg" viewBox="18 18 72 72" width="28" height="28" aria-hidden="true"> <rect x="18" y="18" width="72" height="72" rx="16" fill="#16130F"/> <path fill="#2A251F" stroke="#4A4337" stroke-width="1.5" d="M28,27 h52 a4,4 0 0 1 4,4 v50 h-60 v-50 a4,4 0 0 1 4,-4 z"/> <rect x="30" y="33" width="20" height="11" rx="1.5" fill="#C8321E"/> <circle cx="74" cy="38.5" r="9" fill="#F7F4EA" fill-opacity="0.2"/> <circle cx="74" cy="38.5" r="6.5" fill="#4A4337"/> <circle cx="74" cy="38.5" r="5" fill="#F7F4EA"/> <rect x="31" y="51" width="31.5" height="3" rx="1.5" fill="#EDE8DA"/> <rect x="24" y="67" width="60" height="14" fill="#E6E0CE"/> <path fill="#B4AD9B" d="M43,67 h1 v14 h-1 z M63,67 h1 v14 h-1 z"/> <path fill="#1E1A14" d="M28,72.5 h11 v3 h-11 z M48,72.5 h11 v3 h-11 z M68,72.5 h12 v3 h-12 z"/> </svg>Third Ear</a>
-  <nav class="links" aria-label="Sections"><a href="#actions">Actions</a><a href="#bluetooth">Bluetooth</a><a href="#ostt">Transcription</a><a href="#whitenoise">White Noise</a><a href="#car">Android Auto</a><a href="#get">Get it</a></nav>
+  <nav class="links" aria-label="Sections"><a href="#actions">Actions</a><a href="#agents">Agents</a><a href="#bluetooth">Bluetooth</a><a href="#ostt">Transcription</a><a href="#whitenoise">White Noise</a><a href="#car">Android Auto</a><a href="#get">Get it</a></nav>
   <nav class="lang" aria-label="Language"><a href="./" hreflang="en" lang="en" aria-current="page">EN</a><a href="sk/" hreflang="sk" lang="sk">SK</a><a href="cs/" hreflang="cs" lang="cs">CS</a><a href="de/" hreflang="de" lang="de">DE</a><a href="es/" hreflang="es" lang="es">ES</a></nav>
  </div>
 </header>
@@ -35,7 +35,8 @@
 <section class="hero wrap">
  <div class="hero-text">
   <h1>The voice recorder for the space age</h1>
-  <p class="lead">The most modern voice recorder for Android, and a third ear for everything you would otherwise forget to write down. It records from your phone, a Bluetooth headset, LE Audio hearing aids or your car. The transcript is made on the phone, and the result goes wherever the button you tapped says. The name is a pun on the third eye, but the ear is the one that does the work.</p>
+  <p class="lead">The most modern voice recorder for Android, and a third ear for everything you would otherwise forget to write down. It records from your phone, a Bluetooth headset, LE Audio hearing aids or your car. The transcript is made on the phone, and the result (transcript or audio) goes wherever the button you tapped says: phone storage, the clipboard, a White Noise (Marmot) group or an HTTPS request.</p>
+  <p class="lead">And it is the best way to talk to your AI agents, <a href="https://github.com/NousResearch/hermes-agent">hermes-agent</a> included. Tap, speak, and the agent gets your words; its answer is read back into your ears.</p>
   <ul class="badges"><li>Free</li><li>Open source (GPLv3)</li><li>No account, no analytics</li><li>Android 12+</li></ul>
   <p class="cta"><a class="btn primary" href="#get">Get Third Ear</a> <a class="btn" href="https://github.com/jooray/third-ear">Source code</a></p>
  </div>
@@ -55,6 +56,16 @@
   <figure><img class="shot" src="img/recording.webp" width="720" height="1616" alt="Recording screen: a large timer, and every line reads &quot;Stop →&quot; with what it will do; the line the recording started on is reversed" loading="lazy" decoding="async"><figcaption>While recording, every line reads "Stop →" and the line you started on is reversed.</figcaption></figure>
   <figure><img class="shot" src="img/notification.webp" width="720" height="1616" alt="Recording notification in the line&#x27;s colour, with Pause and &quot;Stop → Meeting notes&quot;" loading="lazy" decoding="async"></figure>
   <figure><img class="shot" src="img/action-editor.webp" width="720" height="1616" alt="Editing a line: the key as it will look, name, line code, cord colour and destination" loading="lazy" decoding="async"></figure>
+ </div>
+</section>
+
+<section id="agents" class="wrap">
+ <div class="card">
+  <h2>The best way to talk to your agents</h2>
+  <p>Typing to an agent on a phone is slow, and the voice modes of apps want you to look at the screen. Third Ear turns any agent into someone you talk to while walking, driving or cooking: one tap (or a Quick Settings tile, the widget, the car screen) records, the phone transcribes, and the words go to the agent.</p>
+  <ul class="list"><li>Through White Noise: put Third Ear and the agent in one encrypted group. <a href="https://github.com/NousResearch/hermes-agent">hermes-agent</a> joins White Noise groups through the MDK connector. The answer comes back and is read aloud or played, in your headset or hearing aids.</li><li>Through HTTPS: post the transcript or the audio to the agent's webhook, to n8n or to your own server.</li><li>Every agent, or every kind of request, gets its own button: “Ask Hermes”, “Add to my notes”, “Log to n8n”.</li></ul>
+  <p>The agent's echo of your transcript is skipped by the 🎙️ ignore entry, so you hear only the answer.</p>
+  <p class="note">Agents behind the MDK connector must allow Third Ear's npub (<code>--allow-welcomer</code> or <code>--allow-user</code>).</p>
  </div>
 </section>
 
@@ -85,10 +96,7 @@
  <div class="copy">
   <h2>Voice notes in White Noise, and answers back</h2>
   <p>White Noise is an end-to-end encrypted messenger built on nostr (Marmot/MLS). Third Ear has its own identity there, shown as an npub with a QR code. Invite it to a group, accept, and an action sends your voice note with the transcript as caption, or just the text.</p>
-  <p>Replies come back. For each group you choose: off, play voice messages, or play voice and read text aloud with text-to-speech. That happens automatically or on request with "Read aloud" in the notification. An ignore list (default 🎙️) skips messages you do not want read. The recent messages list has Play and Read. You can back up your key by exporting and importing the nsec.</p>
-  <h3>Talk to an AI agent, hands-free</h3>
-  <p>Put Third Ear and an agent such as the Hermes agent into one group. Hermes is an AI agent you reach in White Noise groups through the MDK connector. You speak, the agent gets the transcript (or the audio), and its answer is read to you or played, with a headset or hearing aids and no screen. The agent's echo of your transcript is skipped by the 🎙️ ignore entry.</p>
-  <p class="note">Agents behind the MDK connector must allow Third Ear's npub (<code>--allow-welcomer</code> or <code>--allow-user</code>).</p>
+  <p>Replies come back. For each group you choose: off, play voice messages, or play voice and read text aloud with text-to-speech. That happens automatically or on request with "Read aloud" in the notification. An ignore list (default 🎙️) skips messages you do not want read. The Messages tab lists your groups like a chat app, with Play, Read aloud and Mark all as read. You can back up your key by exporting and importing the nsec.</p>
  </div>
  <div class="shots two">
   <figure><img class="shot" src="img/replies.webp" width="720" height="1616" alt="Log, Replies: the answer from Hermes, unread, with Read aloud; an echoed transcript ignored by the 🎙️ entry" loading="lazy" decoding="async"></figure>
@@ -120,6 +128,15 @@
  </div>
 </section>
 
+<section id="geek" class="wrap">
+ <div class="card">
+  <h2>For the geeks: recording from Bluetooth is surprisingly hard</h2>
+  <p>On Android, a Bluetooth microphone is a phone-call microphone. An app that simply picks it as the input records from the phone's own microphone instead, without any error. Most voice recorders get this wrong.</p>
+  <p>Even done right, the headset's microphone takes 2.5 to 3 seconds to come up after recording starts, and some LE Audio hearing aids deliver nothing but digital silence unless something plays into them at the same time. Third Ear routes the call microphone, waits for the first real sound, tells you when to speak, and falls back to the phone microphone with an audible cue.</p>
+  <p>We wrote down everything we learned, with code, so other apps can get it right too: <a href="https://github.com/jooray/android-bluetooth-microphone">Recording from a Bluetooth microphone on Android</a>. It also works as a skill for coding agents, and it covers transcription on the phone with Offline Speech to Text.</p>
+ </div>
+</section>
+
 <section id="get" class="wrap get">
  <h2>Get Third Ear</h2>
  <p>Ready for launch? Get Third Ear on Zapstore, or download the APK from the GitHub release. It needs Android 12 or newer.</p>
@@ -131,7 +148,6 @@
 </main>
 <footer class="foot">
  <div class="wrap">
-  <p>Also by Juraj Bednár: <a href="https://jooray.github.io/i-hear-you/">I Hear You</a> <!-- TODO confirm URL -->, a remote for ReSound/GN hearing aids that records voice notes from the aid buttons.</p>
   <p>Third Ear is open source under the GPLv3. Fossify Voice Recorder, Juraj Bednár.</p>
  </div>
 </footer>

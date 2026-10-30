@@ -27,7 +27,7 @@
 <header class="top">
  <div class="wrap bar">
   <a class="brand" href="../es/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="18 18 72 72" width="28" height="28" aria-hidden="true"> <rect x="18" y="18" width="72" height="72" rx="16" fill="#16130F"/> <path fill="#2A251F" stroke="#4A4337" stroke-width="1.5" d="M28,27 h52 a4,4 0 0 1 4,4 v50 h-60 v-50 a4,4 0 0 1 4,-4 z"/> <rect x="30" y="33" width="20" height="11" rx="1.5" fill="#C8321E"/> <circle cx="74" cy="38.5" r="9" fill="#F7F4EA" fill-opacity="0.2"/> <circle cx="74" cy="38.5" r="6.5" fill="#4A4337"/> <circle cx="74" cy="38.5" r="5" fill="#F7F4EA"/> <rect x="31" y="51" width="31.5" height="3" rx="1.5" fill="#EDE8DA"/> <rect x="24" y="67" width="60" height="14" fill="#E6E0CE"/> <path fill="#B4AD9B" d="M43,67 h1 v14 h-1 z M63,67 h1 v14 h-1 z"/> <path fill="#1E1A14" d="M28,72.5 h11 v3 h-11 z M48,72.5 h11 v3 h-11 z M68,72.5 h12 v3 h-12 z"/> </svg>Third Ear</a>
-  <nav class="links" aria-label="Sections"><a href="#actions">Acciones</a><a href="#bluetooth">Bluetooth</a><a href="#ostt">Transcripción</a><a href="#whitenoise">White Noise</a><a href="#car">Android Auto</a><a href="#get">Conseguir</a></nav>
+  <nav class="links" aria-label="Sections"><a href="#actions">Acciones</a><a href="#agents">Agentes</a><a href="#bluetooth">Bluetooth</a><a href="#ostt">Transcripción</a><a href="#whitenoise">White Noise</a><a href="#car">Android Auto</a><a href="#get">Conseguir</a></nav>
   <nav class="lang" aria-label="Language"><a href="../" hreflang="en" lang="en">EN</a><a href="../sk/" hreflang="sk" lang="sk">SK</a><a href="../cs/" hreflang="cs" lang="cs">CS</a><a href="../de/" hreflang="de" lang="de">DE</a><a href="../es/" hreflang="es" lang="es" aria-current="page">ES</a></nav>
  </div>
 </header>
@@ -35,7 +35,8 @@
 <section class="hero wrap">
  <div class="hero-text">
   <h1>La grabadora de voz para la era espacial</h1>
-  <p class="lead">La grabadora de voz más moderna para Android y un tercer oído para todo lo que, si no, olvidarías apuntar. Graba con el móvil, con unos auriculares Bluetooth, con audífonos LE Audio o con el coche. La transcripción se hace en el teléfono y el resultado va adonde diga el botón que has tocado. El nombre es un juego de palabras con el tercer ojo, pero quien trabaja es el oído.</p>
+  <p class="lead">La grabadora de voz más moderna para Android y un tercer oído para todo lo que, si no, olvidarías apuntar. Graba con el móvil, con unos auriculares Bluetooth, con audífonos LE Audio o con el coche. La transcripción se hace en el teléfono y el resultado (transcripción o audio) va adonde diga el botón que has tocado: el almacenamiento del teléfono, el portapapeles, un grupo de White Noise (Marmot) o una petición HTTPS.</p>
+  <p class="lead">Y es la mejor forma de hablar con tus agentes de IA, <a href="https://github.com/NousResearch/hermes-agent">hermes-agent</a> incluido. Tocas, hablas, el agente recibe tus palabras y su respuesta te la leen al oído.</p>
   <ul class="badges"><li>Gratis</li><li>Código abierto (GPLv3)</li><li>Sin cuenta ni analítica</li><li>Android 12+</li></ul>
   <p class="cta"><a class="btn primary" href="#get">Conseguir Third Ear</a> <a class="btn" href="https://github.com/jooray/third-ear">Código fuente</a></p>
  </div>
@@ -55,6 +56,16 @@
   <figure><img class="shot" src="../img/recording.webp" width="720" height="1616" alt="Pantalla de grabación: un temporizador grande y cada línea dice «Parar →» y lo que hará; la línea con la que empezó la grabación aparece invertida" loading="lazy" decoding="async"><figcaption>Mientras grabas, cada línea dice «Parar →» y la línea con la que empezaste aparece invertida.</figcaption></figure>
   <figure><img class="shot" src="../img/notification.webp" width="720" height="1616" alt="Notificación de grabación en el color de la línea, con Pausa y «Parar → Meeting notes»" loading="lazy" decoding="async"></figure>
   <figure><img class="shot" src="../img/action-editor.webp" width="720" height="1616" alt="Editar una línea: la tecla tal como se verá, nombre, código, color del cable y destino" loading="lazy" decoding="async"></figure>
+ </div>
+</section>
+
+<section id="agents" class="wrap">
+ <div class="card">
+  <h2>La mejor forma de hablar con tus agentes</h2>
+  <p>Escribirle a un agente en el móvil es lento, y los modos de voz de las apps quieren que mires la pantalla. Third Ear convierte cualquier agente en alguien con quien hablas mientras caminas, conduces o cocinas: un toque (o un mosaico de ajustes rápidos, el widget, la pantalla del coche) graba, el teléfono transcribe y las palabras van al agente.</p>
+  <ul class="list"><li>Por White Noise: pon a Third Ear y al agente en un mismo grupo cifrado. <a href="https://github.com/NousResearch/hermes-agent">hermes-agent</a> entra en los grupos de White Noise mediante el conector MDK. La respuesta vuelve y se lee en voz alta o se reproduce, en los auriculares o los audífonos.</li><li>Por HTTPS: envía la transcripción o el audio al webhook del agente, a n8n o a tu propio servidor.</li><li>Cada agente, o cada tipo de petición, tiene su propio botón: «Pregunta a Hermes», «A mis notas», «Registrar en n8n».</li></ul>
+  <p>El eco de tu transcripción que devuelve el agente se salta con la entrada 🎙️ de la lista de ignorados, así que solo oyes la respuesta.</p>
+  <p class="note">Los agentes detrás del conector MDK tienen que permitir el npub de Third Ear (<code>--allow-welcomer</code> o <code>--allow-user</code>).</p>
  </div>
 </section>
 
@@ -85,10 +96,7 @@
  <div class="copy">
   <h2>Notas de voz en White Noise, y respuestas de vuelta</h2>
   <p>White Noise es un mensajero con cifrado de extremo a extremo basado en nostr (Marmot/MLS). Third Ear tiene allí su propia identidad, que se muestra como un npub con código QR. Invítala a un grupo, acepta, y una acción envía tu nota de voz con la transcripción como pie, o solo el texto.</p>
-  <p>Las respuestas vuelven. Para cada grupo eliges: desactivado, reproducir mensajes de voz, o reproducir la voz y leer el texto en voz alta con síntesis de voz. Ocurre de forma automática o a petición con «Leer en voz alta» en la notificación. Una lista de ignorados (por defecto 🎙️) salta los mensajes que no quieres oír. La lista de mensajes recientes tiene Reproducir y Leer. Tu clave se respalda exportando e importando el nsec.</p>
-  <h3>Habla con un agente de IA, sin manos</h3>
-  <p>Pon a Third Ear y a un agente como el Hermes agent en un mismo grupo. Hermes es un agente de IA al que llegas en los grupos de White Noise mediante el conector MDK. Tú hablas, el agente recibe la transcripción (o el audio) y su respuesta te la leen o la reproducen, con auriculares o audífonos y sin mirar la pantalla. El eco de tu transcripción que devuelve el agente se salta con la entrada 🎙️ de la lista de ignorados.</p>
-  <p class="note">Los agentes detrás del conector MDK tienen que permitir el npub de Third Ear (<code>--allow-welcomer</code> o <code>--allow-user</code>).</p>
+  <p>Las respuestas vuelven. Para cada grupo eliges: desactivado, reproducir mensajes de voz, o reproducir la voz y leer el texto en voz alta con síntesis de voz. Ocurre de forma automática o a petición con «Leer en voz alta» en la notificación. Una lista de ignorados (por defecto 🎙️) salta los mensajes que no quieres oír. La pestaña Mensajes muestra tus grupos como una app de chat, con Reproducir, Leer en voz alta y Marcar todo como leído. Tu clave se respalda exportando e importando el nsec.</p>
  </div>
  <div class="shots two">
   <figure><img class="shot" src="../img/replies.webp" width="720" height="1616" alt="Registro, Respuestas: la respuesta de Hermes sin leer, con Leer en voz alta; un eco de la transcripción ignorado por la entrada 🎙️" loading="lazy" decoding="async"></figure>
@@ -120,6 +128,15 @@
  </div>
 </section>
 
+<section id="geek" class="wrap">
+ <div class="card">
+  <h2>Para geeks: grabar por Bluetooth es sorprendentemente difícil</h2>
+  <p>En Android, un micrófono Bluetooth es un micrófono de llamadas. Una app que simplemente lo elige como entrada graba en su lugar con el micrófono del teléfono, sin ningún error. La mayoría de las grabadoras lo hacen mal.</p>
+  <p>Aun haciéndolo bien, el micrófono de los auriculares tarda de 2,5 a 3 segundos en arrancar después de empezar la grabación, y algunos audífonos LE Audio solo entregan silencio digital si no suena nada en ellos al mismo tiempo. Third Ear enruta el micrófono de llamadas, espera al primer sonido real, te avisa de cuándo hablar y, si hace falta, pasa al micrófono del teléfono con un aviso sonoro.</p>
+  <p>Todo lo que aprendimos lo hemos escrito, con código, para que otras apps también lo hagan bien: <a href="https://github.com/jooray/android-bluetooth-microphone">Recording from a Bluetooth microphone on Android</a> (en inglés). También funciona como skill para agentes de programación y cubre la transcripción en el teléfono con Offline Speech to Text.</p>
+ </div>
+</section>
+
 <section id="get" class="wrap get">
  <h2>Conseguir Third Ear</h2>
  <p>¿Listo para el despegue? Consigue Third Ear en Zapstore o descarga el APK desde la versión de GitHub. Necesita Android 12 o posterior.</p>
@@ -131,7 +148,6 @@
 </main>
 <footer class="foot">
  <div class="wrap">
-  <p>También de Juraj Bednár: <a href="https://jooray.github.io/i-hear-you/">I Hear You</a> <!-- TODO confirm URL -->, un mando a distancia para audífonos ReSound/GN que graba notas de voz con los botones del audífono.</p>
   <p>Third Ear es de código abierto bajo la GPLv3. Fossify Voice Recorder, Juraj Bednár.</p>
  </div>
 </footer>
