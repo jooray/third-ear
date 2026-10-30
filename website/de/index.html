@@ -27,7 +27,7 @@
 <header class="top">
  <div class="wrap bar">
   <a class="brand" href="../de/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="18 18 72 72" width="28" height="28" aria-hidden="true"> <rect x="18" y="18" width="72" height="72" rx="16" fill="#16130F"/> <path fill="#2A251F" stroke="#4A4337" stroke-width="1.5" d="M28,27 h52 a4,4 0 0 1 4,4 v50 h-60 v-50 a4,4 0 0 1 4,-4 z"/> <rect x="30" y="33" width="20" height="11" rx="1.5" fill="#C8321E"/> <circle cx="74" cy="38.5" r="9" fill="#F7F4EA" fill-opacity="0.2"/> <circle cx="74" cy="38.5" r="6.5" fill="#4A4337"/> <circle cx="74" cy="38.5" r="5" fill="#F7F4EA"/> <rect x="31" y="51" width="31.5" height="3" rx="1.5" fill="#EDE8DA"/> <rect x="24" y="67" width="60" height="14" fill="#E6E0CE"/> <path fill="#B4AD9B" d="M43,67 h1 v14 h-1 z M63,67 h1 v14 h-1 z"/> <path fill="#1E1A14" d="M28,72.5 h11 v3 h-11 z M48,72.5 h11 v3 h-11 z M68,72.5 h12 v3 h-12 z"/> </svg>Third Ear</a>
-  <nav class="links" aria-label="Sections"><a href="#actions">Aktionen</a><a href="#bluetooth">Bluetooth</a><a href="#ostt">Transkription</a><a href="#whitenoise">White Noise</a><a href="#car">Android Auto</a><a href="#get">Holen</a></nav>
+  <nav class="links" aria-label="Sections"><a href="#actions">Aktionen</a><a href="#agents">Agenten</a><a href="#bluetooth">Bluetooth</a><a href="#ostt">Transkription</a><a href="#whitenoise">White Noise</a><a href="#car">Android Auto</a><a href="#get">Holen</a></nav>
   <nav class="lang" aria-label="Language"><a href="../" hreflang="en" lang="en">EN</a><a href="../sk/" hreflang="sk" lang="sk">SK</a><a href="../cs/" hreflang="cs" lang="cs">CS</a><a href="../de/" hreflang="de" lang="de" aria-current="page">DE</a><a href="../es/" hreflang="es" lang="es">ES</a></nav>
  </div>
 </header>
@@ -35,7 +35,8 @@
 <section class="hero wrap">
  <div class="hero-text">
   <h1>Das Diktiergerät fürs Weltraumzeitalter</h1>
-  <p class="lead">Das modernste Diktiergerät für Android und ein drittes Ohr für alles, was du sonst vergessen würdest aufzuschreiben. Es nimmt mit dem Handy auf, mit einem Bluetooth-Headset, mit LE-Audio-Hörgeräten oder im Auto. Das Transkript entsteht auf dem Handy, und das Ergebnis geht dorthin, wo die Taste hinführt, auf die du getippt hast. Der Name ist ein Wortspiel mit dem dritten Auge, aber die Arbeit macht das Ohr.</p>
+  <p class="lead">Das modernste Diktiergerät für Android und ein drittes Ohr für alles, was du sonst vergessen würdest aufzuschreiben. Es nimmt mit dem Handy auf, mit einem Bluetooth-Headset, mit LE-Audio-Hörgeräten oder im Auto. Das Transkript entsteht auf dem Handy, und das Ergebnis (Transkript oder Audio) geht dorthin, wo die Taste hinführt, auf die du getippt hast: in den Telefonspeicher, in die Zwischenablage, in eine White-Noise-Gruppe (Marmot) oder als HTTPS-Anfrage.</p>
+  <p class="lead">Und es ist der beste Weg, mit deinen KI-Agenten zu sprechen, <a href="https://github.com/NousResearch/hermes-agent">hermes-agent</a> eingeschlossen. Tippen, sprechen, der Agent bekommt deine Worte, und seine Antwort wird dir ins Ohr vorgelesen.</p>
   <ul class="badges"><li>Kostenlos</li><li>Open Source (GPLv3)</li><li>Kein Konto, keine Analyse</li><li>Android 12+</li></ul>
   <p class="cta"><a class="btn primary" href="#get">Third Ear holen</a> <a class="btn" href="https://github.com/jooray/third-ear">Quellcode</a></p>
  </div>
@@ -55,6 +56,16 @@
   <figure><img class="shot" src="../img/recording.webp" width="720" height="1616" alt="Aufnahmebildschirm: großer Timer, jede Leitung zeigt „Stopp →“ und was sie tut; die Leitung, mit der die Aufnahme begann, ist invertiert" loading="lazy" decoding="async"><figcaption>Während der Aufnahme zeigt jede Leitung „Stopp →“, die Startleitung ist invertiert.</figcaption></figure>
   <figure><img class="shot" src="../img/notification.webp" width="720" height="1616" alt="Aufnahme-Benachrichtigung in der Farbe der Leitung, mit Pause und „Stopp → Meeting notes“" loading="lazy" decoding="async"></figure>
   <figure><img class="shot" src="../img/action-editor.webp" width="720" height="1616" alt="Leitung bearbeiten: die Taste, wie sie aussehen wird, Name, Leitungscode, Kabelfarbe und Ziel" loading="lazy" decoding="async"></figure>
+ </div>
+</section>
+
+<section id="agents" class="wrap">
+ <div class="card">
+  <h2>Der beste Weg, mit deinen Agenten zu sprechen</h2>
+  <p>Einem Agenten auf dem Handy zu tippen ist langsam, und die Sprachmodi der Apps wollen, dass du auf den Bildschirm schaust. Third Ear macht aus jedem Agenten jemanden, mit dem du beim Gehen, Fahren oder Kochen sprichst: ein Tipp (oder eine Schnelleinstellungs-Kachel, das Widget, der Bildschirm im Auto) nimmt auf, das Handy transkribiert, und die Worte gehen an den Agenten.</p>
+  <ul class="list"><li>Über White Noise: Packe Third Ear und den Agenten in eine verschlüsselte Gruppe. <a href="https://github.com/NousResearch/hermes-agent">hermes-agent</a> tritt White-Noise-Gruppen über den MDK-Connector bei. Die Antwort kommt zurück und wird vorgelesen oder abgespielt, im Headset oder in den Hörgeräten.</li><li>Über HTTPS: Schicke das Transkript oder das Audio an den Webhook des Agenten, an n8n oder an deinen eigenen Server.</li><li>Jeder Agent oder jede Art von Anfrage bekommt eine eigene Taste: „Frag Hermes“, „In meine Notizen“, „Nach n8n“.</li></ul>
+  <p>Das Echo deines Transkripts vom Agenten überspringt der Ignorier-Eintrag 🎙️, du hörst also nur die Antwort.</p>
+  <p class="note">Agenten hinter dem MDK-Connector müssen den npub von Third Ear zulassen (<code>--allow-welcomer</code> oder <code>--allow-user</code>).</p>
  </div>
 </section>
 
@@ -85,10 +96,7 @@
  <div class="copy">
   <h2>Sprachnachrichten in White Noise, und Antworten zurück</h2>
   <p>White Noise ist ein Ende-zu-Ende-verschlüsselter Messenger auf Basis von nostr (Marmot/MLS). Third Ear hat dort eine eigene Identität, angezeigt als npub mit QR-Code. Lade sie in eine Gruppe ein, nimm an, und eine Aktion sendet deine Sprachnachricht mit dem Transkript als Bildunterschrift, oder nur den Text.</p>
-  <p>Antworten kommen zurück. Pro Gruppe wählst du: aus, Sprachnachrichten abspielen, oder Sprache abspielen und Text per Sprachausgabe vorlesen. Das passiert automatisch oder auf Anfrage über „Vorlesen“ in der Benachrichtigung. Eine Ignorierliste (Standard 🎙️) überspringt Nachrichten, die du nicht hören willst. Die Liste der letzten Nachrichten hat Abspielen und Vorlesen. Deinen Schlüssel sicherst du mit Export und Import des nsec.</p>
-  <h3>Mit einem KI-Agenten sprechen, freihändig</h3>
-  <p>Packe Third Ear und einen Agenten wie den Hermes agent in eine Gruppe. Hermes ist ein KI-Agent, den du in White-Noise-Gruppen über den MDK-Connector erreichst. Du sprichst, der Agent bekommt das Transkript (oder das Audio), und seine Antwort wird dir vorgelesen oder abgespielt, mit Headset oder Hörgeräten und ohne Blick auf den Bildschirm. Das Echo deines Transkripts vom Agenten überspringt der Ignorier-Eintrag 🎙️.</p>
-  <p class="note">Agenten hinter dem MDK-Connector müssen den npub von Third Ear zulassen (<code>--allow-welcomer</code> oder <code>--allow-user</code>).</p>
+  <p>Antworten kommen zurück. Pro Gruppe wählst du: aus, Sprachnachrichten abspielen, oder Sprache abspielen und Text per Sprachausgabe vorlesen. Das passiert automatisch oder auf Anfrage über „Vorlesen“ in der Benachrichtigung. Eine Ignorierliste (Standard 🎙️) überspringt Nachrichten, die du nicht hören willst. Der Tab Nachrichten zeigt deine Gruppen wie eine Chat-App, mit Abspielen, Vorlesen und Alle als gelesen markieren. Deinen Schlüssel sicherst du mit Export und Import des nsec.</p>
  </div>
  <div class="shots two">
   <figure><img class="shot" src="../img/replies.webp" width="720" height="1616" alt="Protokoll, Antworten: ungelesene Antwort von Hermes mit Vorlesen; ein Transkript-Echo, ignoriert durch den Eintrag 🎙️" loading="lazy" decoding="async"></figure>
@@ -120,6 +128,15 @@
  </div>
 </section>
 
+<section id="geek" class="wrap">
+ <div class="card">
+  <h2>Für Geeks: Aufnehmen über Bluetooth ist überraschend schwer</h2>
+  <p>Ein Bluetooth-Mikrofon ist auf Android ein Telefonie-Mikrofon. Eine App, die es einfach als Eingang wählt, nimmt stattdessen mit dem Mikrofon des Handys auf, ganz ohne Fehlermeldung. Die meisten Diktier-Apps machen das falsch.</p>
+  <p>Selbst richtig gemacht braucht das Mikrofon im Headset nach dem Start der Aufnahme 2,5 bis 3 Sekunden, bis es da ist, und manche LE-Audio-Hörgeräte liefern nur digitale Stille, solange nicht gleichzeitig etwas in sie abgespielt wird. Third Ear leitet das Telefonie-Mikrofon um, wartet auf den ersten echten Ton, sagt dir, wann du sprechen kannst, und wechselt bei Bedarf hörbar auf das Mikrofon des Handys.</p>
+  <p>Alles, was wir dabei gelernt haben, haben wir mit Code aufgeschrieben, damit auch andere Apps es richtig machen: <a href="https://github.com/jooray/android-bluetooth-microphone">Recording from a Bluetooth microphone on Android</a> (auf Englisch). Es funktioniert auch als Skill für Coding-Agenten und deckt die Transkription auf dem Handy mit Offline Speech to Text ab.</p>
+ </div>
+</section>
+
 <section id="get" class="wrap get">
  <h2>Third Ear holen</h2>
  <p>Bereit zum Start? Hol dir Third Ear im Zapstore oder lade die APK aus dem GitHub-Release. Voraussetzung ist Android 12 oder neuer.</p>
@@ -131,7 +148,6 @@
 </main>
 <footer class="foot">
  <div class="wrap">
-  <p>Ebenfalls von Juraj Bednár: <a href="https://jooray.github.io/i-hear-you/">I Hear You</a> <!-- TODO confirm URL -->, eine Fernbedienung für ReSound/GN-Hörgeräte, die Sprachnotizen über die Tasten der Hörgeräte aufnimmt.</p>
   <p>Third Ear ist Open Source unter der GPLv3. Fossify Voice Recorder, Juraj Bednár.</p>
  </div>
 </footer>
