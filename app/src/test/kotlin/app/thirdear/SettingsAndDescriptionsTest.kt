@@ -16,10 +16,13 @@ import app.thirdear.extensions.config
 import app.thirdear.extensions.describe
 import app.thirdear.extensions.inputLabel
 import app.thirdear.helpers.Config
+import app.thirdear.helpers.SPOKEN_CUES
+import app.thirdear.pipeline.Cues
 import app.thirdear.whitenoise.GroupSettings
 import app.thirdear.whitenoise.GroupSettingsStore
 import app.thirdear.whitenoise.ReadMode
 import app.thirdear.whitenoise.ReplyMode
+import org.fossify.commons.extensions.getSharedPrefs
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -35,20 +38,31 @@ class SettingsAndDescriptionsTest {
     fun `third ear preferences persist with sensible defaults`() {
         val c = context.config
         assertFalse(c.preferBluetooth)
-        assertTrue(c.spokenCues)
+        assertEquals(Cues.Mode.VOICE, c.listeningCue)
+        assertEquals(Cues.Mode.VOICE, c.progressCue)
         assertFalse(c.pauseMedia)
         assertNull(c.transcriber)
         assertTrue(c.saveTranscriptFiles)
         assertFalse(c.whiteNoiseEnabled)
         c.preferBluetooth = true
-        c.spokenCues = false
+        c.listeningCue = Cues.Mode.BEEP
+        c.progressCue = Cues.Mode.OFF
         c.transcriber = "app.offlinespeechtotext/dev.notune.transcribe.VoiceRecognitionService"
         c.whiteNoiseEnabled = true
         val fresh = Config.newInstance(context)
         assertTrue(fresh.preferBluetooth)
-        assertFalse(fresh.spokenCues)
+        assertEquals(Cues.Mode.BEEP, fresh.listeningCue)
+        assertEquals(Cues.Mode.OFF, fresh.progressCue)
         assertEquals("app.offlinespeechtotext/dev.notune.transcribe.VoiceRecognitionService", fresh.transcriber)
         assertTrue(fresh.whiteNoiseEnabled)
+    }
+
+    @Test
+    fun `the old spoken cues switch, turned off, turns both cues off`() {
+        context.getSharedPrefs().edit().putBoolean(SPOKEN_CUES, false).commit()
+        val c = Config.newInstance(context)
+        assertEquals(Cues.Mode.OFF, c.listeningCue)
+        assertEquals(Cues.Mode.OFF, c.progressCue)
     }
 
     @Test

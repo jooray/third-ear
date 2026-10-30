@@ -42,9 +42,8 @@
     <string name="te_word_saving">Guardando…</string>
     <string name="te_word_not_delivered">No entregado</string>
     <string name="te_board_tap_to_record">Líneas · toca para grabar</string>
-    <string name="te_board_stop_on">Detén en una línea</string>
+    <string name="te_board_other_line">Parar en otra línea</string>
     <string name="te_board_stop">Parar →</string>
-    <string name="te_board_started_here">Empezó aquí</string>
     <string name="te_board_replies">Respuestas pendientes</string>
     <string name="te_board_all_replies">Todas</string>
     <string name="te_board_ostt_missing">Una línea necesita transcripción, pero Offline Speech to Text no está instalado. Las grabaciones se guardan igualmente.</string>

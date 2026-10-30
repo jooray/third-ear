@@ -189,6 +189,7 @@ fun LineKey(
     reversed: Boolean = false,
     /** Flash the strip in the cord colour on tap: the recording going down this line. */
     patchOnClick: Boolean = false,
+    nameStyle: TextStyle = TeType.keyName,
 ) {
     val p = Te.colors
     var patching by remember { mutableStateOf(false) }
@@ -240,7 +241,7 @@ fun LineKey(
         }
         Text(
             name,
-            style = TeType.keyName,
+            style = nameStyle,
             color = ink,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,

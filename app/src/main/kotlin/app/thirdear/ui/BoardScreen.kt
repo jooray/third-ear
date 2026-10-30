@@ -24,6 +24,9 @@ import androidx.compose.material.icons.automirrored.outlined.VolumeUp
 import androidx.compose.material.icons.outlined.Bluetooth
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.ContentCopy
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.ExpandLess
+import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material.icons.outlined.Pause
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.Refresh
@@ -69,6 +72,7 @@ import app.thirdear.pipeline.NoteState
 import app.thirdear.pipeline.NoteStore
 import app.thirdear.pipeline.Transcriber
 import app.thirdear.services.RecorderService
+import app.thirdear.whitenoise.IncomingMessage
 import app.thirdear.whitenoise.IncomingStore
 import app.thirdear.whitenoise.WhiteNoise
 import kotlinx.coroutines.Dispatchers
@@ -102,7 +106,7 @@ fun BoardScreen(host: MainActivity, wide: Boolean, onOpenReplies: () -> Unit, on
     }
 
     Column(Modifier.fillMaxWidth()) {
-    BoardBody(host, wide, live, lines, actions, notes, recording, onOpenReplies, onEditLine, { confirmDiscard = true }, { switchFrom = it })
+    BoardBody(host, wide, live, lines, actions, notes, messages, recording, onOpenReplies, onEditLine, { confirmDiscard = true }, { switchFrom = it })
     }
 
     if (confirmDiscard) {
@@ -126,6 +130,7 @@ private fun androidx.compose.foundation.layout.ColumnScope.BoardBody(
     lines: List<Line>,
     actions: List<app.thirdear.actions.RecordAction>,
     notes: List<Note>,
+    messages: List<IncomingMessage>,
     recording: Boolean,
     onOpenReplies: () -> Unit,
     onEditLine: (String) -> Unit,
@@ -162,7 +167,8 @@ private fun androidx.compose.foundation.layout.ColumnScope.BoardBody(
         val l = live
         if (l != null) {
             Spacer(Modifier.height(12.dp))
-            RecordingPlate(l, onPause = { RecorderService.togglePause(context) }, onDiscard = onDiscard)
+            RecordingPlate(l)
+            RecordingControls(host, l, lines, columns, onDiscard)
         } else {
             val transcriberMissing = remember(actions) {
                 actions.any { ActionPlan.of(it).transcribe } && !Transcriber(context).available(context.config.transcriber)
@@ -171,46 +177,127 @@ private fun androidx.compose.foundation.layout.ColumnScope.BoardBody(
                 Spacer(Modifier.height(12.dp))
                 Notice(stringResource(R.string.te_board_ostt_missing), action = stringResource(R.string.te_get), onAction = { context.openOsttPage() })
             }
-        }
-
-        Row(Modifier.fillMaxWidth().padding(top = 20.dp, bottom = 10.dp), verticalAlignment = Alignment.Bottom) {
-            Label(stringResource(if (recording) R.string.te_board_stop_on else R.string.te_board_tap_to_record))
-            Spacer(Modifier.weight(1f))
-            Figures(pluralStringResource(R.plurals.te_board_lines, lines.size, lines.size), style = TeType.small)
-        }
-
-        lines.chunked(columns).forEach { row ->
-            Row(Modifier.fillMaxWidth().height(IntrinsicSize.Max).padding(bottom = 10.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                row.forEach { line ->
-                    val started = l?.action?.id == line.action.id
-                    LineKey(
-                        code = line.code,
-                        cord = line.cord,
-                        name = line.action.name,
-                        strip = line.strip,
-                        lamp = if (recording) LampState.OFF else line.lamp,
-                        word = if (started) stringResource(R.string.te_board_started_here) else if (recording) null else line.word,
-                        description = if (recording) stringResource(R.string.te_stop_with, line.action.name) + ". " + line.description else line.description,
-                        kicker = if (recording) stringResource(R.string.te_board_stop) else null,
-                        reversed = started,
-                        patchOnClick = recording,
-                        onClick = {
-                            if (RecorderService.live.value != null) RecorderService.stop(context, line.action.id) else host.startLine(line.action)
-                        },
-                        onLongClick = if (recording) null else ({ onEditLine(line.action.id) }),
-                        modifier = Modifier.weight(1f).fillMaxHeight(),
-                    )
-                }
-                repeat(columns - row.size) { Spacer(Modifier.weight(1f)) }
+            Row(Modifier.fillMaxWidth().padding(top = 20.dp, bottom = 10.dp), verticalAlignment = Alignment.Bottom) {
+                Label(stringResource(R.string.te_board_tap_to_record))
+                Spacer(Modifier.weight(1f))
+                Figures(pluralStringResource(R.plurals.te_board_lines, lines.size, lines.size), style = TeType.small)
             }
-        }
-
-        if (!recording) {
-            RepliesPlate(lines, onOpenReplies)
+            LineField(host, lines, columns, recording = false, onEditLine = onEditLine)
+            RepliesPlate(lines, messages, onOpenReplies)
             LastPlate(host, notes, lines)
         }
     }
 
+}
+
+/** The jack field: line keys in equal-height rows; while recording every key is a "Stop →". */
+@Composable
+private fun LineField(host: MainActivity, lines: List<Line>, columns: Int, recording: Boolean, onEditLine: (String) -> Unit) {
+    val context = LocalContext.current
+    lines.chunked(columns).forEach { row ->
+        Row(Modifier.fillMaxWidth().height(IntrinsicSize.Max).padding(bottom = 10.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            row.forEach { line ->
+                LineKey(
+                    code = line.code,
+                    cord = line.cord,
+                    name = line.action.name,
+                    strip = line.strip,
+                    lamp = if (recording) LampState.OFF else line.lamp,
+                    word = if (recording) null else line.word,
+                    description = if (recording) stringResource(R.string.te_stop_with, line.action.name) + ". " + line.description else line.description,
+                    kicker = if (recording) stringResource(R.string.te_board_stop) else null,
+                    patchOnClick = recording,
+                    onClick = {
+                        if (RecorderService.live.value != null) RecorderService.stop(context, line.action.id) else host.startLine(line.action)
+                    },
+                    onLongClick = if (recording) null else ({ onEditLine(line.action.id) }),
+                    modifier = Modifier.weight(1f).fillMaxHeight(),
+                )
+            }
+            repeat(columns - row.size) { Spacer(Modifier.weight(1f)) }
+        }
+    }
+}
+
+/**
+ * While recording, the line it started on is the plan: one big "Stop → line" key does it. Pause
+ * sits below with room between them, the other lines fold away behind one row (picked at the stop
+ * when the plan changed), and Discard is last and furthest, behind a confirmation.
+ */
+@Composable
+private fun RecordingControls(
+    host: MainActivity,
+    live: RecorderService.Companion.Live,
+    lines: List<Line>,
+    columns: Int,
+    onDiscard: () -> Unit,
+) {
+    val p = Te.colors
+    val context = LocalContext.current
+    val started = lines.firstOrNull { it.action.id == live.action.id }
+    val others = lines.filter { it.action.id != live.action.id }
+    // a line deleted mid-recording has no key of its own: the field opens so the stop is still one tap
+    var otherLines by remember(live.action.id) { mutableStateOf(started == null) }
+    val paused = live.status.paused
+
+    if (started != null) {
+        Spacer(Modifier.height(16.dp))
+        LineKey(
+            code = started.code,
+            cord = started.cord,
+            name = started.action.name,
+            strip = started.strip,
+            lamp = LampState.OFF,
+            word = null,
+            description = stringResource(R.string.te_stop_with, started.action.name) + ". " + started.description,
+            kicker = stringResource(R.string.te_board_stop),
+            reversed = true,
+            patchOnClick = true,
+            nameStyle = TeType.screenTitle,
+            onClick = { RecorderService.stop(context, started.action.id) },
+            onLongClick = null,
+            modifier = Modifier.fillMaxWidth().heightIn(min = 168.dp),
+        )
+    }
+    // a gap, not a hairline: a slipped thumb on Pause must not send half a thought
+    Spacer(Modifier.height(20.dp))
+    OutlineButton(
+        stringResource(if (paused) R.string.resume_recording else R.string.pause_recording),
+        { RecorderService.togglePause(context) },
+        modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp),
+        icon = if (paused) Icons.Outlined.PlayArrow else Icons.Outlined.Pause,
+    )
+
+    if (others.isNotEmpty()) {
+        Spacer(Modifier.height(20.dp))
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .clip(PlateShape)
+                .clickable(onClickLabel = stringResource(R.string.te_board_other_line)) { otherLines = !otherLines }
+                .heightIn(min = 48.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Label(stringResource(R.string.te_board_other_line))
+            Spacer(Modifier.weight(1f))
+            Figures(pluralStringResource(R.plurals.te_board_lines, others.size, others.size), style = TeType.small)
+            Spacer(Modifier.width(4.dp))
+            Icon(
+                if (otherLines) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore,
+                contentDescription = null,
+                tint = p.inkMuted,
+                modifier = Modifier.size(24.dp),
+            )
+        }
+        if (otherLines) {
+            Spacer(Modifier.height(8.dp))
+            LineField(host, others, columns, recording = true, onEditLine = {})
+        }
+    }
+
+    Spacer(Modifier.height(40.dp))
+    Rule()
+    PlainButton(stringResource(R.string.te_discard), onDiscard, modifier = Modifier.padding(top = 8.dp), icon = Icons.Outlined.Delete, color = p.faultInk)
 }
 
 /** The microphone that records (or will), with the live level, as one plate; tap to switch. */
@@ -313,9 +400,9 @@ private fun LevelMeter(amplitude: Int) {
     }
 }
 
-/** While recording: the one giant figure, the state word, pause and discard. */
+/** While recording: the one giant figure, the state word and the line's code. */
 @Composable
-private fun RecordingPlate(live: RecorderService.Companion.Live, onPause: () -> Unit, onDiscard: () -> Unit) {
+private fun RecordingPlate(live: RecorderService.Companion.Live) {
     val p = Te.colors
     val s = live.status
     val secs = s.durationMs / 1000
@@ -328,34 +415,24 @@ private fun RecordingPlate(live: RecorderService.Companion.Live, onPause: () -> 
         },
     )
     Plate(Modifier.fillMaxWidth(), fill = p.recess) {
-        // compact on purpose: the stop keys must stay within reach below it
-        Row(Modifier.padding(start = 16.dp, end = 12.dp, top = 12.dp, bottom = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-            Column(Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    // red means "not delivered" everywhere; a recording in progress is the amber working lamp
-                    Lamp(LampState.BUSY, size = 12.dp)
-                    Spacer(Modifier.width(4.dp))
-                    Label(state, color = p.ink)
-                    Spacer(Modifier.width(8.dp))
-                    CodeCell(LineCode.of(live.action), cord = cordForLive(live))
-                }
-                Text(
-                    time,
-                    // an hour adds three figures; the plate keeps its width
-                    style = if (secs >= 3600) TeType.timer.copy(fontSize = 60.sp, lineHeight = 64.sp) else TeType.timer,
-                    color = p.ink,
-                    maxLines = 1,
-                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
-                )
+        // compact on purpose: the stop key must stay within reach below it
+        Column(Modifier.padding(start = 16.dp, end = 12.dp, top = 12.dp, bottom = 12.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                // red means "not delivered" everywhere; a recording in progress is the amber working lamp
+                Lamp(LampState.BUSY, size = 12.dp)
+                Spacer(Modifier.width(4.dp))
+                Label(state, color = p.ink)
+                Spacer(Modifier.width(8.dp))
+                CodeCell(LineCode.of(live.action), cord = cordForLive(live))
             }
-            Column(horizontalAlignment = Alignment.End) {
-                OutlineButton(
-                    stringResource(if (s.paused) R.string.resume_recording else R.string.pause_recording),
-                    onPause,
-                    icon = if (s.paused) Icons.Outlined.PlayArrow else Icons.Outlined.Pause,
-                )
-                PlainButton(stringResource(R.string.te_discard), onDiscard, color = p.faultInk)
-            }
+            Text(
+                time,
+                // an hour adds three figures; the plate keeps its width
+                style = if (secs >= 3600) TeType.timer.copy(fontSize = 60.sp, lineHeight = 64.sp) else TeType.timer,
+                color = p.ink,
+                maxLines = 1,
+                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+            )
         }
     }
 }
@@ -370,7 +447,7 @@ private fun cordForLive(live: RecorderService.Companion.Live): Int {
 
 /** Replies waiting, per line: the white lamps, with Play and Mark read. */
 @Composable
-private fun RepliesPlate(lines: List<Line>, onOpenReplies: () -> Unit) {
+private fun RepliesPlate(lines: List<Line>, messages: List<IncomingMessage>, onOpenReplies: () -> Unit) {
     val p = Te.colors
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -397,7 +474,7 @@ private fun RepliesPlate(lines: List<Line>, onOpenReplies: () -> Unit) {
                         Text(line.action.groupName ?: line.action.name, style = TeType.bodyStrong, color = p.ink, modifier = Modifier.weight(1f))
                         Lamp(LampState.REPLY)
                     }
-                    val latest = IncomingStore.messages.value
+                    val latest = messages
                         .filter { it.groupId == line.action.groupId && !it.read && it.ignoredBy == null }
                         .maxByOrNull { it.at }
                     if (latest != null) {

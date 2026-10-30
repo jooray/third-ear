@@ -42,9 +42,8 @@
     <string name="te_word_saving">Saving…</string>
     <string name="te_word_not_delivered">Not delivered</string>
     <string name="te_board_tap_to_record">Lines · tap to record</string>
-    <string name="te_board_stop_on">Stop on a line</string>
+    <string name="te_board_other_line">Stop on another line</string>
     <string name="te_board_stop">Stop →</string>
-    <string name="te_board_started_here">Started here</string>
     <string name="te_board_replies">Replies waiting</string>
     <string name="te_board_all_replies">All replies</string>
     <string name="te_board_ostt_missing">A line needs a transcript, but Offline Speech to Text is not installed. Recordings are still saved.</string>

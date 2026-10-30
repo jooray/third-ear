@@ -21,6 +21,9 @@ import app.thirdear.actions.Destination
  */
 object Cues {
 
+    /** How a moment is announced: not at all, a short tone, or a spoken clip. */
+    enum class Mode { OFF, BEEP, VOICE }
+
     enum class Tone(val notes: List<Pair<Double, Int>>) {
         START(listOf(660.0 to 110, 0.0 to 40, 990.0 to 140)),
         STOP(listOf(990.0 to 110, 0.0 to 40, 660.0 to 140)),
@@ -40,11 +43,24 @@ object Cues {
         .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
         .build()
 
-    /** "Go ahead", spoken once the microphone records (it can be talked over). */
-    fun playGoAhead(context: Context) = playVoice(context, R.raw.voice_go_ahead, Tone.START)
+    /**
+     * The microphone records now: you can speak. "Go ahead" only from a Bluetooth microphone; the
+     * phone's own microphone would record the clip from the speaker into the note (and its
+     * transcript), so there it is the short tone.
+     */
+    fun playListening(context: Context, mode: Mode, bluetooth: Boolean) = when {
+        mode == Mode.OFF -> Unit
+        mode == Mode.VOICE && bluetooth -> playVoice(context, R.raw.voice_go_ahead, Tone.START)
+        else -> play(Tone.START)
+    }
 
-    /** After the stop, what happens next in a few words ("Saved, transcribing.", "Sending to White Noise."). */
-    fun playDone(context: Context, plan: ActionPlan) = playVoice(context, doneClip(plan), null)
+    /** After the stop, what happens next: a falling tone, or in a few words ("Saved, transcribing.", "Sending to White Noise."). */
+    fun playStopped(context: Context, mode: Mode, plan: ActionPlan, failed: Boolean) = when {
+        mode == Mode.OFF -> Unit
+        failed -> play(Tone.FAILED)
+        mode == Mode.VOICE -> playVoice(context, doneClip(plan), Tone.STOP)
+        else -> play(Tone.STOP)
+    }
 
     fun doneClip(plan: ActionPlan): Int {
         val tr = plan.transcribe

@@ -21,7 +21,7 @@ A voice recorder that also does something with what you said: records reliably (
 
 ## Positioning
 
-- **The destination is chosen at the moment you stop.** Every action button reads "Stop → name" while recording, so one tap at the stop still picks where it goes.
+- **The destination is chosen with the tap that starts, and kept or changed at the stop.** While recording, the started line is one big "Stop → name" key; the other lines wait folded under "Stop on another line", so a change of mind is still one tap.
 - **Bluetooth microphones done right**: headsets, LE Audio hearing aids, the car's hands-free mic, with the real input shown, a mid-recording switch into the same file, and one audible fallback to the phone.
 - **Transcription stays on the phone** through Offline Speech to Text (OSTT). Third Ear has no speech engine of its own.
 - **The loop closes in White Noise**: speak, an agent (e.g. the Hermes agent) gets the transcript or audio, its answer is played or read back.
@@ -38,7 +38,7 @@ A voice recorder that also does something with what you said: records reliably (
 - Android 12+ (minSdk 31). White Noise needs a 64-bit ARM phone and network.
 - Permanent fork of Fossify Voice Recorder. The UI is Third Ear's own (Jetpack Compose: Board, Log, Lines, Setup); fossify-commons stays only as a helper library (storage access, permissions, recycle-bin file moves). Kotlin package and app id `app.thirdear`.
 - Recording: own `AudioRecord` front end, AAC/.m4a, Opus/.ogg, MP3, crash-safe frame journal (a killed process loses at most the last second), wake lock, silence watchdog.
-- Actions: name + destination (save, copy transcript, share, White Noise audio/transcript/both, webhook) + transcribe on/off. Three Quick Settings tiles and a home-screen widget bound to actions. Progress notification, optionally spoken (spoken cues in Lisa's voice, from I Hear You).
+- Actions: name + destination (save, copy transcript, share, White Noise audio/transcript/both, webhook) + transcribe on/off. Three Quick Settings tiles and a home-screen widget bound to actions. Progress notification. Two audible cues, each off / tone / voice (Lisa's voice, from I Hear You): when the microphone really records (a Bluetooth link takes seconds; "Go ahead" only from a Bluetooth mic, a tone on the phone mic so the clip is not recorded), and after the stop (what happens next, then delivered or failed).
 - White Noise: own npub (copy, QR), accept invites, nsec export/import; per-group reply policy (off / play voice / play voice and read text; automatic or on request), ignore list (default 🎙️).
 - Terminology: "line" in the UI (an action as a key on the Board, with a cord colour and a line code), "action" in code and docs, "Stop → <line>", "source button", "Offline Speech to Text (OSTT)", "White Noise", "group".
 - UI languages: English, Slovak, Czech, German, Spanish (app and website).
@@ -59,7 +59,7 @@ A voice recorder that also does something with what you said: records reliably (
 
 ## Product Principles
 
-1. **Decide at the stop, not before.** Where a recording goes is a choice made in one tap at the end.
+1. **Decide with the start, confirm with the stop.** Tapping a line is the plan; one big key at the end carries it out, and a different line is still one tap away.
 2. **Never lose the words.** Reliability (crash recovery, mic fallback, retries) beats features.
 3. **Eyes-free after the tap.** Status and answers reach the ear (cues, spoken progress, read-aloud), not only the screen.
 4. **Local and owned.** On-device transcription, no account, no analytics, own keys.

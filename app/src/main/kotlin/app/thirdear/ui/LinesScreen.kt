@@ -96,6 +96,8 @@ fun LinesScreen(host: MainActivity, editId: String?, onEdited: () -> Unit, onOpe
     val transcriber = remember(version) { Transcriber(context).available(context.config.transcriber) }
     var editing by remember { mutableStateOf<RecordAction?>(null) }
     var creating by remember { mutableStateOf(false) }
+    // a new line with its fields filled in (from a group without a line)
+    var draft by remember { mutableStateOf<RecordAction?>(null) }
     var deleting by remember { mutableStateOf<RecordAction?>(null) }
 
     LaunchedEffect(editId, actions) {
@@ -146,10 +148,13 @@ fun LinesScreen(host: MainActivity, editId: String?, onEdited: () -> Unit, onOpe
                 Rule(inset = 76.dp)
             }
 
-            GroupsSection(host, onOpenSetup)
+            GroupsSection(host, actions, onOpenSetup, onNewLine = { g ->
+                draft = RecordAction(name = g.name, destination = Destination.WHITE_NOISE, groupId = g.id, groupName = g.name)
+                creating = true
+            })
         }
         ExtendedFloatingActionButton(
-            onClick = { creating = true },
+            onClick = { draft = null; creating = true },
             icon = { Icon(Icons.Outlined.Add, null) },
             text = { Text(stringResource(R.string.te_add_line), style = TeType.button) },
             containerColor = p.ink,
@@ -165,6 +170,7 @@ fun LinesScreen(host: MainActivity, editId: String?, onEdited: () -> Unit, onOpe
         val original = editing
         LineEditor(
             original = original,
+            draft = if (original == null) draft else null,
             index = original?.let { o -> actions.indexOfFirst { it.id == o.id } } ?: actions.size,
             usedCords = actions.mapIndexed { i, a -> cordOf(a, i) }.toSet(),
             onSave = { a ->
@@ -176,7 +182,7 @@ fun LinesScreen(host: MainActivity, editId: String?, onEdited: () -> Unit, onOpe
                     if (actions.size <= 1) host.toast(context.getString(R.string.te_at_least_one_action)) else deleting = o
                 }
             },
-            onDismiss = { creating = false; editing = null },
+            onDismiss = { creating = false; editing = null; draft = null },
         )
     }
     deleting?.let { a ->
@@ -206,13 +212,16 @@ fun android.content.Context.problemText(p: ActionPlan.Problem) = getString(
 
 /** White Noise groups: invites to accept, and how each group's replies reach the ear. */
 @Composable
-private fun GroupsSection(host: MainActivity, onOpenSetup: () -> Unit) {
+private fun GroupsSection(host: MainActivity, actions: List<RecordAction>, onOpenSetup: () -> Unit, onNewLine: (MarmotHost.Group) -> Unit) {
     val p = Te.colors
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val groups by MarmotHost.groups.collectAsStateWithLifecycle()
     val phase by MarmotHost.phase.collectAsStateWithLifecycle()
     var editing by remember { mutableStateOf<Pair<String, String>?>(null) }
+    var leaving by remember { mutableStateOf<Pair<String, String>?>(null) }
+    var backingUp by remember { mutableStateOf(false) }
+    val npub by MarmotHost.npub.collectAsStateWithLifecycle()
     var settingsVersion by remember { mutableStateOf(0) }
     val on = context.config.whiteNoiseEnabled
 
@@ -264,10 +273,41 @@ private fun GroupsSection(host: MainActivity, onOpenSetup: () -> Unit) {
     joined.forEach { g ->
         val s = remember(g.id, settingsVersion) { settingsStore.get(g.id) }
         SettingRow(title = g.name, value = context.groupSummary(s), onClick = { editing = g.id to g.name })
+        // joined but nothing records into it yet: say what to do next
+        if (actions.none { it.groupId == g.id }) {
+            Notice(
+                stringResource(R.string.te_wn_no_line_yet, g.name),
+                Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
+                action = stringResource(R.string.te_wn_make_line),
+                onAction = { onNewLine(g) },
+            )
+        }
         Rule(inset = 16.dp)
     }
+    if (joined.isNotEmpty() && npub != null && context.config.nsecShownFor != npub) {
+        Notice(
+            stringResource(R.string.te_wn_backup_nudge),
+            Modifier.padding(16.dp),
+            action = stringResource(R.string.te_wn_back_up),
+            onAction = { backingUp = true },
+        )
+    }
+    if (backingUp) NsecBackup(host, onDone = { backingUp = false; settingsVersion++ })
     editing?.let { (id, name) ->
-        GroupDialog(name, settingsStore.get(id), onSave = { settingsStore.put(id, it); settingsVersion++ }, onDismiss = { editing = null })
+        GroupDialog(name, settingsStore.get(id), onSave = { settingsStore.put(id, it); settingsVersion++ }, onLeave = { leaving = id to name }, onDismiss = { editing = null })
+    }
+    leaving?.let { (id, name) ->
+        ConfirmDialog(
+            title = stringResource(R.string.te_wn_leave_confirm, name),
+            message = stringResource(R.string.te_wn_leave_confirm_desc),
+            confirm = stringResource(R.string.te_wn_leave),
+            destructive = true,
+            onConfirm = {
+                editing = null
+                scope.launch { runCatching { MarmotHost.leave(id) }.onFailure { host.toast(it.message ?: "?") } }
+            },
+            onDismiss = { leaving = null },
+        )
     }
 }
 
@@ -285,7 +325,7 @@ fun android.content.Context.groupSummary(s: GroupSettings): String {
 }
 
 @Composable
-private fun GroupDialog(name: String, initial: GroupSettings, onSave: (GroupSettings) -> Unit, onDismiss: () -> Unit) {
+private fun GroupDialog(name: String, initial: GroupSettings, onSave: (GroupSettings) -> Unit, onLeave: () -> Unit, onDismiss: () -> Unit) {
     val p = Te.colors
     var replies by remember { mutableStateOf(initial.replies) }
     var read by remember { mutableStateOf(initial.read) }
@@ -313,6 +353,9 @@ private fun GroupDialog(name: String, initial: GroupSettings, onSave: (GroupSett
             shape = PlateShape,
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
         )
+        Spacer(Modifier.height(24.dp))
+        Rule()
+        PlainButton(stringResource(R.string.te_wn_leave), onLeave, modifier = Modifier.padding(horizontal = 8.dp), color = p.faultInk)
     }
 }
 
@@ -379,6 +422,7 @@ fun FullDialog(title: String, onDismiss: () -> Unit, onSave: () -> Unit, saveEna
 @Composable
 private fun LineEditor(
     original: RecordAction?,
+    draft: RecordAction?,
     index: Int,
     usedCords: Set<Int>,
     onSave: (RecordAction) -> Unit,
@@ -389,7 +433,7 @@ private fun LineEditor(
     val context = LocalContext.current
     val transcriber = remember { Transcriber(context).available(context.config.transcriber) }
     val firstFree = remember { (0 until Cords.all.size).firstOrNull { it !in usedCords } ?: index }
-    var a by remember { mutableStateOf(original ?: RecordAction(name = "", cord = firstFree)) }
+    var a by remember { mutableStateOf(original ?: draft?.copy(cord = firstFree) ?: RecordAction(name = "", cord = firstFree)) }
     var pickGroup by remember { mutableStateOf(false) }
     var tried by remember { mutableStateOf(false) }
     val cord = cordOf(a, index)

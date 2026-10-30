@@ -298,7 +298,7 @@ Flat. There are no shadows anywhere: depth is a tonal step (face, plate, plate h
 ### Named Rules
 **The Tonal Step Rule.** To separate a surface, step its tone and draw a 1 dp rule. Never a shadow, never a glow.
 
-**The One Reversed Plate Rule.** At most one plate per screen is reversed into strip colours: the line a recording started on ("Started here"). Reversal marks the one thing that is happening, so it is never used for emphasis elsewhere.
+**The One Reversed Plate Rule.** At most one plate per screen is reversed into strip colours: the Stop key, the line a recording started on. Reversal marks the one thing that is happening, so it is never used for emphasis elsewhere.
 
 ## Shapes
 
@@ -310,7 +310,7 @@ Two radii only: 3 dp for cells (code cells, level-meter segments, the pipeline s
 The whole key is one target (min 136 dp tall, equal heights within a row). Top row: code cell, then the lamp at the right. Then the name (key name style, two lines max), then the state word under it in Small Strong: Busy Ink while busy, Fault Ink when not delivered, Ink for replies. The designation strip runs along the bottom edge.
 - **Pressed:** an instant step to Plate High with a haptic tick; no ripple.
 - **Long press:** opens the line in the editor (not while recording).
-- **Recording:** every key shows "STOP →" in Label style after its code cell and its lamp goes off; tapping stops onto that line, and the strip flashes the cord colour for one 90 ms relay frame (skipped with animations off). The started line becomes the reversed plate with "Started here".
+- **Recording:** the line the recording started on is the plan. It leaves the field and becomes the Stop key (see Recording Controls); the other lines fold away behind "Stop on another line". Unfolded, every key shows "STOP →" in Label style after its code cell and its lamp goes off; tapping stops onto that line, and the strip flashes the cord colour for one 90 ms relay frame (skipped with animations off).
 - **Accessibility:** merged semantics; TalkBack reads name, state word and what the line does.
 
 ### Code Cell
@@ -339,7 +339,14 @@ A 16 dp opal circle in a 2 dp bezel inside a 24 dp box (12 dp in Notices and the
 A pinned plate (min 64 dp) naming the real input (phone or the Bluetooth device by name) with its route line beneath. Tapping switches source. While recording it shows a twelve-segment log-scale level meter (last two segments amber); idle it shows "Switch". There is no idle level meter: showing one would keep the microphone open and the system privacy indicator lit.
 
 ### Recording Plate
-Recess plate: amber working lamp (red stays reserved for "not delivered"), "RECORDING" label and the line's code cell, then the giant timer; Pause (outline) and Discard (plain, fault ink) at the right. Kept compact so the stop keys stay within reach below it.
+Recess plate: amber working lamp (red stays reserved for "not delivered"), "RECORDING" label and the line's code cell, then the giant timer. Nothing else: kept compact so the Stop key stays within reach below it.
+
+### Recording Controls
+While recording, the Board below the plate is, in order:
+- **Stop key:** the started line as a full-width line key, min 168 dp, reversed into strip colours (the screen's one reversed plate), "STOP →" after the code cell, the name in Screen title size, its designation strip at the bottom. One tap does what was chosen at the start.
+- **Pause / Resume:** a full-width outline button, min 64 dp, 20 dp below the Stop key: a gap, not a hairline, so a slipped thumb on Pause does not send half a thought.
+- **Stop on another line:** a 48 dp Label row with the count and a chevron; it unfolds the field of the other lines as "STOP →" keys. Open by default only when the started line no longer exists.
+- **Discard:** last and furthest, 40 dp below and after a rule, plain in Fault Ink with a delete icon, behind a confirmation. It deletes the audio.
 
 ### Notice
 A Recess band with a 1 dp amber (or red for faults) border, a 12 dp lamp, a sentence of state, and an optional plain action. Never colour alone.

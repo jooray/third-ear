@@ -1,6 +1,7 @@
 package app.thirdear.ui
 
 import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color as AColor
@@ -61,6 +62,7 @@ import app.thirdear.helpers.EXTENSION_MP3
 import app.thirdear.helpers.EXTENSION_OGG
 import app.thirdear.helpers.SAMPLING_RATES
 import app.thirdear.helpers.SAMPLING_RATE_BITRATE_LIMITS
+import app.thirdear.pipeline.Cues
 import app.thirdear.pipeline.MediaPauser
 import app.thirdear.pipeline.Transcriber
 import app.thirdear.tiles.ActionTileService
@@ -88,9 +90,10 @@ private sealed interface Pick {
     data class MoveTo(val from: String, val to: String) : Pick
     data object CreateGroup : Pick
     data object NsecWarning : Pick
-    data class Nsec(val nsec: String) : Pick
     data object ImportNsec : Pick
     data object EmptyBin : Pick
+    data object ListeningCue : Pick
+    data object ProgressCue : Pick
 }
 
 @Composable
@@ -164,7 +167,8 @@ fun SetupScreen(host: MainActivity) {
             SwitchRow(stringResource(R.string.te_setting_transcript_files), config.saveTranscriptFiles, { config.saveTranscriptFiles = it; changed() })
 
             Section(R.string.te_setup_feedback)
-            SwitchRow(stringResource(R.string.te_setting_spoken_cues), config.spokenCues, { config.spokenCues = it; changed() }, description = stringResource(R.string.te_setting_spoken_cues_desc))
+            SettingRow(stringResource(R.string.te_setting_listening_cue), value = listeningCues(context).toMap()[config.listeningCue], onClick = { pick = Pick.ListeningCue })
+            SettingRow(stringResource(R.string.te_setting_progress_cue), value = progressCues(context).toMap()[config.progressCue], onClick = { pick = Pick.ProgressCue })
             SwitchRow(stringResource(R.string.te_setting_pause_media), config.pauseMedia && MediaPauser.hasAccess(context), {
                 config.pauseMedia = it
                 if (it && !MediaPauser.hasAccess(context)) runCatching { context.startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)) }
@@ -213,6 +217,20 @@ fun SetupScreen(host: MainActivity) {
 
     when (val k = pick) {
         null -> {}
+        Pick.ListeningCue -> ChoiceDialog(
+            stringResource(R.string.te_setting_listening_cue),
+            listeningCues(context),
+            config.listeningCue,
+            { config.listeningCue = it; changed() },
+            { pick = null },
+        )
+        Pick.ProgressCue -> ChoiceDialog(
+            stringResource(R.string.te_setting_progress_cue),
+            progressCues(context),
+            config.progressCue,
+            { config.progressCue = it; changed() },
+            { pick = null },
+        )
         Pick.Format -> ChoiceDialog(
             stringResource(R.string.te_setup_format),
             listOf(EXTENSION_M4A to stringResource(R.string.m4a), EXTENSION_OGG to stringResource(R.string.ogg_opus), EXTENSION_MP3 to stringResource(R.string.mp3_experimental)),
@@ -325,17 +343,7 @@ fun SetupScreen(host: MainActivity) {
             },
             onDismiss = { pick = null },
         )
-        Pick.NsecWarning -> ConfirmDialog(
-            stringResource(R.string.te_wn_show_nsec),
-            stringResource(R.string.te_wn_nsec_warning),
-            stringResource(R.string.te_wn_reveal),
-            onConfirm = {
-                runCatching { MarmotHost.revealNsec() }.onSuccess { pick = Pick.Nsec(it) }.onFailure { host.toast(it.message ?: "?") }
-            },
-            destructive = true,
-            onDismiss = { if (pick == Pick.NsecWarning) pick = null },
-        )
-        is Pick.Nsec -> ReadDialog(stringResource(R.string.te_wn_show_nsec), k.nsec, onCopy = { host.copy(k.nsec, sensitive = true) }, onDismiss = { pick = null }, mono = true)
+        Pick.NsecWarning -> NsecBackup(host, onDone = { pick = null; changed() })
         Pick.ImportNsec -> TextDialog(
             title = stringResource(R.string.te_wn_import_nsec),
             initial = "",
@@ -449,6 +457,9 @@ private fun WhiteNoiseSection(host: MainActivity, onPick: (Pick) -> Unit, change
         }
         SettingRow(stringResource(R.string.te_wn_create_group), value = stringResource(R.string.te_wn_create_group_short), onClick = { onPick(Pick.CreateGroup) })
         Label(stringResource(R.string.te_wn_backup), Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 4.dp))
+        if (context.config.nsecShownFor != n) {
+            Notice(stringResource(R.string.te_wn_backup_nudge), Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
+        }
         SettingRow(stringResource(R.string.te_wn_show_nsec), onClick = { onPick(Pick.NsecWarning) })
         SettingRow(stringResource(R.string.te_wn_import_nsec), onClick = { onPick(Pick.ImportNsec) })
     }
@@ -499,5 +510,44 @@ private fun providerLabel(context: android.content.Context, transcriber: Transcr
         Transcriber.Contract.FILE -> context.getString(R.string.te_transcriber_file_api, name)
         Transcriber.Contract.CALLER_AUDIO -> context.getString(R.string.te_transcriber_caller_audio, name)
         null -> name
+    }
+}
+
+private fun listeningCues(context: Context) = listOf(
+    Cues.Mode.OFF to context.getString(R.string.te_cue_off),
+    Cues.Mode.BEEP to context.getString(R.string.te_cue_tone),
+    Cues.Mode.VOICE to context.getString(R.string.te_cue_go_ahead),
+)
+
+private fun progressCues(context: Context) = listOf(
+    Cues.Mode.OFF to context.getString(R.string.te_cue_off),
+    Cues.Mode.BEEP to context.getString(R.string.te_cue_progress_tones),
+    Cues.Mode.VOICE to context.getString(R.string.te_cue_progress_voice),
+)
+
+/**
+ * Shows the identity's nsec to back it up: a warning first, then the key with Copy. Remembers
+ * which identity was shown, so the backup reminders go away.
+ */
+@Composable
+fun NsecBackup(host: MainActivity, onDone: () -> Unit) {
+    val context = LocalContext.current
+    var nsec by remember { mutableStateOf<String?>(null) }
+    val shown = nsec
+    if (shown == null) {
+        ConfirmDialog(
+            stringResource(R.string.te_wn_show_nsec),
+            stringResource(R.string.te_wn_nsec_warning),
+            stringResource(R.string.te_wn_reveal),
+            onConfirm = {
+                runCatching { MarmotHost.revealNsec() }
+                    .onSuccess { nsec = it; context.config.nsecShownFor = MarmotHost.npub.value }
+                    .onFailure { host.toast(it.message ?: "?") }
+            },
+            destructive = true,
+            onDismiss = { if (nsec == null) onDone() },
+        )
+    } else {
+        ReadDialog(stringResource(R.string.te_wn_show_nsec), shown, onCopy = { host.copy(shown, sensitive = true) }, onDismiss = onDone, mono = true)
     }
 }

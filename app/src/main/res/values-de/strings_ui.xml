@@ -42,9 +42,8 @@
     <string name="te_word_saving">Wird gespeichert…</string>
     <string name="te_word_not_delivered">Nicht zugestellt</string>
     <string name="te_board_tap_to_record">Leitungen · zum Aufnehmen tippen</string>
-    <string name="te_board_stop_on">Auf einer Leitung stoppen</string>
+    <string name="te_board_other_line">Auf einer anderen Leitung stoppen</string>
     <string name="te_board_stop">Stopp →</string>
-    <string name="te_board_started_here">Hier gestartet</string>
     <string name="te_board_replies">Wartende Antworten</string>
     <string name="te_board_all_replies">Alle Antworten</string>
     <string name="te_board_ostt_missing">Eine Leitung braucht ein Transkript, aber Offline Speech to Text ist nicht installiert. Aufnahmen werden trotzdem gespeichert.</string>

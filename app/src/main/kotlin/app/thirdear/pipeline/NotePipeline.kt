@@ -174,7 +174,7 @@ class NotePipeline(private val context: Context, private val store: NoteStore = 
             if (plan.action.destination != Destination.SHARE) store.dropAudio(note)
             if (note.recovered) simpleNotification(context.getString(R.string.te_recovered_title), context.getString(R.string.te_recovered_body, note.savedName))
             else if (plan.action.destination != Destination.SAVE && plan.action.destination != Destination.COPY_TRANSCRIPT && plan.action.destination != Destination.SHARE) {
-                if (context.config.spokenCues) Cues.play(Cues.Tone.SENT)
+                if (context.config.progressCue != Cues.Mode.OFF) Cues.play(Cues.Tone.SENT)
             }
         }
     }
@@ -254,7 +254,7 @@ class NotePipeline(private val context: Context, private val store: NoteStore = 
     private fun fail(note: Note, why: String) {
         val failed = note.copy(state = NoteState.FAILED, step = null, error = why)
         store.put(failed)
-        if (context.config.spokenCues) Cues.play(Cues.Tone.FAILED)
+        if (context.config.progressCue != Cues.Mode.OFF) Cues.play(Cues.Tone.FAILED)
         failureNotification(failed, why)
     }
 

@@ -158,7 +158,7 @@ class RecorderService : Service() {
     private var jobs = 0
     private var lastNotified: EngineStatus? = null
     private var silenceShown = false
-    private var goAheadPlayed = false
+    @Volatile private var goAheadPlayed = false
     private var foregroundId = 0
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -275,7 +275,8 @@ class RecorderService : Service() {
         }
 
         override fun onCue(cue: SourcePolicy.Cue) {
-            // always audible: in a headset or a car nobody watches the screen
+            // always audible: in a headset or a car nobody watches the screen; it also says "speak now"
+            goAheadPlayed = true
             Thread({ Cues.play(Cues.Tone.FALLBACK) }, "third-ear-cue").start()
         }
 
@@ -297,12 +298,12 @@ class RecorderService : Service() {
             lastNotified = status
             notifications().notify(RECORDER_RUNNING_NOTIF_ID, recordingNotification(l))
         }
-        if (!goAheadPlayed && config.spokenCues && status.source == Source.BLUETOOTH && status.input.bluetooth &&
-            !status.waitingForBluetooth && !status.switching && !status.starting
-        ) {
-            // the Bluetooth microphone delivers real audio now: "go ahead" (it can be talked over)
+        if (!goAheadPlayed && !status.waitingForBluetooth && !status.switching && !status.starting) {
+            // the microphone delivers real audio now (a Bluetooth link takes seconds): speak (it can be talked over)
             goAheadPlayed = true
-            Thread({ Cues.playGoAhead(this) }, "third-ear-cue").start()
+            val mode = config.listeningCue
+            val bluetooth = status.source == Source.BLUETOOTH && status.input.bluetooth
+            Thread({ Cues.playListening(this, mode, bluetooth) }, "third-ear-cue").start()
         }
         val silent = status.silent && !status.paused
         if (silent && !silenceShown) {
@@ -366,9 +367,7 @@ class RecorderService : Service() {
         goForeground(NotePipeline.NOTIF_PROGRESS, idleNotification(), microphone = true)
         notifications().cancel(RECORDER_RUNNING_NOTIF_ID)
         scope.launch {
-            if (config.spokenCues) {
-                if (failure != null) Cues.play(Cues.Tone.FAILED) else Cues.playDone(this@RecorderService, ActionPlan.of(action))
-            }
+            Cues.playStopped(this@RecorderService, config.progressCue, ActionPlan.of(action), failed = failure != null)
             resumeMediaNow(toResume)
         }
         runPipeline(done.id, retry = false)
@@ -546,6 +545,6 @@ class RecorderService : Service() {
             .setAutoCancel(true)
             .build()
         notifications().notify(WARNING_NOTIF_ID, notification)
-        if (config.spokenCues) Thread({ Cues.play(Cues.Tone.WARN) }, "third-ear-cue").start()
+        if (config.listeningCue != Cues.Mode.OFF) Thread({ Cues.play(Cues.Tone.WARN) }, "third-ear-cue").start()
     }
 }

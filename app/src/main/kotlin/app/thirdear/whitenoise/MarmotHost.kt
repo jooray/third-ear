@@ -327,6 +327,12 @@ object MarmotHost {
         refreshGroups()
     }
 
+    /** An MLS leave, sent to the group: the others see Third Ear go; it can come back only by a new invite. */
+    suspend fun leave(groupId: String) = io { m, acct ->
+        m.leaveGroup(acct, groupId)
+        refreshGroups()
+    }
+
     /** A group with only Third Ear in it (to try sending without bothering anyone); others can be invited later. */
     suspend fun createGroup(name: String): String = io { m, acct ->
         m.createGroup(acct, name, emptyList(), null).also { refreshGroups() }

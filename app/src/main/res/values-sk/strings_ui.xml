@@ -42,9 +42,8 @@
     <string name="te_word_saving">Ukladá sa…</string>
     <string name="te_word_not_delivered">Nedoručené</string>
     <string name="te_board_tap_to_record">Linky · ťuknutím nahrávaš</string>
-    <string name="te_board_stop_on">Zastav na linke</string>
+    <string name="te_board_other_line">Zastaviť na inej linke</string>
     <string name="te_board_stop">Stop →</string>
-    <string name="te_board_started_here">Začaté tu</string>
     <string name="te_board_replies">Čakajúce odpovede</string>
     <string name="te_board_all_replies">Všetky odpovede</string>
     <string name="te_board_ostt_missing">Linka potrebuje prepis, ale Offline Speech to Text nie je nainštalovaný. Nahrávky sa aj tak uložia.</string>

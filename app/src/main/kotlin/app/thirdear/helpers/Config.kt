@@ -7,6 +7,7 @@ import androidx.core.content.edit
 import org.fossify.commons.helpers.BaseConfig
 import app.thirdear.R
 import app.thirdear.extensions.getDefaultRecordingsFolder
+import app.thirdear.pipeline.Cues
 
 class Config(context: Context) : BaseConfig(context) {
     companion object {
@@ -108,10 +109,25 @@ class Config(context: Context) : BaseConfig(context) {
         get() = prefs.getBoolean(PREFER_BLUETOOTH, false)
         set(v) = prefs.edit { putBoolean(PREFER_BLUETOOTH, v) }
 
-    /** "Go ahead" when a Bluetooth microphone is ready, and what happens after the stop. */
-    var spokenCues: Boolean
-        get() = prefs.getBoolean(SPOKEN_CUES, true)
-        set(v) = prefs.edit { putBoolean(SPOKEN_CUES, v) }
+    /** When the microphone really records (a Bluetooth link takes seconds): a tone or "Go ahead". */
+    var listeningCue: Cues.Mode
+        get() = cueMode(LISTENING_CUE)
+        set(v) = prefs.edit { putString(LISTENING_CUE, v.name) }
+
+    /** After the stop and through delivery: what happens next, then delivered or failed. */
+    var progressCue: Cues.Mode
+        get() = cueMode(PROGRESS_CUE)
+        set(v) = prefs.edit { putString(PROGRESS_CUE, v.name) }
+
+    /** The npub whose nsec was last shown (to back it up); the reminder stays until it matches the identity in use. */
+    var nsecShownFor: String?
+        get() = prefs.getString(NSEC_SHOWN_FOR, null)
+        set(v) = prefs.edit { putString(NSEC_SHOWN_FOR, v) }
+
+    /** Before the two settings there was one "Spoken cues" switch; turned off, it turned both off. */
+    private fun cueMode(key: String): Cues.Mode =
+        prefs.getString(key, null)?.let { runCatching { Cues.Mode.valueOf(it) }.getOrNull() }
+            ?: if (prefs.getBoolean(SPOKEN_CUES, true)) Cues.Mode.VOICE else Cues.Mode.OFF
 
     /** Pause other apps' playback while recording (needs notification access). */
     var pauseMedia: Boolean
