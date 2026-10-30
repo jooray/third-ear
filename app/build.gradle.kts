@@ -70,6 +70,15 @@ android {
             )
             signingConfig = signingConfigs.findByName("release")
         }
+        // release speed (R8) on the debug app id and key: screenshots on an emulator with demo data
+        // put in through run-as; the debug build is too slow there
+        create("screenshots") {
+            initWith(getByName("release"))
+            applicationIdSuffix = ".debug"
+            isDebuggable = true
+            signingConfig = signingConfigs.getByName("debug")
+            matchingFallbacks += "release"
+        }
     }
 
     flavorDimensions.add("variants")
