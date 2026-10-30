@@ -15,7 +15,8 @@ open class SimpleActivity : BaseSimpleActivity() {
             try {
                 @Suppress("DEPRECATION")
                 activity.startActivityForResult(android.content.Intent(android.content.Intent.ACTION_OPEN_DOCUMENT_TREE), PICK_FOLDER)
-            } catch (e: Exception) {
+            } catch (ignored: Exception) {
+                // no folder picker on this phone: the caller treats it as cancelled
                 folderCallback = null
                 callback(null)
             }

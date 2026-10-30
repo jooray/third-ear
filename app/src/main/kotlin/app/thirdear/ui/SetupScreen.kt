@@ -106,7 +106,7 @@ fun SetupScreen(host: MainActivity) {
     var tick by remember { mutableIntStateOf(0) }
     val changed: () -> Unit = { tick++ }
     var pick by remember { mutableStateOf<Pick?>(null) }
-    var binSize by remember { mutableStateOf(0) }
+    var binSize by remember { mutableIntStateOf(0) }
     val trashed by host.trashed
     LaunchedEffect(trashed) { binSize = trashed.sumOf { it.size } }
 
@@ -124,7 +124,7 @@ fun SetupScreen(host: MainActivity) {
         key(tick) {
             SettingRow(stringResource(R.string.save_recordings_in), value = context.humanizePath(config.saveRecordingsFolder), onClick = {
                 val current = config.saveRecordingsFolder
-                host.launchFolderPicker(current) { folder ->
+                host.launchFolderPicker { folder ->
                     if (folder.isNullOrEmpty()) return@launchFolderPicker
                     ensureBackgroundThread {
                         val has = host.hasRecordings()
@@ -161,14 +161,23 @@ fun SetupScreen(host: MainActivity) {
                 value = currentTranscriber?.let { providerLabel(context, transcriber, it) } ?: stringResource(R.string.te_ostt_missing),
                 onClick = {
                     val c = currentTranscriber
-                    if (transcriber.providers().isEmpty() || c == null || transcriber.contractFor(c) == null) context.openOsttPage() else pick = Pick.Transcriber
+                    val usable = transcriber.providers().isNotEmpty() && c != null && transcriber.contractFor(c) != null
+                    if (usable) pick = Pick.Transcriber else context.openOsttPage()
                 },
             )
             SwitchRow(stringResource(R.string.te_setting_transcript_files), config.saveTranscriptFiles, { config.saveTranscriptFiles = it; changed() })
 
             Section(R.string.te_setup_feedback)
-            SettingRow(stringResource(R.string.te_setting_listening_cue), value = listeningCues(context).toMap()[config.listeningCue], onClick = { pick = Pick.ListeningCue })
-            SettingRow(stringResource(R.string.te_setting_progress_cue), value = progressCues(context).toMap()[config.progressCue], onClick = { pick = Pick.ProgressCue })
+            SettingRow(
+                stringResource(R.string.te_setting_listening_cue),
+                value = listeningCues(context).toMap()[config.listeningCue],
+                onClick = { pick = Pick.ListeningCue },
+            )
+            SettingRow(
+                stringResource(R.string.te_setting_progress_cue),
+                value = progressCues(context).toMap()[config.progressCue],
+                onClick = { pick = Pick.ProgressCue },
+            )
             SwitchRow(stringResource(R.string.te_setting_pause_media), config.pauseMedia && MediaPauser.hasAccess(context), {
                 config.pauseMedia = it
                 if (it && !MediaPauser.hasAccess(context)) runCatching { context.startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)) }
@@ -177,8 +186,12 @@ fun SetupScreen(host: MainActivity) {
 
             Section(R.string.te_setup_shortcuts)
             androidx.compose.runtime.key(actionsVersion) {
-                (1..ActionStore.TILE_SLOTS).forEach { slot ->
-                    SettingRow(stringResource(R.string.te_setting_tile, slot), value = store.tileAction(slot)?.name ?: stringResource(R.string.te_tile_no_action), onClick = { pick = Pick.Tile(slot) })
+                for (slot in 1..ActionStore.TILE_SLOTS) {
+                    SettingRow(
+                        stringResource(R.string.te_setting_tile, slot),
+                        value = store.tileAction(slot)?.name ?: stringResource(R.string.te_tile_no_action),
+                        onClick = { pick = Pick.Tile(slot) },
+                    )
                 }
                 SettingRow(stringResource(R.string.te_setting_widget_action), value = store.defaultAction()?.name, onClick = { pick = Pick.Widget })
             }
@@ -198,7 +211,12 @@ fun SetupScreen(host: MainActivity) {
             }
 
             Section(R.string.te_setting_android_auto)
-            Text(stringResource(R.string.te_setting_android_auto_desc), style = TeType.small, color = p.inkMuted, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+            Text(
+                stringResource(R.string.te_setting_android_auto_desc),
+                style = TeType.small,
+                color = p.inkMuted,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            )
 
             Section(R.string.te_setup_about)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -233,7 +251,11 @@ fun SetupScreen(host: MainActivity) {
         )
         Pick.Format -> ChoiceDialog(
             stringResource(R.string.te_setup_format),
-            listOf(EXTENSION_M4A to stringResource(R.string.m4a), EXTENSION_OGG to stringResource(R.string.ogg_opus), EXTENSION_MP3 to stringResource(R.string.mp3_experimental)),
+            listOf(
+                EXTENSION_M4A to stringResource(R.string.m4a),
+                EXTENSION_OGG to stringResource(R.string.ogg_opus),
+                EXTENSION_MP3 to stringResource(R.string.mp3_experimental),
+            ),
             config.extension,
             { config.extension = it; adjustBitrate(context); adjustSamplingRate(context); changed() },
             { pick = null },
@@ -434,7 +456,12 @@ private fun WhiteNoiseSection(host: MainActivity, onPick: (Pick) -> Unit, change
                 size = 12.dp,
             )
         }
-        Text(status, style = TeType.small, color = if (phase == MarmotHost.Phase.FAILED) p.faultInk else p.inkMuted, modifier = Modifier.padding(top = 2.dp, start = 4.dp))
+        Text(
+            status,
+            style = TeType.small,
+            color = if (phase == MarmotHost.Phase.FAILED) p.faultInk else p.inkMuted,
+            modifier = Modifier.padding(top = 2.dp, start = 4.dp),
+        )
     }
     val n = npub
     if (on && ready && n != null) {
@@ -455,7 +482,11 @@ private fun WhiteNoiseSection(host: MainActivity, onPick: (Pick) -> Unit, change
                 }
             }
         }
-        SettingRow(stringResource(R.string.te_wn_create_group), value = stringResource(R.string.te_wn_create_group_short), onClick = { onPick(Pick.CreateGroup) })
+        SettingRow(
+            stringResource(R.string.te_wn_create_group),
+            value = stringResource(R.string.te_wn_create_group_short),
+            onClick = { onPick(Pick.CreateGroup) },
+        )
         Label(stringResource(R.string.te_wn_backup), Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 4.dp))
         if (context.config.nsecShownFor != n) {
             Notice(stringResource(R.string.te_wn_backup_nudge), Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
@@ -491,7 +522,9 @@ private fun adjustBitrate(context: android.content.Context) {
 private fun adjustSamplingRate(context: android.content.Context) {
     val c = context.config
     val available = samplingRates(context)
-    if (c.samplingRate !in available) c.samplingRate = if (DEFAULT_SAMPLING_RATE in available) DEFAULT_SAMPLING_RATE else available.lastOrNull() ?: DEFAULT_SAMPLING_RATE
+    if (c.samplingRate !in available) {
+        c.samplingRate = if (DEFAULT_SAMPLING_RATE in available) DEFAULT_SAMPLING_RATE else available.lastOrNull() ?: DEFAULT_SAMPLING_RATE
+    }
 }
 
 private fun micModes(): List<Int> = listOf(

@@ -172,8 +172,10 @@ class NotePipeline(private val context: Context, private val store: NoteStore = 
             // the user's copy exists; the working copies only cost space (a share target may
             // still be reading the shared copy, so that one stays until the note is pruned)
             if (plan.action.destination != Destination.SHARE) store.dropAudio(note)
-            if (note.recovered) simpleNotification(context.getString(R.string.te_recovered_title), context.getString(R.string.te_recovered_body, note.savedName))
-            else if (plan.action.destination != Destination.SAVE && plan.action.destination != Destination.COPY_TRANSCRIPT && plan.action.destination != Destination.SHARE) {
+            val sent = plan.action.destination !in setOf(Destination.SAVE, Destination.COPY_TRANSCRIPT, Destination.SHARE)
+            if (note.recovered) {
+                simpleNotification(context.getString(R.string.te_recovered_title), context.getString(R.string.te_recovered_body, note.savedName))
+            } else if (sent) {
                 if (context.config.progressCue != Cues.Mode.OFF) Cues.play(Cues.Tone.SENT)
             }
         }
@@ -207,7 +209,8 @@ class NotePipeline(private val context: Context, private val store: NoteStore = 
             }
             note
         } catch (t: Throwable) {
-            val why = (t as? Transcriber.Failed)?.let { if (it.noSpeech) context.getString(R.string.te_error_no_speech) else it.message } ?: t.message ?: t.javaClass.simpleName
+            val why = (t as? Transcriber.Failed)?.let { if (it.noSpeech) context.getString(R.string.te_error_no_speech) else it.message }
+                ?: t.message ?: t.javaClass.simpleName
             note.copy(transcriptError = why).also { store.put(it) }
         }
     }
@@ -230,7 +233,14 @@ class NotePipeline(private val context: Context, private val store: NoteStore = 
                     .put("recorded_at", Instant.ofEpochMilli(note.startedAt).toString())
                     .put("duration_seconds", note.durationMs / 1000.0)
                     .put("microphone", note.mic)
-                    .put("content", if (delivery is ActionPlan.Delivery.Text) "text" else if ((delivery as ActionPlan.Delivery.Audio).caption != null) "audio+text" else "audio")
+                    .put(
+                        "content",
+                        when {
+                            delivery is ActionPlan.Delivery.Text -> "text"
+                            (delivery as ActionPlan.Delivery.Audio).caption != null -> "audio+text"
+                            else -> "audio"
+                        },
+                    )
                 when (delivery) {
                     is ActionPlan.Delivery.Text -> Webhook.post(url, action.webhookAuth, meta, delivery.text, null, name, note.container.mime)
                     is ActionPlan.Delivery.Audio -> Webhook.post(url, action.webhookAuth, meta, delivery.caption, audio, name, note.container.mime)

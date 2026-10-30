@@ -20,6 +20,7 @@ import app.thirdear.activities.MainActivity
 object MessageNotifier {
     const val CHANNEL = "white_noise_messages"
     const val KEY_REPLY = "reply_text"
+    private const val NOTIFICATION_ID_BASE = 5000
 
     fun createChannel(context: Context) {
         context.getSystemService(NotificationManager::class.java).createNotificationChannel(
@@ -27,7 +28,7 @@ object MessageNotifier {
         )
     }
 
-    fun notificationId(groupId: String) = 5000 + (groupId.hashCode() and 0xFFFF)
+    fun notificationId(groupId: String) = NOTIFICATION_ID_BASE + (groupId.hashCode() and 0xFFFF)
 
     fun messageLine(context: Context, m: IncomingMessage): String = when {
         m.audio.isNotEmpty() && m.text.isNotBlank() -> context.getString(R.string.te_message_voice_with_text, m.text)

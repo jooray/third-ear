@@ -29,6 +29,7 @@ import androidx.compose.material.icons.outlined.ExpandLess
 import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material.icons.outlined.Pause
 import androidx.compose.material.icons.outlined.PlayArrow
+import androidx.compose.material.icons.outlined.Stop
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Smartphone
 import androidx.compose.material3.Icon
@@ -106,7 +107,7 @@ fun BoardScreen(host: MainActivity, wide: Boolean, onOpenReplies: () -> Unit, on
     }
 
     Column(Modifier.fillMaxWidth()) {
-    BoardBody(host, wide, live, lines, actions, notes, messages, recording, onOpenReplies, onEditLine, { confirmDiscard = true }, { switchFrom = it })
+    BoardBody(host, wide, live, lines, actions, notes, messages, onOpenReplies, onEditLine, { confirmDiscard = true }, { switchFrom = it })
     }
 
     if (confirmDiscard) {
@@ -131,7 +132,6 @@ private fun androidx.compose.foundation.layout.ColumnScope.BoardBody(
     actions: List<app.thirdear.actions.RecordAction>,
     notes: List<Note>,
     messages: List<IncomingMessage>,
-    recording: Boolean,
     onOpenReplies: () -> Unit,
     onEditLine: (String) -> Unit,
     onDiscard: () -> Unit,
@@ -237,7 +237,7 @@ private fun RecordingControls(
     val started = lines.firstOrNull { it.action.id == live.action.id }
     val others = lines.filter { it.action.id != live.action.id }
     // a line deleted mid-recording has no key of its own: the field opens so the stop is still one tap
-    var otherLines by remember(live.action.id) { mutableStateOf(started == null) }
+    var otherLines by remember(live.action.id) { mutableStateOf(started == null && !live.action.id.startsWith(CHAT_ACTION_PREFIX)) }
     val paused = live.status.paused
 
     if (started != null) {
@@ -257,6 +257,16 @@ private fun RecordingControls(
             onClick = { RecorderService.stop(context, started.action.id) },
             onLongClick = null,
             modifier = Modifier.fillMaxWidth().heightIn(min = 168.dp),
+        )
+    }
+    if (started == null && live.action.id.startsWith(CHAT_ACTION_PREFIX)) {
+        // started from a conversation in Messages: no line of its own, but the stop is still its own
+        Spacer(Modifier.height(16.dp))
+        KeyButton(
+            stringResource(R.string.te_stop_with, live.action.name),
+            { RecorderService.stop(context, null) },
+            modifier = Modifier.fillMaxWidth().heightIn(min = 88.dp),
+            icon = Icons.Outlined.Stop,
         )
     }
     // a gap, not a hairline: a slipped thumb on Pause must not send half a thought
@@ -461,7 +471,10 @@ private fun RepliesPlate(lines: List<Line>, messages: List<IncomingMessage>, onO
                 stringResource(R.string.te_mark_all_read),
                 style = TeType.smallStrong,
                 color = p.inkMuted,
-                modifier = Modifier.clickable { scope.launch(Dispatchers.IO) { WhiteNoise.markAllRead(context) } }.padding(vertical = 14.dp, horizontal = 12.dp),
+                modifier = Modifier.clickable { scope.launch(Dispatchers.IO) { WhiteNoise.markAllRead(context) } }.padding(
+                    vertical = 14.dp,
+                    horizontal = 12.dp,
+                ),
             )
         }
         Text(
@@ -498,7 +511,12 @@ private fun RepliesPlate(lines: List<Line>, messages: List<IncomingMessage>, onO
                             modifier = Modifier.padding(top = 8.dp, end = 4.dp),
                         )
                     }
-                    Text(pluralStringResource(R.plurals.te_word_replies, line.unread, line.unread), style = TeType.small, color = p.inkMuted, modifier = Modifier.padding(top = 2.dp))
+                    Text(
+                        pluralStringResource(R.plurals.te_word_replies, line.unread, line.unread),
+                        style = TeType.small,
+                        color = p.inkMuted,
+                        modifier = Modifier.padding(top = 2.dp),
+                    )
                     Row {
                         PlainButton(stringResource(R.string.te_play), {
                             scope.launch(Dispatchers.IO) { line.action.groupId?.let { WhiteNoise.playUnread(context, it) } }
@@ -538,7 +556,11 @@ private fun LastPlate(host: MainActivity, notes: List<Note>, lines: List<Line>) 
     Row(Modifier.fillMaxWidth().padding(top = 14.dp, bottom = 10.dp), verticalAlignment = Alignment.Bottom) {
         Label(stringResource(R.string.te_last_recording))
         Spacer(Modifier.weight(1f))
-        Figures("%d:%02d · %s".format(secs / 60, secs % 60, android.text.format.DateUtils.formatDateTime(context, n.startedAt, android.text.format.DateUtils.FORMAT_SHOW_TIME)))
+        Figures("%d:%02d · %s".format(
+            secs / 60,
+            secs % 60,
+            android.text.format.DateUtils.formatDateTime(context, n.startedAt, android.text.format.DateUtils.FORMAT_SHOW_TIME),
+        ))
     }
     Plate(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(start = 12.dp, end = 8.dp, top = 12.dp, bottom = 4.dp)) {
@@ -589,10 +611,21 @@ private fun LastPlate(host: MainActivity, notes: List<Note>, lines: List<Line>) 
         }
     }
     if (details) {
-        ReadDialog(stringResource(R.string.te_details), n.error.orEmpty(), onCopy = { host.copy(n.error.orEmpty()) }, onDismiss = { details = false }, mono = true)
+        ReadDialog(
+            stringResource(R.string.te_details),
+            n.error.orEmpty(),
+            onCopy = { host.copy(n.error.orEmpty()) },
+            onDismiss = { details = false },
+            mono = true,
+        )
     }
     if (reading && transcript != null) {
-        ReadDialog(stringResource(R.string.te_transcript), transcript, onCopy = { NotePipeline(context).copyToClipboard(transcript) }, onDismiss = { reading = false })
+        ReadDialog(
+            stringResource(R.string.te_transcript),
+            transcript,
+            onCopy = { NotePipeline(context).copyToClipboard(transcript) },
+            onDismiss = { reading = false },
+        )
     }
 }
 

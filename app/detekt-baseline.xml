@@ -2,37 +2,113 @@
 <SmellBaseline>
   <ManuallySuppressedIssues/>
   <CurrentIssues>
-    <ID>EmptyFunctionBlock:Mp3Recorder.kt$Mp3Recorder${}</ID>
-    <ID>EmptyFunctionBlock:PlayerFragment.kt$PlayerFragment.&lt;no name provided&gt;${}</ID>
-    <ID>EmptyFunctionBlock:RecordingsAdapter.kt$RecordingsAdapter${}</ID>
-    <ID>EmptyFunctionBlock:TrashAdapter.kt$TrashAdapter${}</ID>
-    <ID>EmptyFunctionBlock:TrashFragment.kt$TrashFragment${}</ID>
-    <ID>EmptyFunctionBlock:WidgetRecordDisplayConfigureActivity.kt$WidgetRecordDisplayConfigureActivity.&lt;no name provided&gt;${}</ID>
-    <ID>MagicNumber:Context.kt$60</ID>
-    <ID>MagicNumber:Mp3Recorder.kt$Mp3Recorder$1.25</ID>
-    <ID>MagicNumber:Mp3Recorder.kt$Mp3Recorder$7200</ID>
-    <ID>MagicNumber:Mp3Recorder.kt$Mp3Recorder$8</ID>
-    <ID>MagicNumber:RecorderFragment.kt$RecorderFragment$500</ID>
-    <ID>MagicNumber:ViewPagerAdapter.kt$ViewPagerAdapter$3</ID>
-    <ID>MagicNumber:WidgetRecordDisplayConfigureActivity.kt$WidgetRecordDisplayConfigureActivity$100</ID>
-    <ID>MaxLineLength:PlayerFragment.kt$PlayerFragment$if</ID>
-    <ID>PrintStackTrace:Mp3Recorder.kt$Mp3Recorder$e</ID>
+    <ID>ComplexCondition:LogScreen.kt$(tab == LogTab.DELETED &amp;&amp; !useBin) || (tab == LogTab.REPLIES &amp;&amp; !replies)</ID>
+    <ID>ComplexCondition:RecorderService.kt$RecorderService$!goAheadPlayed &amp;&amp; !status.waitingForBluetooth &amp;&amp; !status.switching &amp;&amp; !status.starting</ID>
+    <ID>ComplexCondition:RecorderService.kt$RecorderService$prev == null || prev.paused != status.paused || prev.source != status.source || prev.input != status.input || prev.waitingForBluetooth != status.waitingForBluetooth || prev.switching != status.switching || prev.starting != status.starting</ID>
+    <ID>ComplexCondition:SourcePolicy.kt$SourcePolicy$current == Source.BLUETOOTH &amp;&amp; !input.bluetooth &amp;&amp; (soundOnBluetooth || !waitingForBluetooth)</ID>
+    <ID>CompositionLocalAllowlist:Theme.kt$LocalPalette</ID>
+    <ID>CyclomaticComplexMethod:App.kt$@Composable fun ThirdEarApp(host: MainActivity, recordToResult: Boolean)</ID>
+    <ID>CyclomaticComplexMethod:BoardScreen.kt$@Composable private fun InputBar(live: RecorderService.Companion.Live?, onSwitch: (Source) -&gt; Unit)</ID>
+    <ID>CyclomaticComplexMethod:BoardScreen.kt$@Composable private fun LastPlate(host: MainActivity, notes: List&lt;Note&gt;, lines: List&lt;Line&gt;)</ID>
+    <ID>CyclomaticComplexMethod:BoardScreen.kt$@Composable private fun PipelineStrip(n: Note, modifier: Modifier = Modifier)</ID>
+    <ID>CyclomaticComplexMethod:Components.kt$@Composable fun Lamp(lamp: LampState, modifier: Modifier = Modifier, size: Dp = 16.dp)</ID>
+    <ID>CyclomaticComplexMethod:Components.kt$@Composable fun LineKey( code: String, cord: Int, name: String, strip: List&lt;String&gt;, lamp: LampState, word: String?, description: String, onClick: () -&gt; Unit, onLongClick: (() -&gt; Unit)?, modifier: Modifier = Modifier, kicker: String? = null, reversed: Boolean = false, /** Flash the strip in the cord colour on tap: the recording going down this line. */ patchOnClick: Boolean = false, nameStyle: TextStyle = TeType.keyName, )</ID>
+    <ID>CyclomaticComplexMethod:FrameJournal.kt$FrameJournal$fun read(file: File, onFormat: (JournalFormat) -&gt; Unit, onSample: (JournalSample) -&gt; Unit): Long</ID>
+    <ID>CyclomaticComplexMethod:LinesScreen.kt$@Composable private fun GroupsSection(host: MainActivity, actions: List&lt;RecordAction&gt;, onOpenSetup: () -&gt; Unit, onNewLine: (MarmotHost.Group) -&gt; Unit)</ID>
+    <ID>CyclomaticComplexMethod:LinesScreen.kt$@OptIn(ExperimentalLayoutApi::class) @Composable private fun LineEditor( original: RecordAction?, draft: RecordAction?, index: Int, usedCords: Set&lt;Int&gt;, onSave: (RecordAction) -&gt; Unit, onDelete: (() -&gt; Unit)?, onDismiss: () -&gt; Unit, )</ID>
+    <ID>CyclomaticComplexMethod:LogScreen.kt$@Composable fun LogScreen(host: MainActivity, tab: LogTab, onTab: (LogTab) -&gt; Unit, replies: Boolean = true)</ID>
+    <ID>CyclomaticComplexMethod:LogScreen.kt$@Composable private fun ReplyList(list: List&lt;IncomingMessage&gt;, actions: List&lt;app.thirdear.actions.RecordAction&gt;)</ID>
+    <ID>CyclomaticComplexMethod:LogScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable private fun RecordingList(host: MainActivity, list: List&lt;Recording&gt;, tags: Map&lt;String, Tag&gt;, player: LogPlayer, loading: Boolean, searching: Boolean)</ID>
+    <ID>CyclomaticComplexMethod:MessagesScreen.kt$@Composable private fun Composer(chat: Chat, notes: List&lt;Note&gt;, onSendDone: () -&gt; Unit)</ID>
+    <ID>CyclomaticComplexMethod:NotePipeline.kt$NotePipeline$private suspend fun deliver(start: Note, plan: ActionPlan, audio: File, transcript: String?)</ID>
+    <ID>CyclomaticComplexMethod:NotePipeline.kt$NotePipeline$private suspend fun run(start: Note)</ID>
+    <ID>CyclomaticComplexMethod:RecorderService.kt$RecorderService$private fun onStatusMain(status: EngineStatus)</ID>
+    <ID>CyclomaticComplexMethod:RecordingEngine.kt$RecordingEngine$private fun loop(): String?</ID>
+    <ID>CyclomaticComplexMethod:SetupScreen.kt$@Composable fun SetupScreen(host: MainActivity)</ID>
+    <ID>CyclomaticComplexMethod:SetupScreen.kt$@Composable private fun WhiteNoiseSection(host: MainActivity, onPick: (Pick) -&gt; Unit, changed: () -&gt; Unit)</ID>
+    <ID>CyclomaticComplexMethod:WhiteNoiseService.kt$WhiteNoiseService$override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int</ID>
+    <ID>LoopWithTooManyJumpStatements:Finaliser.kt$Mp3Duration$for</ID>
+    <ID>LoopWithTooManyJumpStatements:FrameJournal.kt$FrameJournal$while</ID>
+    <ID>LoopWithTooManyJumpStatements:NotePipeline.kt$NotePipeline$for</ID>
+    <ID>LoopWithTooManyJumpStatements:RecordingEngine.kt$RecordingEngine$while</ID>
+    <ID>MagicNumber:ActionTileService.kt$ActionTile3$3</ID>
+    <ID>MagicNumber:AudioSink.kt$MediaCodecSink$1_000_000</ID>
+    <ID>MagicNumber:AudioSink.kt$MediaCodecSink$8</ID>
+    <ID>MagicNumber:CarModel.kt$CarModel$3600</ID>
+    <ID>MagicNumber:CarModel.kt$CarModel$60</ID>
+    <ID>MagicNumber:Finaliser.kt$Mp3Duration$0xE0</ID>
+    <ID>MagicNumber:Finaliser.kt$Mp3Duration$0xFF</ID>
+    <ID>MagicNumber:Finaliser.kt$Mp3Duration$15</ID>
+    <ID>MagicNumber:Finaliser.kt$Mp3Duration$3</ID>
+    <ID>MagicNumber:Finaliser.kt$Mp3Duration$8</ID>
+    <ID>MagicNumber:FrameJournal.kt$FrameJournal$1024</ID>
+    <ID>MagicNumber:FrameJournal.kt$FrameJournal$12</ID>
+    <ID>MagicNumber:FrameJournal.kt$FrameJournal$16</ID>
+    <ID>MagicNumber:FrameJournal.kt$FrameJournal$4</ID>
+    <ID>MagicNumber:FrameJournal.kt$FrameJournal$64</ID>
+    <ID>MagicNumber:FrameJournal.kt$FrameJournal.Writer$12</ID>
+    <ID>MagicNumber:LogScreen.kt$3600</ID>
+    <ID>MagicNumber:LogScreen.kt$60</ID>
+    <ID>MagicNumber:MessageNotifier.kt$MessageNotifier$0xFFFF</ID>
+    <ID>MagicNumber:MessagesScreen.kt$10</ID>
+    <ID>MagicNumber:MessagesScreen.kt$12</ID>
+    <ID>MagicNumber:PcmDecoder.kt$PcmDecoder$8</ID>
+    <ID>MagicNumber:RecordAction.kt$RecordAction$8</ID>
+    <ID>MagicNumber:Stores.kt$IncomingStore$16</ID>
+    <ID>MagicNumber:ThirdEarCarAppService.kt$MessagesScreen$8</ID>
+    <ID>MatchingDeclarationName:App.kt$Destination</ID>
+    <ID>MatchingDeclarationName:LogScreen.kt$LogTab</ID>
+    <ID>ModifierMissing:App.kt$ThirdEarApp</ID>
+    <ID>ModifierMissing:BoardScreen.kt$BoardScreen</ID>
+    <ID>ModifierMissing:Dialogs.kt$SheetItem</ID>
+    <ID>ModifierMissing:LinesScreen.kt$LinesScreen</ID>
+    <ID>ModifierMissing:LinesScreen.kt$RadioRow</ID>
+    <ID>ModifierMissing:LinesScreen.kt$SwitchRow</ID>
+    <ID>ModifierMissing:LogScreen.kt$LogScreen</ID>
+    <ID>ModifierMissing:SetupScreen.kt$SetupScreen</ID>
+    <ID>MultipleEmitters:BoardScreen.kt$LastPlate</ID>
+    <ID>MultipleEmitters:BoardScreen.kt$RecordingControls</ID>
+    <ID>MultipleEmitters:BoardScreen.kt$RepliesPlate</ID>
+    <ID>MultipleEmitters:LinesScreen.kt$GroupsSection</ID>
+    <ID>MultipleEmitters:SetupScreen.kt$WhiteNoiseSection</ID>
+    <ID>NestedBlockDepth:FrameJournal.kt$FrameJournal$fun read(file: File, onFormat: (JournalFormat) -&gt; Unit, onSample: (JournalSample) -&gt; Unit): Long</ID>
+    <ID>NestedBlockDepth:PcmDecoder.kt$PcmDecoder$fun decode(context: Context, uri: Uri, out: OutputStream)</ID>
+    <ID>NestedBlockDepth:RecordingEngine.kt$RecordingEngine$private fun loop(): String?</ID>
+    <ID>NestedBlockDepth:Webhook.kt$Webhook$fun post(url: String, auth: String?, metadata: JSONObject, transcript: String?, audio: File?, audioName: String, audioMime: String)</ID>
+    <ID>NestedBlockDepth:WhiteNoise.kt$WhiteNoise$suspend fun play(context: Context, m: IncomingMessage, audio: Boolean = true, text: Boolean = true)</ID>
+    <ID>ParameterNaming:LinesScreen.kt$onEditDone</ID>
+    <ID>ParameterNaming:MessagesScreen.kt$onSendDone</ID>
+    <ID>ReturnCount:RecordingEngine.kt$RecordingEngine$private fun loop(): String?</ID>
     <ID>SwallowedException:Context.kt$e: Exception</ID>
     <ID>TooGenericExceptionCaught:Activity.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:AndroidSources.kt$AndroidSources$t: Throwable</ID>
+    <ID>TooGenericExceptionCaught:AndroidSources.kt$AudioRecordSource$t: Throwable</ID>
+    <ID>TooGenericExceptionCaught:AudioSink.kt$MediaCodecSink$t: Throwable</ID>
+    <ID>TooGenericExceptionCaught:Backoff.kt$Backoff$t: Throwable</ID>
     <ID>TooGenericExceptionCaught:Context.kt$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:Mp3Recorder.kt$Mp3Recorder$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:PlayerFragment.kt$PlayerFragment$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:RecorderService.kt$RecorderService$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:RenameRecordingDialog.kt$RenameRecordingDialog$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:LogPlayer.kt$LogPlayer$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:MarmotHost.kt$MarmotHost$t: Throwable</ID>
+    <ID>TooGenericExceptionCaught:NotePipeline.kt$NotePipeline$t: Throwable</ID>
+    <ID>TooGenericExceptionCaught:RecorderService.kt$RecorderService$t: Throwable</ID>
+    <ID>TooGenericExceptionCaught:RecorderService.kt$RecorderService.Companion$t: Throwable</ID>
+    <ID>TooGenericExceptionCaught:RecordingEngine.kt$RecordingEngine$t: Throwable</ID>
+    <ID>TooGenericExceptionCaught:Transcriber.kt$Transcriber$t: Throwable</ID>
+    <ID>TooGenericExceptionCaught:WhiteNoise.kt$WhiteNoise$t: Throwable</ID>
+    <ID>TooGenericExceptionCaught:WhiteNoiseService.kt$WhiteNoiseService$t: Throwable</ID>
     <ID>TooManyFunctions:Activity.kt$app.thirdear.extensions.Activity.kt</ID>
+    <ID>TooManyFunctions:BoardScreen.kt$app.thirdear.ui.BoardScreen.kt</ID>
+    <ID>TooManyFunctions:Components.kt$app.thirdear.ui.Components.kt</ID>
     <ID>TooManyFunctions:Context.kt$app.thirdear.extensions.Context.kt</ID>
+    <ID>TooManyFunctions:LogPlayer.kt$LogPlayer</ID>
     <ID>TooManyFunctions:MainActivity.kt$MainActivity : SimpleActivity</ID>
-    <ID>TooManyFunctions:PlayerFragment.kt$PlayerFragment : MyViewPagerFragmentRefreshRecordingsListener</ID>
-    <ID>TooManyFunctions:RecorderFragment.kt$RecorderFragment : MyViewPagerFragment</ID>
+    <ID>TooManyFunctions:MarmotHost.kt$MarmotHost</ID>
+    <ID>TooManyFunctions:MessagesScreen.kt$app.thirdear.ui.MessagesScreen.kt</ID>
+    <ID>TooManyFunctions:NotePipeline.kt$NotePipeline</ID>
+    <ID>TooManyFunctions:NoteStore.kt$NoteStore</ID>
     <ID>TooManyFunctions:RecorderService.kt$RecorderService : Service</ID>
-    <ID>TooManyFunctions:RecordingsAdapter.kt$RecordingsAdapter : MyRecyclerViewAdapterOnPopupTextUpdate</ID>
-    <ID>TooManyFunctions:SettingsActivity.kt$SettingsActivity : SimpleActivity</ID>
-    <ID>TooManyFunctions:TrashAdapter.kt$TrashAdapter : MyRecyclerViewAdapterOnPopupTextUpdate</ID>
-    <ID>TooManyFunctions:TrashFragment.kt$TrashFragment : MyViewPagerFragmentRefreshRecordingsListener</ID>
+    <ID>TooManyFunctions:RecorderService.kt$RecorderService$Companion</ID>
+    <ID>TooManyFunctions:RecordingEngine.kt$RecordingEngine</ID>
+    <ID>TooManyFunctions:SetupScreen.kt$app.thirdear.ui.SetupScreen.kt</ID>
+    <ID>TooManyFunctions:WhiteNoise.kt$WhiteNoise</ID>
   </CurrentIssues>
 </SmellBaseline>

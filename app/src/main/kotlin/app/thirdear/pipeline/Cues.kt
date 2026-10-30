@@ -37,6 +37,10 @@ object Cues {
     }
 
     private const val RATE = 24_000
+    /** Peak of a tone (of 32767): loud enough over a car, not clipping. */
+    private const val AMPLITUDE = 9_000
+    /** After the last note: the track drains before it is released. */
+    private const val TAIL_MS = 60
 
     private val attributes: AudioAttributes = AudioAttributes.Builder()
         .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
@@ -114,7 +118,7 @@ object Cues {
             try {
                 track.write(pcm, 0, pcm.size)
                 track.play()
-                Thread.sleep(tone.notes.sumOf { it.second }.toLong() + 60)
+                Thread.sleep(tone.notes.sumOf { it.second }.toLong() + TAIL_MS)
             } finally {
                 runCatching { track.stop() }
                 track.release()
@@ -135,7 +139,7 @@ object Cues {
                     k > n - fade -> (n - k).toDouble() / fade
                     else -> 1.0
                 }
-                out[i + k] = if (freq == 0.0) 0 else (sin(2 * PI * freq * k / RATE) * env * 9_000).toInt().toShort()
+                out[i + k] = if (freq == 0.0) 0 else (sin(2 * PI * freq * k / RATE) * env * AMPLITUDE).toInt().toShort()
             }
             i += n
         }

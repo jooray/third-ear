@@ -8,6 +8,11 @@ import com.naman14.androidlame.LameBuilder
 import java.io.File
 import java.io.FileOutputStream
 
+/** LAME's flush needs at least this much room. */
+private const val MP3_FLUSH_BYTES = 7200
+/** At the end, 10 ms dequeues: up to 2 s for the encoder's last frames. */
+private const val END_WAITS = 200
+
 /** What a recording is encoded as; fixed for the whole recording (a source switch keeps it). */
 data class EncoderSettings(val container: Container, val sampleRate: Int, val bitrate: Int)
 
@@ -101,7 +106,7 @@ class MediaCodecSink(private val mime: String, private val settings: EncoderSett
             val o = codec.dequeueOutputBuffer(info, if (endOfStream) 10_000 else 0)
             when {
                 // at the end, give the encoder up to 2 s to hand out its last frames
-                o == MediaCodec.INFO_TRY_AGAIN_LATER -> if (!endOfStream || ++waits > 200) return
+                o == MediaCodec.INFO_TRY_AGAIN_LATER -> if (!endOfStream || ++waits > END_WAITS) return
                 o == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED -> writeFormat(codec.outputFormat)
                 o >= 0 -> {
                     val buffer = codec.getOutputBuffer(o)!!
@@ -183,7 +188,7 @@ class Mp3Sink(private val settings: EncoderSettings, file: File) : AudioSink {
 
     override fun finish() {
         try {
-            if (mp3.size < 7200) mp3 = ByteArray(7200)
+            if (mp3.size < MP3_FLUSH_BYTES) mp3 = ByteArray(MP3_FLUSH_BYTES)
             val n = lame.flush(mp3)
             if (n > 0) out.write(mp3, 0, n)
         } finally {

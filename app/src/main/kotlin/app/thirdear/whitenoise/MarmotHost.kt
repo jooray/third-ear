@@ -39,6 +39,11 @@ import kotlinx.coroutines.withContext
  */
 object MarmotHost {
     private const val TAG = "ThirdEarWN"
+    private const val OPEN_ATTEMPTS = 20
+    private const val OPEN_RETRY_MS = 250L
+
+    /** Timestamps above this are milliseconds; below, seconds. */
+    private const val MILLIS_THRESHOLD = 100_000_000_000L
 
     /** Public relays for the relay lists and key package; White Noise users reach us through these. */
     /**
@@ -119,8 +124,8 @@ object MarmotHost {
                         opened = Marmot.newWithConfiguration(root.path, RELAYS, options)
                     } catch (e: MarmotKitException.RuntimeBusy) {
                         // a previous runtime of this process is still closing its root
-                        if (++attempt > 20) throw e
-                        delay(250)
+                        if (++attempt > OPEN_ATTEMPTS) throw e
+                        delay(OPEN_RETRY_MS)
                     }
                 }
                 val m = opened!!
@@ -302,7 +307,7 @@ object MarmotHost {
                 .messages.firstOrNull { it.messageIdHex == msg.messageIdHex }
                 ?.media?.filterIsInstance<MediaAttachmentOutcomeFfi.Accepted>()?.map { it.reference }
         }.getOrNull().orEmpty()
-        val at = msg.recordedAt.toLong().let { if (it > 100_000_000_000L) it else it * 1000 }
+        val at = msg.recordedAt.toLong().let { if (it > MILLIS_THRESHOLD) it else it * 1000 }
         val name = msg.senderDisplayName ?: runCatching { m.displayName(msg.sender) }.getOrNull()
         onIncoming?.invoke(Incoming(msg.groupIdHex, msg.messageIdHex, msg.sender, name, msg.plaintext, media, at))
     }
@@ -381,7 +386,7 @@ object MarmotHost {
                     sender = r.sender,
                     text = r.plaintext,
                     audio = r.media.filterIsInstance<MediaAttachmentOutcomeFfi.Accepted>().map { it.reference }.filter { it.mediaType.startsWith("audio/") },
-                    at = r.timelineAt.toLong().let { if (it > 100_000_000_000L) it else it * 1000 },
+                    at = r.timelineAt.toLong().let { if (it > MILLIS_THRESHOLD) it else it * 1000 },
                 )
             }
             .sortedBy { it.at }

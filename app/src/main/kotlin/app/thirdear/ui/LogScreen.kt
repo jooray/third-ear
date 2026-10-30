@@ -236,14 +236,25 @@ private fun RecordingList(host: MainActivity, list: List<Recording>, tags: Map<S
                         Text(r.title, style = TeType.bodyStrong, color = p.ink, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         Figures(
                             listOf(
-                                DateUtils.formatDateTime(context, r.timestamp, DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_TIME or DateUtils.FORMAT_ABBREV_MONTH),
+                                DateUtils.formatDateTime(
+                                    context,
+                                    r.timestamp,
+                                    DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_TIME or DateUtils.FORMAT_ABBREV_MONTH,
+                                ),
                                 "%d:%02d".format(r.duration / 60, r.duration % 60),
                                 r.size.formatSize(),
                             ).joinToString(" · "),
                             modifier = Modifier.padding(top = 2.dp),
                         )
                         if (transcript != null) {
-                            Text(transcript, style = TeType.small, color = p.inkMuted, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 4.dp))
+                            Text(
+                                transcript,
+                                style = TeType.small,
+                                color = p.inkMuted,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.padding(top = 4.dp),
+                            )
                         }
                     }
                     if (active) Lamp(if (player.playing) LampState.BUSY else LampState.OFF, Modifier.padding(top = 4.dp), size = 12.dp)
@@ -261,7 +272,11 @@ private fun RecordingList(host: MainActivity, list: List<Recording>, tags: Map<S
             val close = { menuFor = null }
             if (transcript != null) {
                 SheetItem(stringResource(R.string.te_show_transcript), Icons.Outlined.Notes, { reading = r to transcript; close() })
-                SheetItem(stringResource(R.string.te_copy_transcript), Icons.Outlined.ContentCopy, { host.copy(transcript, confirmation = R.string.te_transcript_copied); close() })
+                SheetItem(
+                    stringResource(R.string.te_copy_transcript),
+                    Icons.Outlined.ContentCopy,
+                    { host.copy(transcript, confirmation = R.string.te_transcript_copied); close() },
+                )
             }
             SheetItem(stringResource(R.string.te_share), Icons.Outlined.Share, { host.share(r); close() })
             SheetItem(stringResource(R.string.te_open_with), Icons.AutoMirrored.Outlined.OpenInNew, { host.openWith(r); close() })
@@ -294,7 +309,12 @@ private fun RecordingList(host: MainActivity, list: List<Recording>, tags: Map<S
         )
     }
     reading?.let { (_, text) ->
-        ReadDialog(stringResource(R.string.te_transcript), text, onCopy = { host.copy(text, confirmation = R.string.te_transcript_copied) }, onDismiss = { reading = null })
+        ReadDialog(
+            stringResource(R.string.te_transcript),
+            text,
+            onCopy = { host.copy(text, confirmation = R.string.te_transcript_copied) },
+            onDismiss = { reading = null },
+        )
     }
 }
 
@@ -381,13 +401,25 @@ private fun ReplyList(list: List<IncomingMessage>, actions: List<app.thirdear.ac
                         modifier = Modifier.weight(1f),
                     )
                     if (unread) Lamp(LampState.REPLY, size = 12.dp)
-                    Figures(DateUtils.getRelativeTimeSpanString(m.at, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS).toString(), Modifier.padding(start = 4.dp, end = 8.dp))
+                    Figures(
+                        DateUtils.getRelativeTimeSpanString(m.at, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS).toString(),
+                        Modifier.padding(start = 4.dp, end = 8.dp),
+                    )
                 }
                 Row(Modifier.padding(top = 6.dp), verticalAlignment = Alignment.Top) {
                     if (m.audio.isNotEmpty()) {
-                        Icon(Icons.Outlined.Mic, contentDescription = stringResource(R.string.te_voice_message), tint = p.inkMuted, modifier = Modifier.padding(top = 2.dp, end = 6.dp).size(18.dp))
+                        Icon(
+                            Icons.Outlined.Mic,
+                            contentDescription = stringResource(R.string.te_voice_message),
+                            tint = p.inkMuted,
+                            modifier = Modifier.padding(top = 2.dp, end = 6.dp).size(18.dp),
+                        )
                     }
-                    Text(m.text.ifBlank { stringResource(R.string.te_voice_message) }, style = TeType.body, color = if (m.ignoredBy != null) p.inkMuted else p.ink)
+                    Text(
+                        m.text.ifBlank { stringResource(R.string.te_voice_message) },
+                        style = TeType.body,
+                        color = if (m.ignoredBy != null) p.inkMuted else p.ink,
+                    )
                 }
                 val state = when {
                     m.ignoredBy != null -> stringResource(R.string.te_ignored_list)
@@ -397,10 +429,18 @@ private fun ReplyList(list: List<IncomingMessage>, actions: List<app.thirdear.ac
                 if (state != null) Label(state, Modifier.padding(top = 4.dp))
                 Row {
                     if (m.audio.isNotEmpty()) {
-                        PlainButton(stringResource(R.string.te_play), { scope.launch(Dispatchers.IO) { play(context, m, audio = true, text = false) } }, icon = Icons.Outlined.PlayArrow)
+                        PlainButton(
+                            stringResource(R.string.te_play),
+                            { scope.launch(Dispatchers.IO) { play(context, m, audio = true, text = false) } },
+                            icon = Icons.Outlined.PlayArrow,
+                        )
                     }
                     if (m.text.isNotBlank()) {
-                        PlainButton(stringResource(R.string.te_read_aloud), { scope.launch(Dispatchers.IO) { play(context, m, audio = false, text = true) } }, icon = Icons.AutoMirrored.Outlined.VolumeUp)
+                        PlainButton(
+                            stringResource(R.string.te_read_aloud),
+                            { scope.launch(Dispatchers.IO) { play(context, m, audio = false, text = true) } },
+                            icon = Icons.AutoMirrored.Outlined.VolumeUp,
+                        )
                     }
                 }
             }
@@ -438,7 +478,11 @@ private fun DeletedList(host: MainActivity, list: List<Recording>, player: LogPl
                     Column(Modifier.fillMaxWidth().padding(start = 16.dp, end = 8.dp, top = 12.dp)) {
                         Text(r.title, style = TeType.bodyStrong, color = p.inkMuted, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         Figures(
-                            DateUtils.formatDateTime(context, r.timestamp, DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_ABBREV_MONTH) + " · " + r.size.formatSize(),
+                            DateUtils.formatDateTime(
+                                context,
+                                r.timestamp,
+                                DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_ABBREV_MONTH,
+                            ) + " · " + r.size.formatSize(),
                         )
                         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                             PlainButton(stringResource(R.string.te_restore), { host.restore(r) }, icon = Icons.Outlined.RestoreFromTrash)

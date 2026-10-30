@@ -44,9 +44,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -87,7 +89,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 @Composable
-fun LinesScreen(host: MainActivity, editId: String?, onEdited: () -> Unit, onOpenSetup: () -> Unit) {
+fun LinesScreen(host: MainActivity, editId: String?, onEditDone: () -> Unit, onOpenSetup: () -> Unit) {
     val p = Te.colors
     val context = LocalContext.current
     val store = remember { ActionStore(context) }
@@ -100,10 +102,11 @@ fun LinesScreen(host: MainActivity, editId: String?, onEdited: () -> Unit, onOpe
     var draft by remember { mutableStateOf<RecordAction?>(null) }
     var deleting by remember { mutableStateOf<RecordAction?>(null) }
 
+    val editDone by rememberUpdatedState(onEditDone)
     LaunchedEffect(editId, actions) {
         if (editId != null) {
             editing = actions.firstOrNull { it.id == editId }
-            onEdited()
+            editDone()
         }
     }
 
@@ -141,7 +144,11 @@ fun LinesScreen(host: MainActivity, editId: String?, onEdited: () -> Unit, onOpe
                             Icon(Icons.Outlined.ArrowUpward, stringResource(R.string.te_action_move_up), tint = if (i > 0) p.ink else p.rule)
                         }
                         IconButton(onClick = { store.move(a.id, 1); ActionTileService.refreshAll(context) }, enabled = i < actions.lastIndex) {
-                            Icon(Icons.Outlined.ArrowDownward, stringResource(R.string.te_action_move_down), tint = if (i < actions.lastIndex) p.ink else p.rule)
+                            Icon(
+                                Icons.Outlined.ArrowDownward,
+                                stringResource(R.string.te_action_move_down),
+                                tint = if (i < actions.lastIndex) p.ink else p.rule,
+                            )
                         }
                     }
                 }
@@ -222,7 +229,7 @@ private fun GroupsSection(host: MainActivity, actions: List<RecordAction>, onOpe
     var leaving by remember { mutableStateOf<Pair<String, String>?>(null) }
     var backingUp by remember { mutableStateOf(false) }
     val npub by MarmotHost.npub.collectAsStateWithLifecycle()
-    var settingsVersion by remember { mutableStateOf(0) }
+    var settingsVersion by remember { mutableIntStateOf(0) }
     val on = context.config.whiteNoiseEnabled
 
     LaunchedEffect(on) {
@@ -258,8 +265,16 @@ private fun GroupsSection(host: MainActivity, actions: List<RecordAction>, onOpe
             }
             Text(g.name.ifBlank { g.id.take(12) }, style = TeType.bodyStrong, color = p.ink, modifier = Modifier.padding(top = 4.dp))
             Row {
-                PlainButton(stringResource(R.string.te_wn_accept), { scope.launch { runCatching { MarmotHost.accept(g.id) }.onFailure { host.toast(it.message ?: "?") } } }, icon = Icons.Outlined.Check)
-                PlainButton(stringResource(R.string.te_wn_decline), { scope.launch { runCatching { MarmotHost.decline(g.id) }.onFailure { host.toast(it.message ?: "?") } } }, color = p.inkMuted)
+                PlainButton(
+                    stringResource(R.string.te_wn_accept),
+                    { scope.launch { runCatching { MarmotHost.accept(g.id) }.onFailure { host.toast(it.message ?: "?") } } },
+                    icon = Icons.Outlined.Check,
+                )
+                PlainButton(
+                    stringResource(R.string.te_wn_decline),
+                    { scope.launch { runCatching { MarmotHost.decline(g.id) }.onFailure { host.toast(it.message ?: "?") } } },
+                    color = p.inkMuted,
+                )
             }
         }
         Rule()
@@ -294,7 +309,13 @@ private fun GroupsSection(host: MainActivity, actions: List<RecordAction>, onOpe
     }
     if (backingUp) NsecBackup(host, onDone = { backingUp = false; settingsVersion++ })
     editing?.let { (id, name) ->
-        GroupDialog(name, settingsStore.get(id), onSave = { settingsStore.put(id, it); settingsVersion++ }, onLeave = { leaving = id to name }, onDismiss = { editing = null })
+        GroupDialog(
+            name,
+            settingsStore.get(id),
+            onSave = { settingsStore.put(id, it); settingsVersion++ },
+            onLeave = { leaving = id to name },
+            onDismiss = { editing = null },
+        )
     }
     leaving?.let { (id, name) ->
         ConfirmDialog(
@@ -336,7 +357,11 @@ private fun GroupDialog(name: String, initial: GroupSettings, onSave: (GroupSett
         onSave = { onSave(GroupSettings(replies, read, GroupSettings.parseIgnore(ignore))); onDismiss() },
     ) {
         Label(stringResource(R.string.te_group_replies), Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
-        listOf(ReplyMode.OFF to R.string.te_replies_off, ReplyMode.VOICE to R.string.te_replies_voice, ReplyMode.VOICE_AND_TEXT to R.string.te_replies_voice_text)
+        listOf(
+            ReplyMode.OFF to R.string.te_replies_off,
+            ReplyMode.VOICE to R.string.te_replies_voice,
+            ReplyMode.VOICE_AND_TEXT to R.string.te_replies_voice_text,
+        )
             .forEach { (m, label) -> RadioRow(stringResource(label), replies == m) { replies = m } }
         if (replies != ReplyMode.OFF) {
             Label(stringResource(R.string.te_group_reading), Modifier.padding(start = 16.dp, end = 16.dp, top = 20.dp, bottom = 8.dp))
@@ -407,7 +432,14 @@ fun FullDialog(title: String, onDismiss: () -> Unit, onSave: () -> Unit, saveEna
             Column(Modifier.fillMaxSize().background(p.face).windowInsetsPadding(WindowInsets.safeDrawing).imePadding()) {
                 Row(Modifier.fillMaxWidth().height(56.dp).padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                     IconButton(onClick = onDismiss) { Icon(Icons.Outlined.Close, stringResource(R.string.te_close), tint = p.ink) }
-                    Text(title, style = TeType.title, color = p.ink, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f).padding(start = 8.dp))
+                    Text(
+                        title,
+                        style = TeType.title,
+                        color = p.ink,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f).padding(start = 8.dp),
+                    )
                     PlainButton(stringResource(R.string.te_save), onSave, color = if (saveEnabled) p.ink else p.inkMuted)
                 }
                 Rule()
@@ -520,7 +552,12 @@ private fun LineEditor(
                 onClick = { pickGroup = true },
             )
             Destination.WEBHOOK -> {
-                Field(stringResource(R.string.te_action_webhook_url), a.webhookUrl.orEmpty(), { a = a.copy(webhookUrl = it.trim().ifEmpty { null }) }, error = tried && ActionPlan.Problem.NO_WEBHOOK_URL in problems)
+                Field(
+                    stringResource(R.string.te_action_webhook_url),
+                    a.webhookUrl.orEmpty(),
+                    { a = a.copy(webhookUrl = it.trim().ifEmpty { null }) },
+                    error = tried && ActionPlan.Problem.NO_WEBHOOK_URL in problems,
+                )
                 Field(stringResource(R.string.te_action_webhook_auth), a.webhookAuth.orEmpty(), { a = a.copy(webhookAuth = it.trim().ifEmpty { null }) })
             }
             else -> {}
@@ -545,7 +582,13 @@ private fun LineEditor(
         if (onDelete != null) {
             Spacer(Modifier.height(16.dp))
             Rule()
-            PlainButton(stringResource(R.string.te_delete_line), onDelete, icon = Icons.Outlined.Delete, color = p.faultInk, modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp))
+            PlainButton(
+                stringResource(R.string.te_delete_line),
+                onDelete,
+                icon = Icons.Outlined.Delete,
+                color = p.faultInk,
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
+            )
         }
     }
 

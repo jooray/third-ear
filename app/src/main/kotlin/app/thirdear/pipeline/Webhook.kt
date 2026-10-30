@@ -12,16 +12,22 @@ import org.json.JSONObject
  * self-hosted agent; any 2xx counts as delivered. Same format as I Hear You.
  */
 object Webhook {
+    private const val CONNECT_TIMEOUT_MS = 20_000
+    // the receiver may run the transcript through an agent before it answers
+    private const val READ_TIMEOUT_MS = 120_000
+    private const val CHUNK_BYTES = 64 * 1024
+    private val HTTP_SUCCESS = 200..299
+
 
     fun post(url: String, auth: String?, metadata: JSONObject, transcript: String?, audio: File?, audioName: String, audioMime: String) {
         val boundary = "thirdear-" + System.nanoTime()
         val conn = URL(url).openConnection() as HttpURLConnection
         try {
-            conn.connectTimeout = 20_000
-            conn.readTimeout = 120_000
+            conn.connectTimeout = CONNECT_TIMEOUT_MS
+            conn.readTimeout = READ_TIMEOUT_MS
             conn.requestMethod = "POST"
             conn.doOutput = true
-            conn.setChunkedStreamingMode(64 * 1024)
+            conn.setChunkedStreamingMode(CHUNK_BYTES)
             conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=$boundary")
             conn.setRequestProperty("User-Agent", "ThirdEar")
             if (!auth.isNullOrBlank()) conn.setRequestProperty("Authorization", auth.trim())
@@ -48,7 +54,7 @@ object Webhook {
                 out.writeBytes("--$boundary--\r\n")
             }
             val code = conn.responseCode
-            if (code !in 200..299) error("HTTP $code")
+            if (code !in HTTP_SUCCESS) error("HTTP $code")
         } finally {
             conn.disconnect()
         }

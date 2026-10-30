@@ -54,8 +54,8 @@ class SourcePolicy(private val firstSoundTimeoutMs: Long = DEFAULT_FIRST_SOUND_T
         return current
     }
 
-    /** [source] opened; [routed] is where Android says the input went. */
-    fun opened(source: Source, routed: RoutedInput, now: Long): Action {
+    /** [source] opened. */
+    fun opened(source: Source, now: Long): Action {
         current = source
         soundOnBluetooth = false
         if (source == Source.BLUETOOTH) {

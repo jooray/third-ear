@@ -33,6 +33,9 @@ import app.thirdear.whitenoise.IncomingStore
 import app.thirdear.whitenoise.MessageNotifier
 import app.thirdear.whitenoise.WhiteNoiseService
 
+/** Car list templates show this many rows while driving. */
+private const val MAX_STOP_ROWS = 5
+
 /**
  * Android Auto: a grid of the user's actions (tap = record with it), a recording screen with
  * "Stop → action" rows and the microphone in use, and the recent White Noise messages. The car's
@@ -57,7 +60,8 @@ private fun micIcon(c: CarContext) = CarIcon.Builder(IconCompat.createWithResour
 
 /** A line's cord colour as a car icon, so the car grid matches the keys on the phone. */
 private fun lineIcon(c: CarContext, cord: Int): CarIcon {
-    val argb = app.thirdear.ui.Cords.color(cord).let { android.graphics.Color.argb((it.alpha * 255).toInt(), (it.red * 255).toInt(), (it.green * 255).toInt(), (it.blue * 255).toInt()) }
+    val k = app.thirdear.ui.Cords.color(cord)
+    val argb = android.graphics.Color.argb((k.alpha * 255).toInt(), (k.red * 255).toInt(), (k.green * 255).toInt(), (k.blue * 255).toInt())
     return CarIcon.Builder(IconCompat.createWithResource(c, R.drawable.ic_car_line))
         .setTint(androidx.car.app.model.CarColor.createCustom(argb, argb))
         .build()
@@ -180,7 +184,7 @@ class RecordingScreen(carContext: CarContext) : Screen(carContext) {
         val rows = CarModel.stopRows(all, l.action.id, { carContext.describe(it) }) {
             carContext.getString(R.string.te_car_stop, it)
         }
-        for (r in rows.take(5)) {
+        for (r in rows.take(MAX_STOP_ROWS)) {
             val i = all.indexOfFirst { it.id == r.actionId }
             val action = all.getOrNull(i)
             list.addItem(

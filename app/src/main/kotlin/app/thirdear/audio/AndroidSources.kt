@@ -47,7 +47,7 @@ object BluetoothMics {
     }
 
     /** Where media plays now (Android 13+). */
-    private fun mediaAddresses(audio: AudioManager): Set<String> = if (android.os.Build.VERSION.SDK_INT >= 33) {
+    private fun mediaAddresses(audio: AudioManager): Set<String> = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
         runCatching {
             audio.getAudioDevicesForAttributes(AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA).build())
                 .mapNotNull { it.address?.takeIf { a -> a.isNotBlank() }?.uppercase() }.toSet()

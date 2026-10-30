@@ -31,8 +31,9 @@ class Backoff(private val scheduleSeconds: List<Int> = DEFAULT) {
         while (true) {
             try {
                 return block()
+            } catch (c: kotlinx.coroutines.CancellationException) {
+                throw c
             } catch (t: Throwable) {
-                if (t is kotlinx.coroutines.CancellationException) throw t
                 val wait = if (retryable(t)) delayMs(attempt) else null
                 if (wait == null) throw t
                 onWait(attempt, wait, t)

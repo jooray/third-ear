@@ -89,7 +89,13 @@ class PipelineLogicTest {
     @Test
     fun `note json keeps the action snapshot and state`() {
         val n = Note(
-            id = "a-1", startedAt = 123, action = RecordAction(id = "x", name = "Fam", destination = Destination.WHITE_NOISE, content = Content.TRANSCRIPT, groupId = "g"),
+            id = "a-1", startedAt = 123, action = RecordAction(
+                id = "x",
+                name = "Fam",
+                destination = Destination.WHITE_NOISE,
+                content = Content.TRANSCRIPT,
+                groupId = "g",
+            ),
             container = Container.OGG, baseName = "20261029_101010", durationMs = 4_000, mic = "bluetooth: Aids",
             savedUri = "content://x", savedName = "20261029_101010.ogg", transcript = true, transcriptError = null,
             state = NoteState.FAILED, step = NoteStep.SENDING, error = "HTTP 500", recovered = false,

@@ -16,12 +16,15 @@ object LineCode {
         // the last word names the line ("Ask Hermes", "Send to Family"); short leading verbs are skipped
         val word = words.last().takeIf { words.size > 1 && it.length >= 3 && words.first().length <= 4 } ?: words.first()
         val upper = word.uppercase()
-        val head = upper.take(3)
+        val head = upper.take(WORD_LETTERS)
         // "MEE" reads badly; a doubled vowel switches to the consonant skeleton ("MTN")
         if (head.zipWithNext().none { (a, b) -> a in VOWELS && b in VOWELS }) return head
         val skeleton = upper.first() + upper.drop(1).filter { it !in VOWELS }
-        return if (skeleton.length >= 3) skeleton.take(3) else head
+        return if (skeleton.length >= WORD_LETTERS) skeleton.take(WORD_LETTERS) else head
     }
 
     private const val VOWELS = "AEIOUY"
+
+    /** Letters taken from one word of the name. */
+    private const val WORD_LETTERS = 3
 }

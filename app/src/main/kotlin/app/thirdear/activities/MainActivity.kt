@@ -199,7 +199,11 @@ class MainActivity : SimpleActivity() {
         if (!storageReady.value) return
         ensureBackgroundThread {
             val list = runCatching { getAllRecordings(false).sortedByDescending { it.timestamp } }.getOrDefault(emptyList())
-            val bin = if (config.useRecycleBin) runCatching { getAllRecordings(true).sortedByDescending { it.timestamp } }.getOrDefault(emptyList()) else emptyList()
+            val bin = if (config.useRecycleBin) {
+                runCatching { getAllRecordings(true).sortedByDescending { it.timestamp } }.getOrDefault(emptyList())
+            } else {
+                emptyList()
+            }
             runOnUiThread {
                 recordings.value = list
                 trashed.value = bin

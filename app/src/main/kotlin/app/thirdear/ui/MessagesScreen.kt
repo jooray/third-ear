@@ -32,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -44,6 +45,22 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.thirdear.R
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.material.icons.automirrored.outlined.Send
+import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.draw.clip
+import app.thirdear.actions.Content
+import app.thirdear.actions.RecordAction
+import app.thirdear.actions.Destination as ActionDestination
+import app.thirdear.activities.MainActivity
+import app.thirdear.extensions.config
+import app.thirdear.extensions.inputLabel
+import app.thirdear.pipeline.Note
+import app.thirdear.pipeline.NoteState
+import app.thirdear.pipeline.NoteStore
+import app.thirdear.services.RecorderService
 import app.thirdear.actions.LineCode
 import app.thirdear.extensions.recordActions
 import app.thirdear.whitenoise.IncomingMessage
@@ -55,7 +72,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /** One group in the list: its newest message (Third Ear's own included) and what is still unread. */
-private data class Chat(val id: String, val name: String, val last: ChatLine?, val unread: Int)
+private data class Chat(val id: String, val name: String, val last: ChatLine?, val unread: Int, val joined: Boolean)
 
 /** A message as the conversation shows it, from the group's timeline or, offline, from the saved list. */
 private data class ChatLine(
@@ -101,12 +118,13 @@ fun MessagesScreen() {
     }
     val chats = remember(groups, messages, latest) {
         val joined = groups.filter { it.member && !it.pending }.map { it.id to it.name }
+        val ids = joined.map { it.first }.toSet()
         // groups left or not loaded yet still show what was saved from them
         val saved = messages.map { it.groupId to it.groupName }
         (joined + saved).distinctBy { it.first }.map { (id, name) ->
             val own = messages.filter { it.groupId == id }
             val last = listOfNotNull(latest[id], own.maxByOrNull { it.at }?.line()).maxByOrNull { it.at }
-            Chat(id, name, last, own.count { it.unread() })
+            Chat(id, name, last, own.count { it.unread() }, joined = id in ids)
         }.sortedByDescending { it.last?.at ?: 0L }
     }
 
@@ -139,7 +157,11 @@ private fun ChatList(chats: List<Chat>, ready: Boolean, onOpen: (String) -> Unit
         Row(Modifier.fillMaxWidth().height(56.dp).padding(start = 16.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
             Text(stringResource(R.string.te_nav_messages), style = TeType.screenTitle, color = p.ink, modifier = Modifier.weight(1f))
             if (unread > 0) {
-                PlainButton(stringResource(R.string.te_mark_all_read), { scope.launch(Dispatchers.IO) { WhiteNoise.markAllRead(context) } }, icon = Icons.Outlined.DoneAll)
+                PlainButton(
+                    stringResource(R.string.te_mark_all_read),
+                    { scope.launch(Dispatchers.IO) { WhiteNoise.markAllRead(context) } },
+                    icon = Icons.Outlined.DoneAll,
+                )
             }
         }
         Rule()
@@ -166,7 +188,14 @@ private fun ChatList(chats: List<Chat>, ready: Boolean, onOpen: (String) -> Unit
                     }
                     Column(Modifier.weight(1f)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(c.name, style = TeType.bodyStrong, color = p.ink, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+                            Text(
+                                c.name,
+                                style = TeType.bodyStrong,
+                                color = p.ink,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.weight(1f),
+                            )
                             c.last?.let { Figures(ago(it.at), Modifier.padding(start = 8.dp)) }
                         }
                         Row(Modifier.padding(top = 2.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -198,37 +227,183 @@ private fun Conversation(chat: Chat, messages: List<IncomingMessage>, ready: Boo
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var timeline by remember(chat.id) { mutableStateOf<List<MarmotHost.TimelineMessage>?>(null) }
-    LaunchedEffect(chat.id, ready, messages) {
+    // what Third Ear itself sent (a typed message, a note through the pipeline) shows up as well
+    val notes by NoteStore.notes.collectAsStateWithLifecycle()
+    var sent by remember { mutableIntStateOf(0) }
+    LaunchedEffect(chat.id, ready, messages, notes, sent) {
         if (ready) timeline = withContext(Dispatchers.IO) { runCatching { MarmotHost.timeline(chat.id) }.getOrNull() }
     }
     val saved = messages.filter { it.groupId == chat.id }
-    val lines = timeline?.map { it.line(saved) } ?: saved.sortedBy { it.at }.map { it.line() }
+    // the timeline is a window (the last 100); saved replies outside it are still part of the conversation
+    val lines = timeline?.let { t ->
+        val ids = t.map { it.id }.toSet()
+        (t.map { it.line(saved) } + saved.filter { it.id !in ids }.map { it.line() }).sortedBy { it.at }
+    } ?: saved.sortedBy { it.at }.map { it.line() }
 
     Column(Modifier.fillMaxSize()) {
         Row(Modifier.fillMaxWidth().height(56.dp).padding(end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Outlined.ArrowBack, stringResource(R.string.te_back), tint = p.ink) }
             Text(chat.name, style = TeType.title, color = p.ink, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
             if (chat.unread > 0) {
-                PlainButton(stringResource(R.string.te_mark_all_read), { scope.launch(Dispatchers.IO) { WhiteNoise.markAllRead(context, chat.id) } }, icon = Icons.Outlined.DoneAll)
+                PlainButton(
+                    stringResource(R.string.te_mark_all_read),
+                    { scope.launch(Dispatchers.IO) { WhiteNoise.markAllRead(context, chat.id) } },
+                    icon = Icons.Outlined.DoneAll,
+                )
             }
         }
         Rule()
-        if (lines.isEmpty()) {
-            Box(Modifier.fillMaxSize().padding(32.dp), contentAlignment = Alignment.TopCenter) {
-                Text(stringResource(R.string.te_chats_empty), style = TeType.body, color = p.inkMuted, modifier = Modifier.padding(top = 48.dp))
+        Box(Modifier.weight(1f)) {
+            if (lines.isEmpty()) {
+                Box(Modifier.fillMaxSize().padding(32.dp), contentAlignment = Alignment.TopCenter) {
+                    Text(stringResource(R.string.te_chats_empty), style = TeType.body, color = p.inkMuted, modifier = Modifier.padding(top = 48.dp))
+                }
+            } else {
+                // newest at the bottom, where the list starts, as in any chat
+                LazyColumn(
+                    Modifier.fillMaxSize(),
+                    reverseLayout = true,
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    items(lines.asReversed(), key = { it.id }) { m -> Bubble(chat.id, m) }
+                }
             }
-            return
         }
-        // newest at the bottom, where the list starts, as in any chat
-        LazyColumn(
-            Modifier.fillMaxSize(),
-            reverseLayout = true,
-            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            items(lines.asReversed(), key = { it.id }) { m -> Bubble(chat.id, m) }
+        if (chat.joined && ready) Composer(chat, notes, onSendDone = { sent++ })
+    }
+}
+
+/** The id prefix of a conversation's record key, an action that is not a line. */
+const val CHAT_ACTION_PREFIX = "chat-"
+
+/** Recording from a conversation: to this group, the audio or only the transcript. */
+fun chatAction(groupId: String, groupName: String, transcript: Boolean) = RecordAction(
+    id = CHAT_ACTION_PREFIX + groupId.take(12) + if (transcript) "-t" else "-a",
+    name = groupName,
+    destination = ActionDestination.WHITE_NOISE,
+    content = if (transcript) Content.TRANSCRIPT else Content.AUDIO,
+    groupId = groupId,
+    groupName = groupName,
+)
+
+/**
+ * Record (the primary key) or type, for any joined group, also one without a line on the Board.
+ * A recording sends the audio or only the transcript, as the switch above the key says.
+ */
+@Composable
+private fun Composer(chat: Chat, notes: List<Note>, onSendDone: () -> Unit) {
+    val p = Te.colors
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val live by RecorderService.live.collectAsStateWithLifecycle()
+    var transcript by remember { mutableStateOf(context.config.chatSendsTranscript) }
+    var text by rememberSaveable(chat.id) { mutableStateOf("") }
+    var sending by remember { mutableStateOf(false) }
+    val mine = live?.takeIf { it.action.groupId == chat.id && it.action.id.startsWith(CHAT_ACTION_PREFIX) }
+    // the newest note for this group still on its way, or stuck
+    val pending = notes.firstOrNull { it.action.groupId == chat.id && it.state != NoteState.RECORDING }
+        ?.takeIf { it.state == NoteState.PROCESSING || it.state == NoteState.FAILED }
+
+    Column(Modifier.fillMaxWidth().background(p.plate)) {
+        Rule()
+        pending?.let { n ->
+            Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 8.dp, top = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+                val failed = n.state == NoteState.FAILED
+                Lamp(if (failed) LampState.FAULT else LampState.BUSY, size = 10.dp)
+                Text(
+                    if (failed) context.plainFailure(n.error) else context.stepWord(n),
+                    style = TeType.small,
+                    color = if (failed) p.faultInk else p.inkMuted,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f).padding(start = 8.dp),
+                )
+                if (failed) PlainButton(stringResource(R.string.te_retry), { RecorderService.retry(context, n.id) }, icon = Icons.Outlined.Refresh)
+            }
+        }
+        val l = mine
+        if (l != null) {
+            // recording: what it hears, then Discard or Send
+            Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
+                // the amber working lamp, as on the Board; the label says whether it already hears
+                Lamp(LampState.BUSY, size = 12.dp)
+                Column(Modifier.weight(1f).padding(start = 10.dp)) {
+                    val secs = l.status.durationMs / 1000
+                    Figures("%d:%02d".format(secs / 60, secs % 60), color = p.ink, style = TeType.title)
+                    Text(context.inputLabel(l.status), style = TeType.small, color = p.inkMuted, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                }
+                PlainButton(stringResource(R.string.te_discard), { RecorderService.discard(context) }, color = p.faultInk)
+                Spacer(Modifier.width(8.dp))
+                KeyButton(
+                    stringResource(if (l.action.content == Content.TRANSCRIPT) R.string.te_chat_send_transcript else R.string.te_chat_send_audio),
+                    { RecorderService.stop(context, null) },
+                    icon = Icons.AutoMirrored.Outlined.Send,
+                    modifier = Modifier.heightIn(min = 56.dp),
+                )
+            }
+        } else {
+            Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 8.dp, top = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                Label(stringResource(R.string.te_chat_record_sends), Modifier.weight(1f))
+                Toggle(stringResource(R.string.te_chat_audio), !transcript) { transcript = false; context.config.chatSendsTranscript = false }
+                Spacer(Modifier.width(6.dp))
+                Toggle(stringResource(R.string.te_chat_transcript), transcript) { transcript = true; context.config.chatSendsTranscript = true }
+            }
+            Row(Modifier.fillMaxWidth().padding(start = 12.dp, end = 8.dp, top = 6.dp, bottom = 10.dp), verticalAlignment = Alignment.CenterVertically) {
+                val busy = live != null
+                Box(
+                    Modifier
+                        .size(56.dp)
+                        .clip(PlateShape)
+                        .background(if (busy) p.rule else p.ink)
+                        .clickable(enabled = !busy) { RecorderService.start(context, chatAction(chat.id, chat.name, transcript)) },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(Icons.Outlined.Mic, stringResource(R.string.te_chat_record), tint = p.face, modifier = Modifier.size(28.dp))
+                }
+                Spacer(Modifier.width(10.dp))
+                OutlinedTextField(
+                    value = text,
+                    onValueChange = { text = it },
+                    placeholder = { Text(stringResource(R.string.te_chat_message), style = TeType.body) },
+                    textStyle = TeType.body,
+                    shape = PlateShape,
+                    maxLines = 5,
+                    modifier = Modifier.weight(1f).heightIn(min = 48.dp),
+                )
+                IconButton(
+                    enabled = text.isNotBlank() && !sending,
+                    onClick = {
+                        val body = text.trim()
+                        sending = true
+                        scope.launch {
+                            val ok = withContext(Dispatchers.IO) { runCatching { WhiteNoise.sendText(context, chat.id, body) } }
+                            sending = false
+                            ok.onSuccess { text = ""; onSendDone() }
+                                .onFailure { (context as? MainActivity)?.toast(context.getString(R.string.te_chat_not_sent, it.message ?: "?")) }
+                        }
+                    },
+                ) {
+                    Icon(Icons.AutoMirrored.Outlined.Send, stringResource(R.string.te_chat_send), tint = if (text.isNotBlank()) p.ink else p.inkMuted)
+                }
+            }
         }
     }
+}
+
+@Composable
+private fun Toggle(text: String, selected: Boolean, onClick: () -> Unit) {
+    val p = Te.colors
+    Text(
+        text,
+        style = TeType.smallStrong,
+        color = if (selected) p.face else p.inkMuted,
+        modifier = Modifier
+            .clip(CellShape)
+            .background(if (selected) p.ink else p.plateHi)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+    )
 }
 
 @Composable
@@ -252,16 +427,29 @@ private fun Bubble(groupId: String, m: ChatLine) {
                     if (m.unread) Lamp(LampState.REPLY, Modifier.padding(start = 6.dp), size = 10.dp)
                 }
                 Row(Modifier.padding(top = 4.dp), verticalAlignment = Alignment.Top) {
-                    if (m.voice) Icon(Icons.Outlined.Mic, stringResource(R.string.te_voice_message), tint = p.inkMuted, modifier = Modifier.padding(top = 2.dp, end = 6.dp).size(18.dp))
+                    if (m.voice) Icon(
+                        Icons.Outlined.Mic,
+                        stringResource(R.string.te_voice_message),
+                        tint = p.inkMuted,
+                        modifier = Modifier.padding(top = 2.dp, end = 6.dp).size(18.dp),
+                    )
                     Text(m.text.ifBlank { stringResource(R.string.te_voice_message) }, style = TeType.body, color = if (m.ignored) p.inkMuted else p.ink)
                 }
                 if (m.ignored) Label(stringResource(R.string.te_ignored_list), Modifier.padding(top = 4.dp))
                 Row {
                     if (m.voice) {
-                        PlainButton(stringResource(R.string.te_play), { scope.launch(Dispatchers.IO) { play(context, groupId, m, voice = true) } }, icon = Icons.Outlined.PlayArrow)
+                        PlainButton(
+                            stringResource(R.string.te_play),
+                            { scope.launch(Dispatchers.IO) { play(context, groupId, m, voice = true) } },
+                            icon = Icons.Outlined.PlayArrow,
+                        )
                     }
                     if (m.text.isNotBlank() && !m.mine) {
-                        PlainButton(stringResource(R.string.te_read_aloud), { scope.launch(Dispatchers.IO) { play(context, groupId, m, voice = false) } }, icon = Icons.AutoMirrored.Outlined.VolumeUp)
+                        PlainButton(
+                            stringResource(R.string.te_read_aloud),
+                            { scope.launch(Dispatchers.IO) { play(context, groupId, m, voice = false) } },
+                            icon = Icons.AutoMirrored.Outlined.VolumeUp,
+                        )
                     }
                 }
             }

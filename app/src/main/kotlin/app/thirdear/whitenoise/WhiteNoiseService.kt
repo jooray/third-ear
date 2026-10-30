@@ -43,6 +43,7 @@ class WhiteNoiseService : Service() {
         const val EXTRA_MESSAGE = "message"
         private const val CHANNEL = "white_noise_service"
         private const val NOTIF_ID = 4900
+        private val START_RETRIES_MS = listOf(0L, 3_000L, 10_000L, 30_000L, 60_000L)
 
         fun intent(context: Context, action: String): Intent = Intent(context, WhiteNoiseService::class.java).setAction(action)
 
@@ -136,7 +137,7 @@ class WhiteNoiseService : Service() {
         scope.launch {
             // a first start can fail (seen right after a fresh launch) where turning White Noise off
             // and on again works: try again a few times before leaving it failed
-            for (wait in listOf(0L, 3_000L, 10_000L, 30_000L, 60_000L)) {
+            for (wait in START_RETRIES_MS) {
                 delay(wait)
                 if (!config.whiteNoiseEnabled) return@launch
                 if (MarmotHost.phase.value == MarmotHost.Phase.READY) return@launch

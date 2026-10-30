@@ -124,6 +124,11 @@ class Config(context: Context) : BaseConfig(context) {
         get() = prefs.getString(NSEC_SHOWN_FOR, null)
         set(v) = prefs.edit { putString(NSEC_SHOWN_FOR, v) }
 
+    /** What the record key in a Messages conversation sends: the transcript (true) or the audio. */
+    var chatSendsTranscript: Boolean
+        get() = prefs.getBoolean(CHAT_SENDS_TRANSCRIPT, false)
+        set(v) = prefs.edit { putBoolean(CHAT_SENDS_TRANSCRIPT, v) }
+
     /** Before the two settings there was one "Spoken cues" switch; turned off, it turned both off. */
     private fun cueMode(key: String): Cues.Mode =
         prefs.getString(key, null)?.let { runCatching { Cues.Mode.valueOf(it) }.getOrNull() }

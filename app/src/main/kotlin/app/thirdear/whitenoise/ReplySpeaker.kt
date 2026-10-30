@@ -26,6 +26,8 @@ import app.thirdear.pipeline.Cues
 class ReplySpeaker(private val context: Context) {
 
     companion object {
+        private const val ENGINE_START_TIMEOUT_MS = 10_000L
+
         // holds the application context only
         @android.annotation.SuppressLint("StaticFieldLeak")
         @Volatile
@@ -89,7 +91,8 @@ class ReplySpeaker(private val context: Context) {
                     p.setOnErrorListener { _, _, _ -> done(); true }
                     p.prepare()
                     p.start()
-                } catch (t: Throwable) {
+                } catch (ignored: Throwable) {
+                    // a file the player can't open ends like one that finished: on to the next
                     done()
                 }
                 cont.invokeOnCancellation { runCatching { p.stop() }; player = null; runCatching { p.release() } }
@@ -103,7 +106,7 @@ class ReplySpeaker(private val context: Context) {
         ttsReady = ready
         val t = TextToSpeech(context.applicationContext) { status -> ready.complete(status == TextToSpeech.SUCCESS) }
         tts = t
-        if (withTimeoutOrNull(10_000) { ready.await() } != true) {
+        if (withTimeoutOrNull(ENGINE_START_TIMEOUT_MS) { ready.await() } != true) {
             t.shutdown()
             tts = null
             return null
@@ -116,7 +119,8 @@ class ReplySpeaker(private val context: Context) {
         val id = UUID.randomUUID().toString()
         engine.language = guessLocale(text)
         engine.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
-            override fun onStart(utteranceId: String?) {}
+            // only the end of the utterance matters
+            override fun onStart(utteranceId: String?) = Unit
             override fun onDone(utteranceId: String?) {
                 if (utteranceId == id && cont.isActive) cont.resume(Unit)
             }

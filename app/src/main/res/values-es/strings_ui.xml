@@ -11,6 +11,15 @@
     <string name="te_chats_me">Third Ear (yo)</string>
     <string name="te_chats_offline">White Noise no está en marcha: estos son los mensajes guardados en el teléfono.</string>
     <string name="te_chats_empty">Aún no hay mensajes en este grupo.</string>
+    <string name="te_chat_record">Grabar</string>
+    <string name="te_chat_message">Mensaje</string>
+    <string name="te_chat_send">Enviar</string>
+    <string name="te_chat_record_sends">La grabación envía</string>
+    <string name="te_chat_audio">Audio</string>
+    <string name="te_chat_transcript">Transcripción</string>
+    <string name="te_chat_send_audio">Enviar audio</string>
+    <string name="te_chat_send_transcript">Enviar transcripción</string>
+    <string name="te_chat_not_sent">No enviado: %s</string>
     <string name="te_close">Cerrar</string>
     <string name="te_save">Guardar</string>
     <string name="te_get">Obtener</string>

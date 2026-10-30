@@ -59,10 +59,7 @@ private fun BaseSimpleActivity.ensureFolderExists(folder: String) {
  * makes sure Third Ear holds the grant for the folder's top-level directory, which is what the
  * Fossify storage code writes through.
  */
-fun BaseSimpleActivity.launchFolderPicker(
-    currentPath: String,
-    callback: (newPath: String?) -> Unit
-) {
+fun BaseSimpleActivity.launchFolderPicker(callback: (newPath: String?) -> Unit) {
     SimpleActivity.pickFolder(this) { tree ->
         val path = tree?.let { treeUriToPath(it) }
         if (path == null) {

@@ -10,7 +10,15 @@ import org.junit.Test
 class ActionPlanTest {
 
     private fun plan(d: Destination, c: Content = Content.AUDIO, transcribe: Boolean = false, copy: Boolean = false) =
-        ActionPlan.of(RecordAction(name = "x", destination = d, content = c, transcribe = transcribe, copyTranscript = copy, groupId = "g", webhookUrl = "https://h"))
+        ActionPlan.of(RecordAction(
+            name = "x",
+            destination = d,
+            content = c,
+            transcribe = transcribe,
+            copyTranscript = copy,
+            groupId = "g",
+            webhookUrl = "https://h",
+        ))
 
     @Test
     fun `save only does nothing but save`() {

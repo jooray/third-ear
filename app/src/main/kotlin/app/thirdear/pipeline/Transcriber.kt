@@ -48,7 +48,7 @@ class Transcriber(private val context: Context) {
     }
 
     /** [busy]: the provider was in use or dropped us; worth retrying. [noSpeech]: ran, found no words. */
-    class Failed(message: String, val busy: Boolean = false, val noSpeech: Boolean = false) : Exception(message)
+    class Failed(message: String, val busy: Boolean = false, val noSpeech: Boolean = false, cause: Throwable? = null) : Exception(message, cause)
 
     enum class Contract { FILE, CALLER_AUDIO }
 
@@ -90,7 +90,7 @@ class Transcriber(private val context: Context) {
             withTimeout(timeout) { run(audio, component, contract) }
         } catch (e: TimeoutCancellationException) {
             // a newer recognition request (another app) can retire ours without an answer
-            throw Failed("no answer in ${timeout / 1000} s", busy = true)
+            throw Failed("no answer in ${timeout / 1000} s", busy = true, cause = e)
         }
     }
 
@@ -120,13 +120,14 @@ class Transcriber(private val context: Context) {
                 val r = SpeechRecognizer.createSpeechRecognizer(context, component)
                 recognizer = r
                 r.setRecognitionListener(object : RecognitionListener {
-                    override fun onReadyForSpeech(params: Bundle?) {}
-                    override fun onBeginningOfSpeech() {}
-                    override fun onRmsChanged(rmsdB: Float) {}
-                    override fun onBufferReceived(buffer: ByteArray?) {}
-                    override fun onEndOfSpeech() {}
-                    override fun onPartialResults(partialResults: Bundle?) {}
-                    override fun onEvent(eventType: Int, params: Bundle?) {}
+                    // the file is recognised as a whole: only the result and errors matter
+                    override fun onReadyForSpeech(params: Bundle?) = Unit
+                    override fun onBeginningOfSpeech() = Unit
+                    override fun onRmsChanged(rmsdB: Float) = Unit
+                    override fun onBufferReceived(buffer: ByteArray?) = Unit
+                    override fun onEndOfSpeech() = Unit
+                    override fun onPartialResults(partialResults: Bundle?) = Unit
+                    override fun onEvent(eventType: Int, params: Bundle?) = Unit
                     override fun onResults(results: Bundle?) {
                         val text = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull()?.trim()
                         if (text.isNullOrBlank()) finish(Result.failure(Failed("no speech recognised", noSpeech = true)))

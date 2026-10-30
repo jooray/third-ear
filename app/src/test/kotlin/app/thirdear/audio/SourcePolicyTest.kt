@@ -8,7 +8,6 @@ import org.junit.Test
 
 class SourcePolicyTest {
 
-    private val bt = RoutedInput(true, "Aids")
 
     @Test
     fun `starts on bluetooth only when wanted and available`() {
@@ -21,7 +20,7 @@ class SourcePolicyTest {
     fun `waits generously for the first bluetooth sound, then falls back with a cue`() {
         val p = SourcePolicy(firstSoundTimeoutMs = 8_000)
         p.start(true, true)
-        p.opened(Source.BLUETOOTH, bt, now = 0)
+        p.opened(Source.BLUETOOTH, now = 0)
         assertTrue(p.waitingForBluetooth)
         assertEquals(SourcePolicy.Action.None, p.tick(3_500))
         assertEquals(SourcePolicy.Action.None, p.tick(7_999))
@@ -36,7 +35,7 @@ class SourcePolicyTest {
     fun `first sound ends the wait`() {
         val p = SourcePolicy()
         p.start(true, true)
-        p.opened(Source.BLUETOOTH, bt, 0)
+        p.opened(Source.BLUETOOTH, 0)
         p.firstSound()
         assertFalse(p.waitingForBluetooth)
         assertEquals(SourcePolicy.Action.None, p.tick(60_000))
@@ -46,7 +45,7 @@ class SourcePolicyTest {
     fun `route moving off bluetooth while still starting is ignored, after sound it falls back`() {
         val p = SourcePolicy()
         p.start(true, true)
-        p.opened(Source.BLUETOOTH, RoutedInput.PHONE, 0)
+        p.opened(Source.BLUETOOTH, 0)
         // LE Audio reports routes late: no decision until it delivered sound or the deadline
         assertEquals(SourcePolicy.Action.None, p.routed(RoutedInput.PHONE))
         p.firstSound()
@@ -59,11 +58,11 @@ class SourcePolicyTest {
     fun `only the first automatic fallback has a cue`() {
         val p = SourcePolicy()
         p.start(true, true)
-        p.opened(Source.BLUETOOTH, bt, 0)
+        p.opened(Source.BLUETOOTH, 0)
         val first = p.readFailed("input lost") as SourcePolicy.Action.Open
         assertEquals(SourcePolicy.Cue.FALLBACK_TO_PHONE, first.cue)
         // pretend something reopened Bluetooth automatically; a second fallback is silent
-        p.opened(Source.BLUETOOTH, bt, 0)
+        p.opened(Source.BLUETOOTH, 0)
         val second = p.readFailed("input lost") as SourcePolicy.Action.Open
         assertEquals(null, second.cue)
     }
@@ -72,14 +71,14 @@ class SourcePolicyTest {
     fun `user switch to bluetooth re-arms the fallback`() {
         val p = SourcePolicy()
         p.start(true, true)
-        p.opened(Source.BLUETOOTH, bt, 0)
+        p.opened(Source.BLUETOOTH, 0)
         p.readFailed("x")
-        p.opened(Source.PHONE, RoutedInput.PHONE, 0)
+        p.opened(Source.PHONE, 0)
         val a = p.userSwitch(Source.BLUETOOTH) as SourcePolicy.Action.Open
         assertEquals(Source.BLUETOOTH, a.source)
         assertEquals(null, a.cue)
         assertFalse(p.fellBack)
-        p.opened(Source.BLUETOOTH, bt, 0)
+        p.opened(Source.BLUETOOTH, 0)
         assertEquals(SourcePolicy.Cue.FALLBACK_TO_PHONE, (p.readFailed("x") as SourcePolicy.Action.Open).cue)
     }
 
@@ -87,7 +86,7 @@ class SourcePolicyTest {
     fun `phone failure stops the recording`() {
         val p = SourcePolicy()
         p.start(false, false)
-        p.opened(Source.PHONE, RoutedInput.PHONE, 0)
+        p.opened(Source.PHONE, 0)
         assertIs<SourcePolicy.Action.Stop>(p.readFailed("input lost"))
         assertIs<SourcePolicy.Action.Stop>(p.openFailed(Source.PHONE, "busy"))
     }

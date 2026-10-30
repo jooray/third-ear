@@ -34,10 +34,16 @@ style:
     active: true
     ignoreAnnotated: ["Composable"]
     ignoreEnums: true
+    # a named value already says what the number is
+    ignorePropertyDeclaration: true
+    ignoreLocalVariableDeclaration: true
     ignoreNumbers: ["-1", "0", "1", "2", "42", "1000"]
+    # the palette is a table of colours
+    excludes: ["**/test/**", "**/androidTest/**", "**/ui/Theme.kt"]
   MaxLineLength:
     active: true
-    maxLineLength: 120
+    # Third Ear's Kotlin is written wide (Compose modifier chains, one-line guards)
+    maxLineLength: 160
     excludePackageStatements: true
     excludeImportStatements: true
   ReturnCount:

@@ -82,6 +82,7 @@ class RecorderService : Service() {
         const val ACTION_RETRY = P + "RETRY"
         const val ACTION_RECOVER = P + "RECOVER"
         const val EXTRA_ACTION_ID = "action_id"
+        const val EXTRA_ACTION_JSON = "action_json"
         const val EXTRA_NOTE_ID = "note_id"
         const val EXTRA_SOURCE = "source"
 
@@ -107,6 +108,10 @@ class RecorderService : Service() {
         /** From a visible activity (Android lets only a visible app start a microphone service). */
         fun start(context: Context, actionId: String?) = launch(context, intent(context, ACTION_START).putExtra(EXTRA_ACTION_ID, actionId))
 
+        /** Records for an action that is not a line (a White Noise conversation's record key); stop with a null id. */
+        fun start(context: Context, action: RecordAction) =
+            launch(context, intent(context, ACTION_START).putExtra(EXTRA_ACTION_JSON, action.toJson().toString()))
+
         /** Ends the recording and runs [actionId]'s action (null: the one it was started with). */
         fun stop(context: Context, actionId: String?) = control(context, intent(context, ACTION_STOP).putExtra(EXTRA_ACTION_ID, actionId))
 
@@ -127,7 +132,8 @@ class RecorderService : Service() {
             return try {
                 context.startService(intent)
                 true
-            } catch (t: Throwable) {
+            } catch (ignored: Throwable) {
+                // the process was cached and may not start a background service: go through the foreground path
                 launch(context, intent)
             }
         }
@@ -183,7 +189,7 @@ class RecorderService : Service() {
             ACTION_RETRY -> intent.getStringExtra(EXTRA_NOTE_ID)?.let { runPipeline(it, retry = true) }
             ACTION_RECOVER -> recover()
             GET_RECORDER_INFO, STOP_AMPLITUDE_UPDATE -> {}
-            else -> startRecording(intent?.getStringExtra(EXTRA_ACTION_ID))
+            else -> startRecording(intent?.getStringExtra(EXTRA_ACTION_ID), intent?.getStringExtra(EXTRA_ACTION_JSON))
         }
         // a foreground-service start must reach startForeground, even when there is nothing to do
         if (foregroundId == 0) {
@@ -204,10 +210,11 @@ class RecorderService : Service() {
 
     // ------------------------------------------------------------------ recording
 
-    private fun startRecording(actionId: String?) {
+    private fun startRecording(actionId: String?, actionJson: String? = null) {
         if (engine != null) return
         val all = actions.all { defaultActions() }
-        val action = all.firstOrNull { it.id == actionId } ?: actions.defaultAction() ?: all.first()
+        val adHoc = actionJson?.let { runCatching { RecordAction.fromJson(org.json.JSONObject(it)) }.getOrNull() }
+        val action = adHoc ?: all.firstOrNull { it.id == actionId } ?: actions.defaultAction() ?: all.first()
         val container = when (config.extension) {
             EXTENSION_MP3 -> Container.MP3
             EXTENSION_OGG -> Container.OGG

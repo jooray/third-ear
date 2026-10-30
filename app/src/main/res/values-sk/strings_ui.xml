@@ -11,6 +11,15 @@
     <string name="te_chats_me">Third Ear (ja)</string>
     <string name="te_chats_offline">White Noise nebeží: toto sú správy uložené v telefóne.</string>
     <string name="te_chats_empty">V tejto skupine zatiaľ nie sú správy.</string>
+    <string name="te_chat_record">Nahrať</string>
+    <string name="te_chat_message">Správa</string>
+    <string name="te_chat_send">Odoslať</string>
+    <string name="te_chat_record_sends">Nahrávka pošle</string>
+    <string name="te_chat_audio">Zvuk</string>
+    <string name="te_chat_transcript">Prepis</string>
+    <string name="te_chat_send_audio">Poslať zvuk</string>
+    <string name="te_chat_send_transcript">Poslať prepis</string>
+    <string name="te_chat_not_sent">Neodoslané: %s</string>
     <string name="te_close">Zavrieť</string>
     <string name="te_save">Uložiť</string>
     <string name="te_get">Získať</string>

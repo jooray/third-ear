@@ -107,7 +107,7 @@ fun ThirdEarApp(host: MainActivity, recordToResult: Boolean) {
                 Destination.BOARD -> BoardScreen(host, wide, onOpenReplies = openReplies, onEditLine = { editId = it; dest = Destination.LINES })
                 Destination.MESSAGES -> Box(measure) { MessagesScreen() }
                 Destination.LOG, Destination.LOG_REPLIES -> Box(measure) { LogScreen(host, logTab, onTab = { logTab = it }, replies = !chats) }
-                Destination.LINES -> Box(measure) { LinesScreen(host, editId, onEdited = { editId = null }, onOpenSetup = { dest = Destination.SETUP }) }
+                Destination.LINES -> Box(measure) { LinesScreen(host, editId, onEditDone = { editId = null }, onOpenSetup = { dest = Destination.SETUP }) }
                 Destination.SETUP -> Box(measure) { SetupScreen(host) }
             }
         }

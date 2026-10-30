@@ -169,7 +169,12 @@ fun ReadDialog(title: String, text: String, onCopy: () -> Unit, onDismiss: () ->
 
 /** A row that reads as a menu entry inside a bottom sheet. */
 @Composable
-fun SheetItem(text: String, icon: androidx.compose.ui.graphics.vector.ImageVector, onClick: () -> Unit, color: androidx.compose.ui.graphics.Color = Te.colors.ink) {
+fun SheetItem(
+    text: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    onClick: () -> Unit,
+    color: androidx.compose.ui.graphics.Color = Te.colors.ink,
+) {
     Row(
         Modifier
             .fillMaxWidth()

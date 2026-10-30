@@ -2,6 +2,15 @@ package app.thirdear.audio
 
 import java.util.concurrent.ConcurrentLinkedQueue
 
+/** How often the level and duration go to the screen. */
+private const val PUBLISH_MS = 100L
+private const val EMPTY_READ_SLEEP_MS = 10L
+
+// AudioRecord.read's errors (this file stays free of Android for the tests)
+private const val ERROR_INVALID_OPERATION = -3
+private const val ERROR_BAD_VALUE = -2
+private const val ERROR_DEAD_OBJECT = -6
+
 /** What the recording screen, the notification and the tiles show. */
 data class EngineStatus(
     val starting: Boolean = true,
@@ -136,7 +145,7 @@ class RecordingEngine(
             source = opened
             zeros.reset()
             val routed = opened.routed()
-            policy.opened(want, routed, clock())
+            policy.opened(want, clock())
             listener.onLog("recording from ${want.name.lowercase()} (routed: ${if (routed.bluetooth) "bluetooth" else "phone"})")
             publish {
                 it.copy(
@@ -195,7 +204,7 @@ class RecordingEngine(
                         ZeroRunDetector.Change.NONE -> {}
                     }
                     if (!paused) sink.write(buffer, n)
-                    if (now - lastPublish >= 100) {
+                    if (now - lastPublish >= PUBLISH_MS) {
                         lastPublish = now
                         val amp = if (paused) 0 else peak(buffer, n)
                         publish { it.copy(samples = sink.samplesWritten, amplitude = amp) }
@@ -210,7 +219,7 @@ class RecordingEngine(
                         act(policy.readFailed("no audio for a second"))?.let { return it }
                         continue
                     }
-                    Thread.sleep(10)
+                    Thread.sleep(EMPTY_READ_SLEEP_MS)
                 }
 
                 else -> {
@@ -256,9 +265,9 @@ class RecordingEngine(
     }
 
     private fun readError(n: Int) = when (n) {
-        -3 -> "invalid operation"
-        -2 -> "bad value"
-        -6 -> "input lost"
+        ERROR_INVALID_OPERATION -> "invalid operation"
+        ERROR_BAD_VALUE -> "bad value"
+        ERROR_DEAD_OBJECT -> "input lost"
         else -> "error $n"
     }
 }

@@ -30,7 +30,7 @@ class SecureKv(context: Context) {
             KeyGenParameterSpec.Builder(ALIAS, KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
                 .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
                 .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
-                .setKeySize(256)
+                .setKeySize(KEY_BITS)
                 .build(),
         )
         return gen.generateKey()
@@ -61,6 +61,7 @@ class SecureKv(context: Context) {
 
     companion object {
         private const val ALIAS = "thirdear.marmot"
+        private const val KEY_BITS = 256
     }
 
     /** Forgets every secret (used when White Noise starts over with a fresh identity). */
