@@ -358,6 +358,37 @@ object MarmotHost {
         m.downloadMedia(acct, groupId, ref).plaintext
     }
 
+    /** One chat message of a group's conversation, Third Ear's own included. */
+    data class TimelineMessage(
+        val id: String,
+        val mine: Boolean,
+        val sender: String,
+        val text: String,
+        val audio: List<MediaAttachmentReferenceFfi>,
+        val at: Long,
+    )
+
+    /** The group's latest chat messages, oldest first (system events and deleted messages left out). */
+    suspend fun timeline(groupId: String, limit: Int = 100): List<TimelineMessage> = io { m, acct ->
+        val self = accountHex
+        m.timelineMessages(acct, TimelineMessageQueryFfi(groupId, null, null, null, null, null, limit.toUInt()))
+            .messages
+            .filter { it.kind == 9uL && !it.deleted && it.groupSystem == null }
+            .map { r ->
+                TimelineMessage(
+                    id = r.messageIdHex,
+                    mine = r.sender == self,
+                    sender = r.sender,
+                    text = r.plaintext,
+                    audio = r.media.filterIsInstance<MediaAttachmentOutcomeFfi.Accepted>().map { it.reference }.filter { it.mediaType.startsWith("audio/") },
+                    at = r.timelineAt.toLong().let { if (it > 100_000_000_000L) it else it * 1000 },
+                )
+            }
+            .sortedBy { it.at }
+    }
+
+    fun displayName(pubkey: String): String? = marmot?.let { m -> runCatching { m.displayName(pubkey) }.getOrNull() }
+
     suspend fun markRead(groupId: String, messageId: String) = io { m, acct ->
         runCatching { m.markTimelineMessageRead(acct, groupId, messageId) }
         Unit

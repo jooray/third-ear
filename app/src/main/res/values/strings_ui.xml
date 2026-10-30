@@ -4,6 +4,13 @@
     <string name="te_nav_log">Log</string>
     <string name="te_nav_lines">Lines</string>
     <string name="te_nav_setup">Setup</string>
+    <string name="te_nav_messages">Messages</string>
+    <string name="te_mark_all_read">Mark all as read</string>
+    <string name="te_back">Back</string>
+    <string name="te_chats_no_groups">No groups yet. Accept an invite under Lines → Groups.</string>
+    <string name="te_chats_me">Third Ear (me)</string>
+    <string name="te_chats_offline">White Noise is not running: these are the messages saved on this phone.</string>
+    <string name="te_chats_empty">No messages in this group yet.</string>
     <string name="te_close">Close</string>
     <string name="te_save">Save</string>
     <string name="te_get">Get</string>

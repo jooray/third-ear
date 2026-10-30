@@ -111,6 +111,36 @@ object WhiteNoise {
         markRead(context, groupId, unread.map { it.id })
     }
 
+    /** Marks every unread message of the group read (or of all groups, without one). */
+    suspend fun markAllRead(context: Context, groupId: String? = null) {
+        IncomingStore(context).load()
+            .filter { !it.read && it.ignoredBy == null && (groupId == null || it.groupId == groupId) }
+            .groupBy { it.groupId }
+            .forEach { (g, list) -> markRead(context, g, list.map { it.id }) }
+    }
+
+    /**
+     * Plays the voice of a conversation message: the copy saved on arrival when there is one,
+     * otherwise downloaded (also Third Ear's own and older messages) into the cache.
+     */
+    suspend fun playTimeline(context: Context, groupId: String, m: MarmotHost.TimelineMessage) {
+        val saved = IncomingStore(context).get(m.id)?.audio.orEmpty().map(::File).filter { it.exists() }
+        val files = saved.ifEmpty {
+            val dir = File(context.cacheDir, "wn-media").apply { mkdirs() }
+            m.audio.mapIndexedNotNull { i, ref ->
+                val f = File(dir, "${m.id.take(16)}-$i.${ref.fileName.substringAfterLast('.', "m4a").take(5)}")
+                if (!f.exists()) runCatching { f.writeBytes(MarmotHost.download(groupId, ref)) }.onFailure { Log.w(TAG, "download failed: ${it.message}") }
+                f.takeIf { it.exists() }
+            }
+        }
+        val speaker = ReplySpeaker.get(context)
+        try {
+            for (f in files) speaker.play(f)
+        } catch (t: Throwable) {
+            Log.w(TAG, "playback failed: ${t.message}")
+        }
+    }
+
     suspend fun markRead(context: Context, groupId: String, ids: List<String>) {
         IncomingStore(context).markRead(ids)
         for (id in ids) runCatching { MarmotHost.markRead(groupId, id) }

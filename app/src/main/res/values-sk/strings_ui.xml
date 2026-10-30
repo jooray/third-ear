@@ -4,6 +4,13 @@
     <string name="te_nav_log">Záznam</string>
     <string name="te_nav_lines">Linky</string>
     <string name="te_nav_setup">Nastavenie</string>
+    <string name="te_nav_messages">Správy</string>
+    <string name="te_mark_all_read">Označiť všetko ako prečítané</string>
+    <string name="te_back">Späť</string>
+    <string name="te_chats_no_groups">Zatiaľ žiadne skupiny. Pozvánku prijmete v Linky → Skupiny.</string>
+    <string name="te_chats_me">Third Ear (ja)</string>
+    <string name="te_chats_offline">White Noise nebeží: toto sú správy uložené v telefóne.</string>
+    <string name="te_chats_empty">V tejto skupine zatiaľ nie sú správy.</string>
     <string name="te_close">Zavrieť</string>
     <string name="te_save">Uložiť</string>
     <string name="te_get">Získať</string>

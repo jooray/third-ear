@@ -4,6 +4,13 @@
     <string name="te_nav_log">Protokoll</string>
     <string name="te_nav_lines">Leitungen</string>
     <string name="te_nav_setup">Einrichtung</string>
+    <string name="te_nav_messages">Nachrichten</string>
+    <string name="te_mark_all_read">Alle als gelesen markieren</string>
+    <string name="te_back">Zurück</string>
+    <string name="te_chats_no_groups">Noch keine Gruppen. Einladungen nehmen Sie unter Leitungen → Gruppen an.</string>
+    <string name="te_chats_me">Third Ear (ich)</string>
+    <string name="te_chats_offline">White Noise läuft nicht: Das sind die auf diesem Telefon gespeicherten Nachrichten.</string>
+    <string name="te_chats_empty">Noch keine Nachrichten in dieser Gruppe.</string>
     <string name="te_close">Schließen</string>
     <string name="te_save">Speichern</string>
     <string name="te_get">Holen</string>

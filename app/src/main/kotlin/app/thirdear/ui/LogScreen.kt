@@ -87,7 +87,7 @@ enum class LogTab { RECORDINGS, REPLIES, DELETED }
 private data class Tag(val code: String, val cord: Int)
 
 @Composable
-fun LogScreen(host: MainActivity, tab: LogTab, onTab: (LogTab) -> Unit) {
+fun LogScreen(host: MainActivity, tab: LogTab, onTab: (LogTab) -> Unit, replies: Boolean = true) {
     val p = Te.colors
     val context = LocalContext.current
     val recordings by host.recordings
@@ -99,7 +99,7 @@ fun LogScreen(host: MainActivity, tab: LogTab, onTab: (LogTab) -> Unit) {
     val player = rememberLogPlayer()
     var query by remember { mutableStateOf<String?>(null) }
     val useBin = context.config.useRecycleBin
-    val shownTab = if (tab == LogTab.DELETED && !useBin) LogTab.RECORDINGS else tab
+    val shownTab = if ((tab == LogTab.DELETED && !useBin) || (tab == LogTab.REPLIES && !replies)) LogTab.RECORDINGS else tab
 
     LaunchedEffect(Unit) {
         host.reloadRecordings()
@@ -135,7 +135,8 @@ fun LogScreen(host: MainActivity, tab: LogTab, onTab: (LogTab) -> Unit) {
             }
         }
 
-        val tabs = listOfNotNull(LogTab.RECORDINGS, LogTab.REPLIES, LogTab.DELETED.takeIf { useBin })
+        // with White Noise on, replies live under Messages
+        val tabs = listOfNotNull(LogTab.RECORDINGS, LogTab.REPLIES.takeIf { replies }, LogTab.DELETED.takeIf { useBin })
         val unread = messages.count { !it.read && it.ignoredBy == null }
         SecondaryTabRow(
             selectedTabIndex = tabs.indexOf(shownTab).coerceAtLeast(0),

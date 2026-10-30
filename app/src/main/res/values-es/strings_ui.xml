@@ -4,6 +4,13 @@
     <string name="te_nav_log">Registro</string>
     <string name="te_nav_lines">Líneas</string>
     <string name="te_nav_setup">Ajustes</string>
+    <string name="te_nav_messages">Mensajes</string>
+    <string name="te_mark_all_read">Marcar todo como leído</string>
+    <string name="te_back">Atrás</string>
+    <string name="te_chats_no_groups">Aún no hay grupos. Acepte una invitación en Líneas → Grupos.</string>
+    <string name="te_chats_me">Third Ear (yo)</string>
+    <string name="te_chats_offline">White Noise no está en marcha: estos son los mensajes guardados en el teléfono.</string>
+    <string name="te_chats_empty">Aún no hay mensajes en este grupo.</string>
     <string name="te_close">Cerrar</string>
     <string name="te_save">Guardar</string>
     <string name="te_get">Obtener</string>

@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Cable
+import androidx.compose.material.icons.outlined.ChatBubbleOutline
 import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Tune
@@ -44,14 +45,17 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.thirdear.R
 import app.thirdear.activities.MainActivity
+import app.thirdear.extensions.config
 import app.thirdear.whitenoise.IncomingStore
+import app.thirdear.whitenoise.MarmotHost
 
-enum class Destination { BOARD, LOG, LOG_REPLIES, LINES, SETUP }
+enum class Destination { BOARD, MESSAGES, LOG, LOG_REPLIES, LINES, SETUP }
 
 private data class NavItem(val dest: Destination, val label: Int, val icon: ImageVector)
 
 private val NAV = listOf(
     NavItem(Destination.BOARD, R.string.te_nav_board, Icons.Outlined.GridView),
+    NavItem(Destination.MESSAGES, R.string.te_nav_messages, Icons.Outlined.ChatBubbleOutline),
     NavItem(Destination.LOG, R.string.te_nav_log, Icons.Outlined.History),
     NavItem(Destination.LINES, R.string.te_nav_lines, Icons.Outlined.Cable),
     NavItem(Destination.SETUP, R.string.te_nav_setup, Icons.Outlined.Tune),
@@ -67,10 +71,13 @@ fun ThirdEarApp(host: MainActivity, recordToResult: Boolean) {
     var logTab by rememberSaveable { mutableStateOf(LogTab.RECORDINGS) }
     var editId by rememberSaveable { mutableStateOf<String?>(null) }
     val requested by host.requested
+    // read again whenever White Noise starts or stops (the switch in Setup does both)
+    val phase by MarmotHost.phase.collectAsStateWithLifecycle()
+    val chats = host.config.whiteNoiseEnabled || phase != MarmotHost.Phase.OFF
     LaunchedEffect(requested) {
         when (val r = requested) {
             null -> {}
-            Destination.LOG_REPLIES -> { dest = Destination.LOG; logTab = LogTab.REPLIES }
+            Destination.LOG_REPLIES -> if (chats) dest = Destination.MESSAGES else { dest = Destination.LOG; logTab = LogTab.REPLIES }
             else -> dest = r
         }
         host.requested.value = null
@@ -80,7 +87,15 @@ fun ThirdEarApp(host: MainActivity, recordToResult: Boolean) {
     val messages by IncomingStore.messages.collectAsStateWithLifecycle()
     val unread = messages.count { !it.read && it.ignoredBy == null }
     val wide = LocalConfiguration.current.screenWidthDp >= EXPANDED_DP
-    val shown = if (dest == Destination.LOG_REPLIES) Destination.LOG else dest
+    val shown = when {
+        dest == Destination.LOG_REPLIES -> Destination.LOG
+        dest == Destination.MESSAGES && !chats -> Destination.BOARD
+        else -> dest
+    }
+    // with White Noise on, its messages have their own destination and the badge moves there
+    val nav = NAV.filter { it.dest != Destination.MESSAGES || chats }
+    val badged = if (chats) Destination.MESSAGES else Destination.LOG
+    val openReplies = { if (chats) dest = Destination.MESSAGES else { logTab = LogTab.REPLIES; dest = Destination.LOG } }
 
     val content: @Composable (Modifier) -> Unit = { m ->
         // the bottom bar takes the navigation inset on phones; the rail leaves it to the content
@@ -89,8 +104,9 @@ fun ThirdEarApp(host: MainActivity, recordToResult: Boolean) {
             // lists and settings keep a reading measure on wide screens; the board takes the width
             val measure = Modifier.widthIn(max = 600.dp)
             when (shown) {
-                Destination.BOARD -> BoardScreen(host, wide, onOpenReplies = { logTab = LogTab.REPLIES; dest = Destination.LOG }, onEditLine = { editId = it; dest = Destination.LINES })
-                Destination.LOG, Destination.LOG_REPLIES -> Box(measure) { LogScreen(host, logTab, onTab = { logTab = it }) }
+                Destination.BOARD -> BoardScreen(host, wide, onOpenReplies = openReplies, onEditLine = { editId = it; dest = Destination.LINES })
+                Destination.MESSAGES -> Box(measure) { MessagesScreen() }
+                Destination.LOG, Destination.LOG_REPLIES -> Box(measure) { LogScreen(host, logTab, onTab = { logTab = it }, replies = !chats) }
                 Destination.LINES -> Box(measure) { LinesScreen(host, editId, onEdited = { editId = null }, onOpenSetup = { dest = Destination.SETUP }) }
                 Destination.SETUP -> Box(measure) { SetupScreen(host) }
             }
@@ -106,11 +122,11 @@ fun ThirdEarApp(host: MainActivity, recordToResult: Boolean) {
                 modifier = Modifier.fillMaxHeight(),
                 header = { Text("3E", style = TeType.wordmark, color = p.ink, modifier = Modifier.padding(vertical = 12.dp)) },
             ) {
-                NAV.forEach { item ->
+                nav.forEach { item ->
                     NavigationRailItem(
                         selected = shown == item.dest,
                         onClick = { dest = item.dest },
-                        icon = { NavIcon(item, if (item.dest == Destination.LOG) unread else 0) },
+                        icon = { NavIcon(item, if (item.dest == badged) unread else 0) },
                         label = { Text(stringResource(item.label), style = TeType.small) },
                         colors = NavigationRailItemDefaults.colors(
                             selectedIconColor = p.ink, selectedTextColor = p.ink, indicatorColor = p.plateHi,
@@ -127,11 +143,11 @@ fun ThirdEarApp(host: MainActivity, recordToResult: Boolean) {
             content(Modifier.weight(1f))
             Rule()
             NavigationBar(containerColor = p.plate, tonalElevation = 0.dp) {
-                NAV.forEach { item ->
+                nav.forEach { item ->
                     NavigationBarItem(
                         selected = shown == item.dest,
                         onClick = { dest = item.dest },
-                        icon = { NavIcon(item, if (item.dest == Destination.LOG) unread else 0) },
+                        icon = { NavIcon(item, if (item.dest == badged) unread else 0) },
                         label = { Text(stringResource(item.label), style = TeType.small) },
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = p.ink, selectedTextColor = p.ink, indicatorColor = p.plateHi,

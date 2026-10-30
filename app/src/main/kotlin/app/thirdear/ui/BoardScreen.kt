@@ -456,6 +456,14 @@ private fun RepliesPlate(lines: List<Line>, messages: List<IncomingMessage>, onO
     Row(Modifier.fillMaxWidth().padding(top = 14.dp, bottom = 2.dp), verticalAlignment = Alignment.CenterVertically) {
         Label(stringResource(R.string.te_board_replies))
         Spacer(Modifier.weight(1f))
+        if (waiting.size > 1) {
+            Text(
+                stringResource(R.string.te_mark_all_read),
+                style = TeType.smallStrong,
+                color = p.inkMuted,
+                modifier = Modifier.clickable { scope.launch(Dispatchers.IO) { WhiteNoise.markAllRead(context) } }.padding(vertical = 14.dp, horizontal = 12.dp),
+            )
+        }
         Text(
             stringResource(R.string.te_board_all_replies),
             style = TeType.smallStrong,
