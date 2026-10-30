@@ -88,3 +88,17 @@ package is `app.thirdear` too; remote `upstream` (FossifyOrg/Voice-Recorder) is 
 ## License
 
 GPLv3, as Fossify Voice Recorder. The spoken cues (Lisa's voice) come from I Hear You.
+
+<!-- jooray-links:start -->
+### More from me
+
+**Related projects**
+
+- [android-bluetooth-microphone](https://github.com/jooray/android-bluetooth-microphone): how to record from Bluetooth headsets and hearing aids on Android, and transcribe on the phone
+- [livecaster-llm](https://github.com/jooray/livecaster-llm): a live co-pilot for podcast hosts, with local transcription and an LLM that keeps your outline honest
+- [markdown2audio](https://github.com/jooray/markdown2audio): turn Markdown into an audio file with StyleTTS
+
+**Full project showcase:** [Third Ear in my project showcase](https://juraj.bednar.io/showcase/#MED-05), or [all my projects](https://juraj.bednar.io/showcase/).
+
+I write about building things on [my blog](https://juraj.bednar.io/en/blog-en/). I also wrote a cypherpunk novel, [Tamers of Entropy](https://tamersofentropy.net/), and there is a [trailer](https://tamersofentropy.net/#trailer).
+<!-- jooray-links:end -->
