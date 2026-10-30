@@ -135,11 +135,22 @@ class RecordingScreen(carContext: CarContext) : Screen(carContext) {
     private var shownAt = 0L
     private var job: Job? = null
     private var sawRecording = false
+    private val openedAt = System.currentTimeMillis()
+    private var refused = false
 
     init {
         lifecycle.addObserver(object : DefaultLifecycleObserver {
             override fun onStart(owner: LifecycleOwner) {
                 job = lifecycleScope.launch {
+                    // Android refused the microphone: say so instead of "starting" forever
+                    launch {
+                        RecorderService.refusedAt.collect { at ->
+                            if (at >= openedAt && !refused) {
+                                refused = true
+                                invalidate()
+                            }
+                        }
+                    }
                     RecorderService.live.collect { l ->
                         if (l == null) {
                             if (sawRecording) {
@@ -169,7 +180,8 @@ class RecordingScreen(carContext: CarContext) : Screen(carContext) {
         val l = RecorderService.live.value
         val list = ItemList.Builder()
         if (l == null) {
-            return MessageTemplate.Builder(carContext.getString(R.string.te_input_starting)).setTitle(carContext.getString(R.string.te_car_title))
+            val text = if (refused) R.string.te_car_open_phone else R.string.te_input_starting
+            return MessageTemplate.Builder(carContext.getString(text)).setTitle(carContext.getString(R.string.te_car_title))
                 .setHeaderAction(Action.BACK).build()
         }
         val status = l.status
@@ -218,7 +230,8 @@ class MessagesScreen(carContext: CarContext) : Screen(carContext) {
         for (m in messages) {
             list.addItem(
                 Row.Builder()
-                    .setTitle("${m.groupName} · ${m.senderName ?: m.sender.take(8)}")
+                    // a sender named like the group (an agent's own group) is said once
+                    .setTitle(listOfNotNull(m.groupName, (m.senderName ?: m.sender.take(8)).takeIf { it != m.groupName }).joinToString(" · "))
                     .addText(MessageNotifier.messageLine(carContext, m))
                     .setOnClickListener { WhiteNoiseService.playMessage(carContext, m.id) }
                     .build(),

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- the screenshots build sits next to the real app: its own name in launchers and Android Auto -->
+<resources>
+    <string name="app_launcher_name">Third Ear demo</string>
+</resources>

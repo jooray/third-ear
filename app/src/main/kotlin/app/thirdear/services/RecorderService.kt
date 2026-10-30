@@ -103,6 +103,11 @@ class RecorderService : Service() {
         private val liveState = MutableStateFlow<Live?>(null)
         val live: StateFlow<Live?> get() = liveState
 
+        private val refusedState = MutableStateFlow(0L)
+
+        /** When Android last refused to start the microphone (Third Ear not opened on the phone since boot or update). */
+        val refusedAt: StateFlow<Long> get() = refusedState
+
         fun intent(context: Context, action: String): Intent = Intent(context, RecorderService::class.java).setAction(action)
 
         /** From a visible activity (Android lets only a visible app start a microphone service). */
@@ -231,6 +236,7 @@ class RecorderService : Service() {
         if (!goForeground(RECORDER_RUNNING_NOTIF_ID, recordingNotification(live), microphone = true)) {
             // Android 14+: the microphone service starts only while Third Ear is visible
             toast(R.string.te_error_background_start)
+            refusedState.value = System.currentTimeMillis()
             maybeStop()
             return
         }
