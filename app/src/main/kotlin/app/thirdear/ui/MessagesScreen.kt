@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.VolumeUp
@@ -46,6 +47,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.thirdear.R
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.OutlinedTextField
@@ -98,7 +102,7 @@ private fun IncomingMessage.line() = ChatLine(
 
 /** White Noise as a chat app: the groups with their messages, opened one at a time; Mark all as read on both. */
 @Composable
-fun MessagesScreen() {
+fun MessagesScreen(modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val messages by IncomingStore.messages.collectAsStateWithLifecycle()
     val groups by MarmotHost.groups.collectAsStateWithLifecycle()
@@ -130,13 +134,32 @@ fun MessagesScreen() {
     }
 
     val chat = open?.let { id -> chats.firstOrNull { it.id == id } }
-    if (chat != null) {
-        BackHandler { open = null }
-        Conversation(chat, messages, ready, onBack = { open = null })
+    Box(modifier) { Panes(chats, chat, messages, ready, onOpen = { open = it }, onClose = { open = null }) }
+}
+
+@Composable
+private fun Panes(chats: List<Chat>, chat: Chat?, messages: List<IncomingMessage>, ready: Boolean, onOpen: (String?) -> Unit, onClose: () -> Unit) {
+    if (LocalConfiguration.current.screenWidthDp >= TWO_PANE_DP) {
+        // a tablet: the groups on the left, the open one beside them, as in any chat app
+        val shown = chat ?: chats.firstOrNull()
+        Row(Modifier.fillMaxSize()) {
+            Box(Modifier.width(LIST_PANE_DP.dp).fillMaxHeight()) { ChatList(chats, ready, onOpen = onOpen, selected = shown?.id) }
+            Box(Modifier.width(1.dp).fillMaxHeight().background(Te.colors.rule))
+            Box(Modifier.weight(1f).fillMaxHeight()) {
+                if (shown != null) Conversation(shown, messages, ready, onBack = null)
+            }
+        }
+    } else if (chat != null) {
+        BackHandler(onBack = onClose)
+        Conversation(chat, messages, ready, onBack = onClose)
     } else {
-        ChatList(chats, ready, onOpen = { open = it })
+        Box(Modifier.widthIn(max = 600.dp)) { ChatList(chats, ready, onOpen = onOpen) }
     }
 }
+
+/** From this width the list and the conversation are shown side by side. */
+private const val TWO_PANE_DP = 800
+private const val LIST_PANE_DP = 360
 
 private fun MarmotHost.TimelineMessage.line(saved: List<IncomingMessage>): ChatLine {
     val s = saved.firstOrNull { it.id == id }
@@ -148,7 +171,7 @@ private fun MarmotHost.TimelineMessage.line(saved: List<IncomingMessage>): ChatL
 }
 
 @Composable
-private fun ChatList(chats: List<Chat>, ready: Boolean, onOpen: (String) -> Unit) {
+private fun ChatList(chats: List<Chat>, ready: Boolean, onOpen: (String) -> Unit, selected: String? = null) {
     val p = Te.colors
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -179,7 +202,7 @@ private fun ChatList(chats: List<Chat>, ready: Boolean, onOpen: (String) -> Unit
                 Row(
                     Modifier
                         .fillMaxWidth()
-                        .background(if (c.unread > 0) p.plate else p.face)
+                        .background(if (c.id == selected) p.plateHi else if (c.unread > 0) p.plate else p.face)
                         .clickable { onOpen(c.id) }
                         .padding(horizontal = 16.dp, vertical = 12.dp),
                     verticalAlignment = Alignment.Top,
@@ -197,7 +220,7 @@ private fun ChatList(chats: List<Chat>, ready: Boolean, onOpen: (String) -> Unit
                                 overflow = TextOverflow.Ellipsis,
                                 modifier = Modifier.weight(1f),
                             )
-                            c.last?.let { Figures(ago(it.at), Modifier.padding(start = 8.dp)) }
+                            c.last?.let { Figures(listTime(it.at), Modifier.padding(start = 8.dp)) }
                         }
                         Row(Modifier.padding(top = 2.dp), verticalAlignment = Alignment.CenterVertically) {
                             Text(
@@ -223,7 +246,7 @@ private fun ChatList(chats: List<Chat>, ready: Boolean, onOpen: (String) -> Unit
 }
 
 @Composable
-private fun Conversation(chat: Chat, messages: List<IncomingMessage>, ready: Boolean, onBack: () -> Unit) {
+private fun Conversation(chat: Chat, messages: List<IncomingMessage>, ready: Boolean, onBack: (() -> Unit)?) {
     val p = Te.colors
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -243,9 +266,14 @@ private fun Conversation(chat: Chat, messages: List<IncomingMessage>, ready: Boo
         (t.map { it.line(saved) } + saved.filter { it.id !in ids }.map { it.line() }).sortedBy { it.at }
     } ?: saved.sortedBy { it.at }.map { it.line() }
 
-    Column(Modifier.fillMaxSize()) {
+    // the keyboard shrinks the conversation, it doesn't push the header away
+    Column(Modifier.fillMaxSize().imePadding()) {
         Row(Modifier.fillMaxWidth().height(56.dp).padding(end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Outlined.ArrowBack, stringResource(R.string.te_back), tint = p.ink) }
+            if (onBack != null) {
+                IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Outlined.ArrowBack, stringResource(R.string.te_back), tint = p.ink) }
+            } else {
+                Spacer(Modifier.width(16.dp))
+            }
             Text(chat.name, style = TeType.title, color = p.ink, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
             if (chat.unread > 0) {
                 PlainButton(
@@ -263,11 +291,17 @@ private fun Conversation(chat: Chat, messages: List<IncomingMessage>, ready: Boo
                 }
             } else {
                 // newest at the bottom, where the list starts, as in any chat
+                val listState = rememberLazyListState()
+                val newest = lines.lastOrNull()?.id
+                // a new message shows itself when the reader is at the bottom (not while reading back)
+                LaunchedEffect(newest) { if (listState.firstVisibleItemIndex <= 1) listState.animateScrollToItem(0) }
                 LazyColumn(
                     Modifier.fillMaxSize(),
+                    state = listState,
                     reverseLayout = true,
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 12.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    // a short conversation sits at the bottom, by the composer
+                    verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Bottom),
                 ) {
                     items(lines.asReversed(), key = { it.id }) { m -> Bubble(chat.id, m, player, speed) }
                 }
@@ -426,7 +460,7 @@ private fun Bubble(groupId: String, m: ChatLine, player: ChatPlayer, speed: Floa
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f, fill = false),
                     )
-                    Figures(ago(m.at), Modifier.padding(start = 8.dp))
+                    Figures(clockTime(context, m.at), Modifier.padding(start = 8.dp))
                     if (m.unread) Lamp(LampState.REPLY, Modifier.padding(start = 6.dp), size = 10.dp)
                 }
                 if (m.voice) {
@@ -483,4 +517,13 @@ private fun preview(context: Context, m: ChatLine): String {
     return listOfNotNull(who?.let { "$it:" }, if (m.voice) "🎤 $text" else text).joinToString(" ")
 }
 
-private fun ago(at: Long) = DateUtils.getRelativeTimeSpanString(at, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS).toString()
+/** In a bubble: the time, with the day when it is not today. */
+private fun clockTime(context: Context, at: Long): String = DateUtils.formatDateTime(
+    context,
+    at,
+    if (DateUtils.isToday(at)) DateUtils.FORMAT_SHOW_TIME else DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_TIME or DateUtils.FORMAT_ABBREV_MONTH,
+)
+
+/** In the list, as chat apps do: the time today, the day before that. */
+private fun listTime(at: Long): String =
+    DateUtils.formatSameDayTime(at, System.currentTimeMillis(), java.text.DateFormat.SHORT, java.text.DateFormat.SHORT).toString()

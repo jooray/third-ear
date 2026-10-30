@@ -105,7 +105,8 @@ fun ThirdEarApp(host: MainActivity, recordToResult: Boolean) {
             val measure = Modifier.widthIn(max = 600.dp)
             when (shown) {
                 Destination.BOARD -> BoardScreen(host, wide, onOpenReplies = openReplies, onEditLine = { editId = it; dest = Destination.LINES })
-                Destination.MESSAGES -> Box(measure) { MessagesScreen() }
+                // wide enough, the list and the open conversation sit side by side and take the width
+                Destination.MESSAGES -> MessagesScreen()
                 Destination.LOG, Destination.LOG_REPLIES -> Box(measure) { LogScreen(host, logTab, onTab = { logTab = it }, replies = !chats) }
                 Destination.LINES -> Box(measure) { LinesScreen(host, editId, onEditDone = { editId = null }, onOpenSetup = { dest = Destination.SETUP }) }
                 Destination.SETUP -> Box(measure) { SetupScreen(host) }
