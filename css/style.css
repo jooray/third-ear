@@ -88,3 +88,8 @@ h2,h3{font-weight:700}
 .steps{margin:.6rem 0 0;padding-left:1.4rem;display:grid;gap:.45rem}
 .steps li{padding-left:.2rem}
 #car-setup{margin-top:1.6rem}
+
+/* Android Auto screens: landscape, two side by side, one per row on phones */
+.car-shots{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0 8px}
+.car-shots img{width:100%;height:auto;border-radius:10px;border:1px solid var(--line)}
+@media (max-width:640px){.car-shots{grid-template-columns:1fr}}
