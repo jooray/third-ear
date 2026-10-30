@@ -20,6 +20,12 @@
     <string name="te_chat_send_audio">Audio senden</string>
     <string name="te_chat_send_transcript">Transkript senden</string>
     <string name="te_chat_not_sent">Nicht gesendet: %s</string>
+    <string name="te_setting_playback_speed">Tempo von Sprachnachrichten</string>
+    <string name="te_setting_playback_speed_desc">für White-Noise-Nachrichten; jede Gruppe kann ein eigenes haben</string>
+    <string name="te_group_speed">Tempo von Sprachnachrichten</string>
+    <string name="te_speed_default">App-Standard (%s)</string>
+    <string name="te_seek">In der Sprachnachricht springen</string>
+    <string name="te_speed_now">Wiedergabetempo %s, tippen zum Ändern</string>
     <string name="te_close">Schließen</string>
     <string name="te_save">Speichern</string>
     <string name="te_get">Holen</string>

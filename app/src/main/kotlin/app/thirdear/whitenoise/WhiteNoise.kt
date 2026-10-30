@@ -92,11 +92,16 @@ object WhiteNoise {
         }
     }
 
+    /** How fast this group's voice messages play: its own setting, else the app's default. */
+    fun speedFor(context: Context, groupId: String): Float =
+        GroupSettingsStore(context).get(groupId).speed ?: context.config.playbackSpeed
+
     /** Plays one message (from the list, a notification or the car). */
     suspend fun play(context: Context, m: IncomingMessage, audio: Boolean = true, text: Boolean = true) {
         val speaker = ReplySpeaker.get(context)
+        val speed = speedFor(context, m.groupId)
         try {
-            if (audio) for (path in m.audio) File(path).takeIf { it.exists() }?.let { speaker.play(it) }
+            if (audio) for (path in m.audio) File(path).takeIf { it.exists() }?.let { speaker.play(it, speed) }
             if (text && m.text.isNotBlank()) speaker.speak(m.text)
         } catch (t: Throwable) {
             Log.w(TAG, "playback failed: ${t.message}")
@@ -120,24 +125,20 @@ object WhiteNoise {
     }
 
     /**
-     * Plays the voice of a conversation message: the copy saved on arrival when there is one,
-     * otherwise downloaded (also Third Ear's own and older messages) into the cache.
+     * The voice of a conversation message as local files: the copy saved on arrival when there is
+     * one, otherwise downloaded (also Third Ear's own and older messages) into the cache.
      */
-    suspend fun playTimeline(context: Context, groupId: String, m: MarmotHost.TimelineMessage) {
+    suspend fun audioFiles(context: Context, groupId: String, m: MarmotHost.TimelineMessage): List<File> {
         val saved = IncomingStore(context).get(m.id)?.audio.orEmpty().map(::File).filter { it.exists() }
-        val files = saved.ifEmpty {
-            val dir = File(context.cacheDir, "wn-media").apply { mkdirs() }
-            m.audio.mapIndexedNotNull { i, ref ->
-                val f = File(dir, "${m.id.take(16)}-$i.${ref.fileName.substringAfterLast('.', "m4a").take(5)}")
-                if (!f.exists()) runCatching { f.writeBytes(MarmotHost.download(groupId, ref)) }.onFailure { Log.w(TAG, "download failed: ${it.message}") }
-                f.takeIf { it.exists() }
+        if (saved.isNotEmpty()) return saved
+        val dir = File(context.cacheDir, "wn-media").apply { mkdirs() }
+        return m.audio.mapIndexedNotNull { i, ref ->
+            val f = File(dir, "${m.id.take(16)}-$i.${ref.fileName.substringAfterLast('.', "m4a").take(5)}")
+            if (!f.exists()) {
+                runCatching { File(f.path + ".part").apply { writeBytes(MarmotHost.download(groupId, ref)) }.renameTo(f) }
+                    .onFailure { Log.w(TAG, "download failed: ${it.message}") }
             }
-        }
-        val speaker = ReplySpeaker.get(context)
-        try {
-            for (f in files) speaker.play(f)
-        } catch (t: Throwable) {
-            Log.w(TAG, "playback failed: ${t.message}")
+            f.takeIf { it.exists() }
         }
     }
 

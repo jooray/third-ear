@@ -67,6 +67,7 @@ import app.thirdear.whitenoise.IncomingMessage
 import app.thirdear.whitenoise.IncomingStore
 import app.thirdear.whitenoise.MarmotHost
 import app.thirdear.whitenoise.WhiteNoise
+import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -234,6 +235,8 @@ private fun Conversation(chat: Chat, messages: List<IncomingMessage>, ready: Boo
         if (ready) timeline = withContext(Dispatchers.IO) { runCatching { MarmotHost.timeline(chat.id) }.getOrNull() }
     }
     val saved = messages.filter { it.groupId == chat.id }
+    val player = rememberChatPlayer()
+    val speed = remember(chat.id) { WhiteNoise.speedFor(context, chat.id) }
     // the timeline is a window (the last 100); saved replies outside it are still part of the conversation
     val lines = timeline?.let { t ->
         val ids = t.map { it.id }.toSet()
@@ -266,7 +269,7 @@ private fun Conversation(chat: Chat, messages: List<IncomingMessage>, ready: Boo
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 12.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    items(lines.asReversed(), key = { it.id }) { m -> Bubble(chat.id, m) }
+                    items(lines.asReversed(), key = { it.id }) { m -> Bubble(chat.id, m, player, speed) }
                 }
             }
         }
@@ -356,7 +359,7 @@ private fun Composer(chat: Chat, notes: List<Note>, onSendDone: () -> Unit) {
                         .size(56.dp)
                         .clip(PlateShape)
                         .background(if (busy) p.rule else p.ink)
-                        .clickable(enabled = !busy) { RecorderService.start(context, chatAction(chat.id, chat.name, transcript)) },
+                        .clickable(enabled = !busy) { (context as? MainActivity)?.startLine(chatAction(chat.id, chat.name, transcript)) },
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(Icons.Outlined.Mic, stringResource(R.string.te_chat_record), tint = p.face, modifier = Modifier.size(28.dp))
@@ -407,7 +410,7 @@ private fun Toggle(text: String, selected: Boolean, onClick: () -> Unit) {
 }
 
 @Composable
-private fun Bubble(groupId: String, m: ChatLine) {
+private fun Bubble(groupId: String, m: ChatLine, player: ChatPlayer, speed: Float) {
     val p = Te.colors
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -426,24 +429,27 @@ private fun Bubble(groupId: String, m: ChatLine) {
                     Figures(ago(m.at), Modifier.padding(start = 8.dp))
                     if (m.unread) Lamp(LampState.REPLY, Modifier.padding(start = 6.dp), size = 10.dp)
                 }
-                Row(Modifier.padding(top = 4.dp), verticalAlignment = Alignment.Top) {
-                    if (m.voice) Icon(
-                        Icons.Outlined.Mic,
-                        stringResource(R.string.te_voice_message),
-                        tint = p.inkMuted,
-                        modifier = Modifier.padding(top = 2.dp, end = 6.dp).size(18.dp),
+                if (m.voice) {
+                    VoicePlayer(
+                        id = m.id,
+                        groupSpeed = speed,
+                        player = player,
+                        load = { voiceFiles(context, groupId, m) },
+                        onPlayToEnd = { if (m.unread) scope.launch(Dispatchers.IO) { runCatching { WhiteNoise.markRead(context, groupId, listOf(m.id)) } } },
+                        modifier = Modifier.padding(top = 8.dp, end = 4.dp),
                     )
-                    Text(m.text.ifBlank { stringResource(R.string.te_voice_message) }, style = TeType.body, color = if (m.ignored) p.inkMuted else p.ink)
+                }
+                // a voice message's caption is its transcript
+                if (m.text.isNotBlank() || !m.voice) {
+                    Text(
+                        m.text.ifBlank { stringResource(R.string.te_voice_message) },
+                        style = TeType.body,
+                        color = if (m.ignored) p.inkMuted else p.ink,
+                        modifier = Modifier.padding(top = if (m.voice) 6.dp else 4.dp),
+                    )
                 }
                 if (m.ignored) Label(stringResource(R.string.te_ignored_list), Modifier.padding(top = 4.dp))
                 Row {
-                    if (m.voice) {
-                        PlainButton(
-                            stringResource(R.string.te_play),
-                            { scope.launch(Dispatchers.IO) { play(context, groupId, m, voice = true) } },
-                            icon = Icons.Outlined.PlayArrow,
-                        )
-                    }
                     if (m.text.isNotBlank() && !m.mine) {
                         PlainButton(
                             stringResource(R.string.te_read_aloud),
@@ -457,9 +463,14 @@ private fun Bubble(groupId: String, m: ChatLine) {
     }
 }
 
+private suspend fun voiceFiles(context: Context, groupId: String, m: ChatLine): List<File> = when {
+    m.timeline != null -> WhiteNoise.audioFiles(context, groupId, m.timeline)
+    else -> m.saved?.audio.orEmpty().map(::File).filter { it.exists() }
+}
+
+/** Reads a text message aloud (voice messages play in their bubble). */
 private suspend fun play(context: Context, groupId: String, m: ChatLine, voice: Boolean) {
     when {
-        voice && m.timeline != null -> WhiteNoise.playTimeline(context, groupId, m.timeline)
         m.saved != null -> WhiteNoise.play(context, m.saved, audio = voice, text = !voice)
         !voice -> WhiteNoise.play(context, IncomingMessage(m.id, groupId, "", "", null, m.text, m.at), audio = false, text = true)
     }

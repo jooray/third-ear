@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_launcher_name">Third Ear</string>
-    <string name="confirm_recording_folder">You must confirm the folder where you want to save your recordings. Please press "OK" to continue.</string>
+    <string name="confirm_recording_folder">Choose the folder where Third Ear saves your recordings, for example Music or a new folder inside it. On the next screen open or create the folder and tap \'Use this folder\'. You can change it later in Setup.</string>
     <string name="move_recordings">Move recordings</string>
     <string name="move_recordings_to_new_folder_desc">You have existing recordings. Do you want to move them to your new folder?</string>
     <string name="recording_saved_successfully">Recording saved successfully</string>

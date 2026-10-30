@@ -31,14 +31,20 @@ data class GroupSettings(
     val read: ReadMode = ReadMode.ASK,
     /** Messages containing any of these are ignored; default the microphone emoji that marks an echoed transcript. */
     val ignore: List<String> = listOf(DEFAULT_IGNORE),
+    /** Voice messages from this group play at this speed; null: the app's default (an agent may already speak fast, people not). */
+    val speed: Float? = null,
 ) {
     fun toJson(): JSONObject = JSONObject()
         .put("replies", replies.name)
         .put("read", read.name)
         .put("ignore", JSONArray(ignore))
+        .putOpt("speed", speed?.toDouble())
 
     companion object {
         const val DEFAULT_IGNORE = "🎙️"
+
+        /** The speeds offered for voice messages. */
+        val SPEEDS = listOf(1f, 1.25f, 1.5f, 1.75f, 2f)
 
         fun fromJson(o: JSONObject?): GroupSettings {
             if (o == null) return GroupSettings()
@@ -47,6 +53,7 @@ data class GroupSettings(
                 replies = enumOr(o.optString("replies"), ReplyMode.VOICE_AND_TEXT),
                 read = enumOr(o.optString("read"), ReadMode.ASK),
                 ignore = if (arr == null) listOf(DEFAULT_IGNORE) else (0 until arr.length()).map { arr.getString(it) }.filter { it.isNotBlank() },
+                speed = if (o.has("speed") && !o.isNull("speed")) o.optDouble("speed").toFloat() else null,
             )
         }
 

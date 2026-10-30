@@ -20,6 +20,12 @@
     <string name="te_chat_send_audio">Poslať zvuk</string>
     <string name="te_chat_send_transcript">Poslať prepis</string>
     <string name="te_chat_not_sent">Neodoslané: %s</string>
+    <string name="te_setting_playback_speed">Rýchlosť hlasových správ</string>
+    <string name="te_setting_playback_speed_desc">pre správy z White Noise; každá skupina môže mať vlastnú</string>
+    <string name="te_group_speed">Rýchlosť hlasových správ</string>
+    <string name="te_speed_default">Podľa aplikácie (%s)</string>
+    <string name="te_seek">Skočiť v hlasovej správe</string>
+    <string name="te_speed_now">Rýchlosť prehrávania %s, ťuknutím zmeníte</string>
     <string name="te_close">Zavrieť</string>
     <string name="te_save">Uložiť</string>
     <string name="te_get">Získať</string>

@@ -342,7 +342,7 @@ fun android.content.Context.groupSummary(s: GroupSettings): String {
     )
     if (s.replies == ReplyMode.OFF) return replies
     val read = getString(if (s.read == ReadMode.AUTO) R.string.te_reading_auto else R.string.te_reading_ask)
-    return "$replies · $read"
+    return listOfNotNull(replies, read, s.speed?.let(::speedLabel)).joinToString(" · ")
 }
 
 @Composable
@@ -351,10 +351,12 @@ private fun GroupDialog(name: String, initial: GroupSettings, onSave: (GroupSett
     var replies by remember { mutableStateOf(initial.replies) }
     var read by remember { mutableStateOf(initial.read) }
     var ignore by remember { mutableStateOf(initial.ignore.joinToString("\n")) }
+    var speed by remember { mutableStateOf(initial.speed) }
+    val appSpeed = LocalContext.current.config.playbackSpeed
     FullDialog(
         title = name,
         onDismiss = onDismiss,
-        onSave = { onSave(GroupSettings(replies, read, GroupSettings.parseIgnore(ignore))); onDismiss() },
+        onSave = { onSave(GroupSettings(replies, read, GroupSettings.parseIgnore(ignore), speed)); onDismiss() },
     ) {
         Label(stringResource(R.string.te_group_replies), Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
         listOf(
@@ -369,6 +371,9 @@ private fun GroupDialog(name: String, initial: GroupSettings, onSave: (GroupSett
             RadioRow(stringResource(R.string.te_reading_ask), read == ReadMode.ASK) { read = ReadMode.ASK }
             Text(stringResource(R.string.te_reading_car_note), style = TeType.small, color = p.inkMuted, modifier = Modifier.padding(16.dp))
         }
+        Label(stringResource(R.string.te_group_speed), Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 8.dp))
+        RadioRow(stringResource(R.string.te_speed_default, speedLabel(appSpeed)), speed == null) { speed = null }
+        GroupSettings.SPEEDS.forEach { v -> RadioRow(speedLabel(v), speed == v) { speed = v } }
         Label(stringResource(R.string.te_group_ignore), Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 8.dp))
         OutlinedTextField(
             value = ignore,

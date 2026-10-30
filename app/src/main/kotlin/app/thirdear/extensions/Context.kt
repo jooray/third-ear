@@ -13,10 +13,6 @@ import android.os.Environment
 import android.provider.DocumentsContract
 import androidx.core.graphics.createBitmap
 import androidx.documentfile.provider.DocumentFile
-import org.fossify.commons.extensions.createFirstParentTreeUri
-import org.fossify.commons.extensions.createSAFDirectorySdk30
-import org.fossify.commons.extensions.getDocumentSdk30
-import org.fossify.commons.extensions.getDoesFilePathExistSdk30
 import org.fossify.commons.extensions.getDuration
 import org.fossify.commons.extensions.getFilenameFromPath
 import org.fossify.commons.extensions.getMimeType
@@ -94,7 +90,7 @@ fun Context.getDefaultRecordingsRelativePath(): String {
 fun Context.hasRecordings(): Boolean {
     val recordingsFolder = config.saveRecordingsFolder
     return if (isRPlus()) {
-        getDocumentSdk30(recordingsFolder)
+        folderDocument(recordingsFolder)
             ?.listFiles()
             ?.any { it.isAudioRecording() }
             ?: false
@@ -125,7 +121,7 @@ fun Context.getAllRecordings(trashed: Boolean = false): ArrayList<Recording> {
 private fun Context.getRecordings(trashed: Boolean = false): ArrayList<Recording> {
     val recordings = ArrayList<Recording>()
     val folder = if (trashed) trashFolder else config.saveRecordingsFolder
-    val files = getDocumentSdk30(folder)?.listFiles() ?: return recordings
+    val files = folderDocument(folder)?.listFiles() ?: return recordings
     files.forEach { file ->
         if (file.isAudioRecording()) {
             recordings.add(
@@ -144,7 +140,7 @@ private fun Context.getRecordings(trashed: Boolean = false): ArrayList<Recording
 private fun Context.getMediaStoreTrashedRecordings(): ArrayList<Recording> {
     val recordings = ArrayList<Recording>()
     val folder = config.saveRecordingsFolder
-    val documentFiles = getDocumentSdk30(folder)?.listFiles() ?: return recordings
+    val documentFiles = folderDocument(folder)?.listFiles() ?: return recordings
     documentFiles.forEach { file ->
         if (file.isTrashedMediaStoreRecording()) {
             val recording = readRecordingFromFile(file)
@@ -217,27 +213,8 @@ private fun Context.getDurationFromUri(uri: Uri): Long {
     }
 }
 
-// Based on common's `Context.createSAFFileSdk30` extension
-fun Context.createDocumentFile(path: String): Uri? {
-    return try {
-        val treeUri = createFirstParentTreeUri(path)
-        val parentPath = path.getParentPath()
-        if (!getDoesFilePathExistSdk30(parentPath)) {
-            createSAFDirectorySdk30(parentPath)
-        }
-
-        val documentId = getSAFDocumentId(parentPath)
-        val parentUri = DocumentsContract.buildDocumentUriUsingTree(treeUri, documentId)
-        DocumentsContract.createDocument(
-            contentResolver,
-            parentUri,
-            path.getMimeType(),
-            path.getFilenameFromPath()
-        )
-    } catch (@Suppress("SwallowedException") e: IllegalStateException) {
-        null
-    }
-}
+/** Creates the file [path] in the recordings folder (or another granted one); null without access. */
+fun Context.createDocumentFile(path: String): Uri? = makeFile(path)
 
 // move to commons in the future
 fun Context.getFormattedFilename(): String {

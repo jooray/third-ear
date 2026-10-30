@@ -9,12 +9,14 @@ open class SimpleActivity : BaseSimpleActivity() {
         private const val PICK_FOLDER = 7341
         private var folderCallback: ((android.net.Uri?) -> Unit)? = null
 
-        /** The system folder picker; [callback] gets the tree Uri or null. */
-        fun pickFolder(activity: BaseSimpleActivity, callback: (android.net.Uri?) -> Unit) {
+        /** The system folder picker, opening at [initial] when given; [callback] gets the tree Uri or null. */
+        fun pickFolder(activity: BaseSimpleActivity, initial: android.net.Uri? = null, callback: (android.net.Uri?) -> Unit) {
             folderCallback = callback
             try {
+                val intent = android.content.Intent(android.content.Intent.ACTION_OPEN_DOCUMENT_TREE)
+                if (initial != null) intent.putExtra(android.provider.DocumentsContract.EXTRA_INITIAL_URI, initial)
                 @Suppress("DEPRECATION")
-                activity.startActivityForResult(android.content.Intent(android.content.Intent.ACTION_OPEN_DOCUMENT_TREE), PICK_FOLDER)
+                activity.startActivityForResult(intent, PICK_FOLDER)
             } catch (ignored: Exception) {
                 // no folder picker on this phone: the caller treats it as cancelled
                 folderCallback = null
@@ -53,12 +55,17 @@ open class SimpleActivity : BaseSimpleActivity() {
         if (requestCode == PICK_FOLDER) {
             val cb = folderCallback
             folderCallback = null
-            cb?.invoke(if (resultCode == RESULT_OK) resultData?.data else null)
+            val tree = if (resultCode == RESULT_OK) resultData?.data else null
+            // Android may end the process while the picker is open: the choice still counts
+            if (cb != null) cb(tree) else if (tree != null) onFolderPickedAfterRestart(tree)
             return
         }
         @Suppress("DEPRECATION")
         super.onActivityResult(requestCode, resultCode, resultData)
     }
+
+    /** A folder picked while the process was gone (the caller's callback with it). */
+    protected open fun onFolderPickedAfterRestart(tree: android.net.Uri) = Unit
 
     override fun getAppIconIDs() = arrayListOf(
         R.mipmap.ic_launcher_red,

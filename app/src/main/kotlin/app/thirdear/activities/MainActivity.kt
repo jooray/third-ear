@@ -26,6 +26,9 @@ import app.thirdear.extensions.deleteExpiredTrashedRecordings
 import app.thirdear.extensions.deleteRecordings
 import app.thirdear.extensions.deleteTrashedRecordings
 import app.thirdear.extensions.ensureStoragePermission
+import app.thirdear.extensions.hasFolderAccess
+import app.thirdear.extensions.treeUriToPath
+import app.thirdear.ui.CHAT_ACTION_PREFIX
 import app.thirdear.extensions.getAllRecordings
 import app.thirdear.extensions.restoreRecordings
 import app.thirdear.extensions.trashRecordings
@@ -150,15 +153,26 @@ class MainActivity : SimpleActivity() {
         else -> if (intent?.action == Intent.ACTION_APPLICATION_PREFERENCES) Destination.SETUP else null
     }
 
+    override fun onFolderPickedAfterRestart(tree: android.net.Uri) {
+        val path = treeUriToPath(tree) ?: return
+        runCatching {
+            contentResolver.takePersistableUriPermission(tree, Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+        }
+        config.saveRecordingsFolder = path
+        storageReady.value = true
+        reloadRecordings()
+    }
+
+    /**
+     * The recordings folder is asked for on the first recording, where the question makes sense,
+     * not at launch (a launch can also be the return from that very folder picker).
+     */
     private fun ensureStorage() {
-        ensureStoragePermission { granted ->
-            if (granted) {
-                storageReady.value = true
-                reloadRecordings()
-            } else {
-                Toast.makeText(this, org.fossify.commons.R.string.no_storage_permissions, Toast.LENGTH_LONG).show()
-                finish()
-            }
+        if (hasFolderAccess(config.saveRecordingsFolder)) {
+            storageReady.value = true
+            reloadRecordings()
+        } else {
+            loading.value = false
         }
     }
 
@@ -171,6 +185,10 @@ class MainActivity : SimpleActivity() {
                 toast(getString(org.fossify.commons.R.string.no_storage_permissions))
                 return@ensureStoragePermission
             }
+            if (!storageReady.value) {
+                storageReady.value = true
+                reloadRecordings()
+            }
             handleNotificationPermission { granted ->
                 if (!granted) {
                     toast(getString(org.fossify.commons.R.string.allow_notifications_voice_recorder))
@@ -182,7 +200,8 @@ class MainActivity : SimpleActivity() {
                 ) {
                     ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.BLUETOOTH_CONNECT), BLUETOOTH_REQUEST)
                 }
-                RecorderService.start(this, action.id)
+                // a conversation's record key is not a line: it travels whole
+                if (action.id.startsWith(CHAT_ACTION_PREFIX)) RecorderService.start(this, action) else RecorderService.start(this, action.id)
             }
         }
     }

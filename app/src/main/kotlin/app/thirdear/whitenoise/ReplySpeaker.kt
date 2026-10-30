@@ -73,7 +73,7 @@ class ReplySpeaker(private val context: Context) {
         }
     }
 
-    suspend fun play(file: File) = queue.withLock {
+    suspend fun play(file: File, speed: Float = 1f) = queue.withLock {
         withFocus {
             Cues.play(Cues.Tone.REPLY)
             suspendCancellableCoroutine { cont ->
@@ -90,7 +90,8 @@ class ReplySpeaker(private val context: Context) {
                     p.setOnCompletionListener { done() }
                     p.setOnErrorListener { _, _, _ -> done(); true }
                     p.prepare()
-                    p.start()
+                    // setting a speed starts playback, so it comes with the start
+                    if (speed != 1f) p.playbackParams = p.playbackParams.setSpeed(speed) else p.start()
                 } catch (ignored: Throwable) {
                     // a file the player can't open ends like one that finished: on to the next
                     done()

@@ -22,9 +22,9 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import org.fossify.commons.extensions.createDocumentUriUsingFirstParentTreeUri
-import org.fossify.commons.extensions.createSAFFileSdk30
-import org.fossify.commons.extensions.getDoesFilePathExistSdk30
+import app.thirdear.extensions.documentName
+import app.thirdear.extensions.makeFile
+import app.thirdear.extensions.pathExists
 import app.thirdear.BuildConfig
 import app.thirdear.R
 import app.thirdear.actions.ActionPlan
@@ -279,10 +279,11 @@ class NotePipeline(private val context: Context, private val store: NoteStore = 
         val ext = if (dot > 0) fileName.substring(dot) else ""
         var name = fileName
         var i = 2
-        while (context.getDoesFilePathExistSdk30("$folder/$name")) name = "$base (${i++})$ext"
+        while (context.pathExists("$folder/$name")) name = "$base (${i++})$ext"
+        val uri = context.makeFile("$folder/$name", mime) ?: error(context.getString(R.string.te_error_folder_access))
+        // the folder may have numbered the name itself
+        name = uri.documentName()
         val path = "$folder/$name"
-        val uri = context.createDocumentUriUsingFirstParentTreeUri(path)
-        check(context.createSAFFileSdk30(path)) { context.getString(R.string.te_error_folder_access) }
         (context.contentResolver.openOutputStream(uri, "wt") ?: error("cannot write $name")).use { out ->
             source.inputStream().use { it.copyTo(out) }
         }

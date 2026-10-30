@@ -124,6 +124,11 @@ class Config(context: Context) : BaseConfig(context) {
         get() = prefs.getString(NSEC_SHOWN_FOR, null)
         set(v) = prefs.edit { putString(NSEC_SHOWN_FOR, v) }
 
+    /** How fast voice messages play, unless their group says otherwise. */
+    var playbackSpeed: Float
+        get() = prefs.getFloat(PLAYBACK_SPEED, 1f)
+        set(v) = prefs.edit { putFloat(PLAYBACK_SPEED, v) }
+
     /** What the record key in a Messages conversation sends: the transcript (true) or the audio. */
     var chatSendsTranscript: Boolean
         get() = prefs.getBoolean(CHAT_SENDS_TRANSCRIPT, false)

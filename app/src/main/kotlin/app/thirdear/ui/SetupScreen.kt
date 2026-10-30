@@ -66,6 +66,7 @@ import app.thirdear.pipeline.Cues
 import app.thirdear.pipeline.MediaPauser
 import app.thirdear.pipeline.Transcriber
 import app.thirdear.tiles.ActionTileService
+import app.thirdear.whitenoise.GroupSettings
 import app.thirdear.whitenoise.MarmotHost
 import app.thirdear.whitenoise.WhiteNoiseService
 import com.google.zxing.BarcodeFormat
@@ -93,6 +94,7 @@ private sealed interface Pick {
     data object ImportNsec : Pick
     data object EmptyBin : Pick
     data object ListeningCue : Pick
+    data object PlaybackSpeed : Pick
     data object ProgressCue : Pick
 }
 
@@ -124,7 +126,7 @@ fun SetupScreen(host: MainActivity) {
         key(tick) {
             SettingRow(stringResource(R.string.save_recordings_in), value = context.humanizePath(config.saveRecordingsFolder), onClick = {
                 val current = config.saveRecordingsFolder
-                host.launchFolderPicker { folder ->
+                host.launchFolderPicker(initial = current) { folder ->
                     if (folder.isNullOrEmpty()) return@launchFolderPicker
                     ensureBackgroundThread {
                         val has = host.hasRecordings()
@@ -240,6 +242,13 @@ fun SetupScreen(host: MainActivity) {
             listeningCues(context),
             config.listeningCue,
             { config.listeningCue = it; changed() },
+            { pick = null },
+        )
+        Pick.PlaybackSpeed -> ChoiceDialog(
+            stringResource(R.string.te_setting_playback_speed),
+            GroupSettings.SPEEDS.map { it to speedLabel(it) },
+            config.playbackSpeed,
+            { config.playbackSpeed = it; changed() },
             { pick = null },
         )
         Pick.ProgressCue -> ChoiceDialog(
@@ -461,6 +470,13 @@ private fun WhiteNoiseSection(host: MainActivity, onPick: (Pick) -> Unit, change
             style = TeType.small,
             color = if (phase == MarmotHost.Phase.FAILED) p.faultInk else p.inkMuted,
             modifier = Modifier.padding(top = 2.dp, start = 4.dp),
+        )
+    }
+    if (on) {
+        SettingRow(
+            stringResource(R.string.te_setting_playback_speed),
+            value = speedLabel(config.playbackSpeed) + " · " + stringResource(R.string.te_setting_playback_speed_desc),
+            onClick = { onPick(Pick.PlaybackSpeed) },
         )
     }
     val n = npub

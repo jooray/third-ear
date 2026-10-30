@@ -20,6 +20,12 @@
     <string name="te_chat_send_audio">Enviar audio</string>
     <string name="te_chat_send_transcript">Enviar transcripción</string>
     <string name="te_chat_not_sent">No enviado: %s</string>
+    <string name="te_setting_playback_speed">Velocidad de los mensajes de voz</string>
+    <string name="te_setting_playback_speed_desc">para mensajes de White Noise; cada grupo puede tener la suya</string>
+    <string name="te_group_speed">Velocidad de los mensajes de voz</string>
+    <string name="te_speed_default">Según la app (%s)</string>
+    <string name="te_seek">Saltar dentro del mensaje de voz</string>
+    <string name="te_speed_now">Velocidad %s, toca para cambiarla</string>
     <string name="te_close">Cerrar</string>
     <string name="te_save">Guardar</string>
     <string name="te_get">Obtener</string>

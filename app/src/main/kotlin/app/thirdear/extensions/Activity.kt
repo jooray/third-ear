@@ -9,13 +9,7 @@ import android.view.WindowManager
 import androidx.core.net.toUri
 import org.fossify.commons.activities.BaseSimpleActivity
 import org.fossify.commons.dialogs.FilePickerDialog
-import org.fossify.commons.extensions.createDocumentUriUsingFirstParentTreeUri
-import org.fossify.commons.extensions.createSAFDirectorySdk30
 import org.fossify.commons.extensions.deleteFile
-import org.fossify.commons.extensions.getDoesFilePathExistSdk30
-import org.fossify.commons.extensions.hasProperStoredFirstParentUri
-import org.fossify.commons.extensions.hideKeyboard
-import org.fossify.commons.extensions.isShowingSAFDialogSdk30
 import org.fossify.commons.extensions.toFileDirItem
 import org.fossify.commons.helpers.DAY_SECONDS
 import org.fossify.commons.helpers.MONTH_SECONDS
@@ -36,68 +30,53 @@ fun Activity.setKeepScreenAwake(keepScreenOn: Boolean) {
 
 fun BaseSimpleActivity.ensureStoragePermission(callback: (result: Boolean) -> Unit) {
     val folder = config.saveRecordingsFolder
-    if (hasProperStoredFirstParentUri(folder)) {
-        ensureFolderExists(folder)
+    if (hasFolderAccess(folder)) {
+        ensureBackgroundThread { makeFolder(folder) }
         callback(true)
         return
     }
-    // commons explains, then opens the system picker on the folder's top-level directory
-    handleSafSdk30(folder) { granted ->
-        val ok = granted && hasProperStoredFirstParentUri(folder)
-        if (ok) ensureFolderExists(folder)
-        callback(ok)
+    // the first recording (or the grant is gone): the folder the user picks is where recordings go
+    StoragePermissionDialog(this) { ok ->
+        if (!ok) {
+            callback(false)
+            return@StoragePermissionDialog
+        }
+        launchFolderPicker(initial = folder) { picked ->
+            if (picked == null) {
+                callback(false)
+            } else {
+                config.saveRecordingsFolder = picked
+                callback(true)
+            }
+        }
     }
 }
 
-private fun BaseSimpleActivity.ensureFolderExists(folder: String) {
-    runCatching { if (!getDoesFilePathExistSdk30(folder)) createSAFDirectorySdk30(folder) }
-}
-
 /**
- * Picks the recordings folder with the system folder picker (commons' own picker and its
- * "create folder" dialog skip the permission grant for packages not named org.fossify.*), then
- * makes sure Third Ear holds the grant for the folder's top-level directory, which is what the
- * Fossify storage code writes through.
+ * Picks a folder with the system folder picker and keeps the grant for it: that folder is where
+ * recordings go, nothing above it is needed. [initial]: where the picker opens.
  */
-fun BaseSimpleActivity.launchFolderPicker(callback: (newPath: String?) -> Unit) {
-    SimpleActivity.pickFolder(this) { tree ->
+fun BaseSimpleActivity.launchFolderPicker(initial: String? = null, callback: (newPath: String?) -> Unit) {
+    SimpleActivity.pickFolder(this, initial?.let { pickerStart(it) }) { tree ->
         val path = tree?.let { treeUriToPath(it) }
-        if (path == null) {
+        if (tree == null || path == null) {
             callback(null)
             return@pickFolder
         }
+        // kept across restarts: this folder is the grant
         runCatching {
             contentResolver.takePersistableUriPermission(tree, Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
         }
-        if (hasProperStoredFirstParentUri(path)) {
-            callback(path)
-        } else {
-            handleSafSdk30(path) { granted -> callback(if (granted && hasProperStoredFirstParentUri(path)) path else null) }
-        }
+        callback(path)
     }
 }
 
-/** content://…externalstorage…/tree/primary:Music/Third Ear → /storage/emulated/0/Music/Third Ear */
-fun BaseSimpleActivity.treeUriToPath(tree: android.net.Uri): String? = runCatching {
-    val id = DocumentsContract.getTreeDocumentId(tree)
-    val volume = id.substringBefore(':')
-    val rel = id.substringAfter(':', "")
-    val root = if (volume == "primary") internalStoragePath else "/storage/$volume"
-    if (rel.isEmpty()) root else "$root/$rel"
-}.getOrNull()
-
-/**
- * fossify-commons' `handleSAFDialogSdk30` skips the folder-permission dialog (and reports success)
- * for any package not named `org.fossify.*`, which leaves a fork like Third Ear without write
- * access to its folder. This does the same thing as the original without that check.
- */
-fun BaseSimpleActivity.handleSafSdk30(path: String, callback: (granted: Boolean) -> Unit) {
-    hideKeyboard()
-    if (isShowingSAFDialogSdk30(path, showRationale = false)) {
-        BaseSimpleActivity.funAfterSdk30Action = callback
-    } else {
-        callback(true)
-    }
+/** The picker opens at the nearest existing folder above [path] on internal storage (Music for the default). */
+private fun BaseSimpleActivity.pickerStart(path: String): android.net.Uri? {
+    var p = path.trimEnd('/')
+    while (p.length > internalStoragePath.length && !File(p).exists()) p = p.substringBeforeLast('/')
+    if (!p.startsWith(internalStoragePath) || p.length <= internalStoragePath.length) return null
+    return DocumentsContract.buildDocumentUri("com.android.externalstorage.documents", "primary:" + p.removePrefix("$internalStoragePath/"))
 }
 
 fun BaseSimpleActivity.deleteRecordings(
@@ -173,12 +152,12 @@ private fun BaseSimpleActivity.moveRecordingsSAF(
 ) {
     ensureBackgroundThread {
         val contentResolver = contentResolver
-        val sourceParentDocumentUri = createDocumentUriUsingFirstParentTreeUri(sourceParent)
-        val destinationParentDocumentUri =
-            createDocumentUriUsingFirstParentTreeUri(destinationParent)
-
-        if (!getDoesFilePathExistSdk30(destinationParent)) {
-            createSAFDirectorySdk30(destinationParent)
+        makeFolder(destinationParent)
+        val sourceParentDocumentUri = documentUri(sourceParent)
+        val destinationParentDocumentUri = documentUri(destinationParent)
+        if (sourceParentDocumentUri == null || destinationParentDocumentUri == null) {
+            callback(false)
+            return@ensureBackgroundThread
         }
 
         recordings.forEach { recording ->
@@ -193,7 +172,8 @@ private fun BaseSimpleActivity.moveRecordingsSAF(
                     sourceParentDocumentUri,
                     destinationParentDocumentUri
                 )
-            } catch (@Suppress("SwallowedException") e: IllegalStateException) {
+            } catch (@Suppress("SwallowedException", "TooGenericExceptionCaught") e: Exception) {
+                // folders under different grants can't move a document: copy and delete instead
                 val sourceUri = recording.path.toUri()
                 contentResolver.openInputStream(sourceUri)?.use { inputStream ->
                     val targetPath = File(destinationParent, recording.title).absolutePath
