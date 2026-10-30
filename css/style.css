@@ -89,7 +89,8 @@ h2,h3{font-weight:700}
 .steps li{padding-left:.2rem}
 #car-setup{margin-top:1.6rem}
 
-/* Android Auto screens: landscape, two side by side, one per row on phones */
-.car-shots{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0 8px}
-.car-shots img{width:100%;height:auto;border-radius:10px;border:1px solid var(--line)}
-@media (max-width:640px){.car-shots{grid-template-columns:1fr}}
+/* Android Auto screens: each in its own dark bezel with a caption; side by side when there is room */
+.car-shots{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:28px;margin:28px 0 12px}
+.car-shots figure.car{margin:0;max-width:440px;justify-self:center;width:100%}
+.car-shots figure.car img{display:block;width:100%;height:auto;border-radius:14px;background:#0b0a08;padding:8px;border:1px solid var(--line);box-shadow:0 6px 24px rgba(0,0,0,.35)}
+.car-shots figcaption{margin-top:10px;font-size:.9rem;color:var(--mute);text-align:center}
