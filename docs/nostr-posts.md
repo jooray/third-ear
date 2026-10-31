@@ -2,7 +2,7 @@
 
 Plain text, one post per block. Each ends with the website and the Zapstore link, then its images
 (screenshots from the emulator with demo data, on Blossom, uploaded with the Third Ear key).
-Post 3 describes 0.1.3: post it once 0.1.3 is released.
+Post 3 describes 0.1.3, post 5 describes 0.1.4: post each once that version is released.
 
 ## 1. Launch
 
@@ -140,4 +140,23 @@ Zapstore: https://zapstore.dev/apps/app.thirdear
 https://blossom.primal.net/af2221688826b64d15226ec8d75f01a18c53fe981baba67e9b9ae20b5674dc6e.png
 
 https://blossom.primal.net/3387d668b5fa8b0db96d3e0b10aadd08dab97c83a91c1634c9e87048288c6b69.png
+```
+
+## 5. App shortcuts (0.1.4)
+
+```text
+Third Ear 0.1.4 is out: app shortcuts.
+
+Long-press the Third Ear icon and your first four lines are right there, plus "Stop recording". Tap a line to record on it, tap it again to stop and send. Drag one to the home screen and you have a one-tap recorder for your agent, or your family.
+
+Better still: button-mapping and automation apps (Key Mapper, Button Mapper, Tasker) can bind any line. Press a hardware button, talk, press it again, and the transcript is already in your White Noise group. No screen needed.
+
+Only your own shortcuts work, so no other app can start a recording behind your back.
+
+Thanks to the user who asked for this!
+
+Web: https://jooray.github.io/third-ear/
+Zapstore: https://zapstore.dev/apps/app.thirdear
+
+#android #foss #nostr #whitenoise
 ```

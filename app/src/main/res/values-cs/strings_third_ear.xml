@@ -235,4 +235,15 @@
     <!-- Offline Speech to Text -->
     <string name="te_ostt_missing">Na přepis je potřeba Offline Speech to Text, bezplatná aplikace, která převádí řeč na text přímo v telefonu, bez internetu. Third Ear s ní funguje mnohem líp. Klepni a stáhni si ji ze Zapstore.</string>
     <string name="te_get_ostt">Stáhnout Offline Speech to Text</string>
+
+    <!-- app shortcuts -->
+    <string name="te_shortcut_stop">Zastavit nahrávání</string>
+    <string name="te_shortcut_stop_hint">Zastaví nahrávání a odešle ho linkou, na které začalo</string>
+    <string name="te_shortcut_not_recording">Nic se nenahrává</string>
+    <string name="te_shortcut_line_gone">Tato linka už neexistuje</string>
+    <string name="te_shortcut_picker_label">Nahrávat na linku</string>
+    <string name="te_shortcut_picker_title">Zkratka Third Ear</string>
+    <string name="te_shortcut_picker_hint">Vyberte, co zkratka udělá. Zkratka linky začne nahrávat na tu linku; dalším použitím zastaví a odešle.</string>
+    <string name="te_shortcut_picker_lines">Linky</string>
+    <string name="te_shortcut_line_hint">Nahrávejte, dalším použitím zastavte a odešlete</string>
 </resources>

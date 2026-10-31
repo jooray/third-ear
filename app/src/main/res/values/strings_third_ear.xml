@@ -225,4 +225,15 @@
     <!-- Offline Speech to Text -->
     <string name="te_ostt_missing">Transcription needs Offline Speech to Text, a free app that turns speech into text on the phone, offline. Third Ear works much better with it. Tap to get it from Zapstore.</string>
     <string name="te_get_ostt">Get Offline Speech to Text</string>
+
+    <!-- app shortcuts -->
+    <string name="te_shortcut_stop">Stop recording</string>
+    <string name="te_shortcut_stop_hint">Stops the recording and sends it on the line it was started with</string>
+    <string name="te_shortcut_not_recording">Nothing is recording</string>
+    <string name="te_shortcut_line_gone">This line no longer exists</string>
+    <string name="te_shortcut_picker_label">Record on a line</string>
+    <string name="te_shortcut_picker_title">Third Ear shortcut</string>
+    <string name="te_shortcut_picker_hint">Pick what the shortcut does. A line shortcut starts recording on that line; used again, it stops and sends.</string>
+    <string name="te_shortcut_picker_lines">Lines</string>
+    <string name="te_shortcut_line_hint">Record, use again to stop and send</string>
 </resources>

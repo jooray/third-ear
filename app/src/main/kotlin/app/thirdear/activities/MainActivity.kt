@@ -109,6 +109,8 @@ class MainActivity : SimpleActivity() {
         bus = EventBus.getDefault().also { it.register(this) }
         if (config.recordAfterLaunch && !RecorderService.isRunning) RecorderService.start(this, null)
         app.thirdear.whitenoise.WhiteNoiseService.start(this)
+        // the launcher's long-press menu: the first lines and "Stop recording"
+        ensureBackgroundThread { app.thirdear.shortcuts.LineShortcuts.publish(this) }
         // recordings the process died on (or that died mid-pipeline) are finished and saved now
         ensureBackgroundThread {
             if (!RecorderService.isRunning && NoteStore(this).unfinished().isNotEmpty()) {

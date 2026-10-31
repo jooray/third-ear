@@ -233,4 +233,15 @@
     <!-- Offline Speech to Text -->
     <string name="te_ostt_missing">Für die Transkription braucht es Offline Speech to Text, eine kostenlose App, die Sprache direkt auf dem Handy und ohne Internet in Text umwandelt. Mit ihr funktioniert Third Ear deutlich besser. Tippen und im Zapstore holen.</string>
     <string name="te_get_ostt">Offline Speech to Text holen</string>
+
+    <!-- app shortcuts -->
+    <string name="te_shortcut_stop">Aufnahme stoppen</string>
+    <string name="te_shortcut_stop_hint">Stoppt die Aufnahme und sendet sie über die Leitung, auf der sie begann</string>
+    <string name="te_shortcut_not_recording">Es läuft keine Aufnahme</string>
+    <string name="te_shortcut_line_gone">Diese Leitung gibt es nicht mehr</string>
+    <string name="te_shortcut_picker_label">Auf einer Leitung aufnehmen</string>
+    <string name="te_shortcut_picker_title">Third-Ear-Verknüpfung</string>
+    <string name="te_shortcut_picker_hint">Wähle, was die Verknüpfung tut. Eine Leitungs-Verknüpfung startet die Aufnahme auf dieser Leitung; erneut benutzt, stoppt und sendet sie.</string>
+    <string name="te_shortcut_picker_lines">Leitungen</string>
+    <string name="te_shortcut_line_hint">Aufnehmen, erneut benutzen zum Stoppen und Senden</string>
 </resources>

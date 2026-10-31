@@ -37,6 +37,9 @@ bin, **Lines** to edit them and **Setup**. The design system is in [DESIGN.md](D
   the Log.
 - **Quick Settings tiles**: three tiles, each bound to an action (start / stop). The home-screen
   widget is a line key for a chosen line.
+- **App shortcuts**: long-press the icon for the first four lines and "Stop recording". Launchers,
+  automation and button-mapping apps (Key Mapper, Tasker…) can bind any line or "Stop recording"
+  through the "Record on a line" shortcut picker. A line shortcut toggles like the widget.
 - **White Noise** (MarmotKit 0.14.0): Third Ear gets its own npub (copy, QR). Accept group
   invites, send recordings as voice notes (transcript as caption when chosen) or text,
   export/import the nsec.

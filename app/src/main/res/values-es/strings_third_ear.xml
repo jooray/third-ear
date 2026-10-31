@@ -233,4 +233,15 @@
     <!-- Offline Speech to Text -->
     <string name="te_ostt_missing">La transcripción necesita Offline Speech to Text, una app gratuita que convierte la voz en texto en el propio teléfono, sin conexión. Third Ear funciona mucho mejor con ella. Toca para conseguirla en Zapstore.</string>
     <string name="te_get_ostt">Conseguir Offline Speech to Text</string>
+
+    <!-- app shortcuts -->
+    <string name="te_shortcut_stop">Parar la grabación</string>
+    <string name="te_shortcut_stop_hint">Para la grabación y la envía por la línea en la que empezó</string>
+    <string name="te_shortcut_not_recording">No se está grabando nada</string>
+    <string name="te_shortcut_line_gone">Esta línea ya no existe</string>
+    <string name="te_shortcut_picker_label">Grabar en una línea</string>
+    <string name="te_shortcut_picker_title">Acceso directo de Third Ear</string>
+    <string name="te_shortcut_picker_hint">Elige qué hace el acceso directo. El de una línea empieza a grabar en ella; usado otra vez, para y envía.</string>
+    <string name="te_shortcut_picker_lines">Líneas</string>
+    <string name="te_shortcut_line_hint">Graba; úsalo otra vez para parar y enviar</string>
 </resources>

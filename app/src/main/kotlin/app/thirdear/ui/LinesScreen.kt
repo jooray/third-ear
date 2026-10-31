@@ -77,6 +77,7 @@ import app.thirdear.extensions.describe
 import app.thirdear.extensions.destinationLabel
 import app.thirdear.extensions.recordActions
 import app.thirdear.pipeline.Transcriber
+import app.thirdear.shortcuts.LineShortcuts
 import app.thirdear.tiles.ActionTileService
 import app.thirdear.whitenoise.GroupSettings
 import app.thirdear.whitenoise.GroupSettingsStore
@@ -140,10 +141,10 @@ fun LinesScreen(host: MainActivity, editId: String?, onEditDone: () -> Unit, onO
                         }
                     }
                     Row {
-                        IconButton(onClick = { store.move(a.id, -1); ActionTileService.refreshAll(context) }, enabled = i > 0) {
+                        IconButton(onClick = { store.move(a.id, -1); ActionTileService.refreshAll(context); LineShortcuts.publish(context) }, enabled = i > 0) {
                             Icon(Icons.Outlined.ArrowUpward, stringResource(R.string.te_action_move_up), tint = if (i > 0) p.ink else p.rule)
                         }
-                        IconButton(onClick = { store.move(a.id, 1); ActionTileService.refreshAll(context) }, enabled = i < actions.lastIndex) {
+                        IconButton(onClick = { store.move(a.id, 1); ActionTileService.refreshAll(context); LineShortcuts.publish(context) }, enabled = i < actions.lastIndex) {
                             Icon(
                                 Icons.Outlined.ArrowDownward,
                                 stringResource(R.string.te_action_move_down),
@@ -183,6 +184,7 @@ fun LinesScreen(host: MainActivity, editId: String?, onEditDone: () -> Unit, onO
             onSave = { a ->
                 store.upsert(a)
                 ActionTileService.refreshAll(context)
+                LineShortcuts.publish(context)
             },
             onDelete = original?.let { o ->
                 {
@@ -201,6 +203,7 @@ fun LinesScreen(host: MainActivity, editId: String?, onEditDone: () -> Unit, onO
             onConfirm = {
                 store.delete(a.id)
                 ActionTileService.refreshAll(context)
+                LineShortcuts.publish(context)
                 editing = null
             },
             onDismiss = { deleting = null },

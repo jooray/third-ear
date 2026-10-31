@@ -77,6 +77,30 @@
             android:exported="false"
             android:theme="@style/AppTheme.NoDisplay" />
 
+        <!-- app shortcuts (launcher menu, pinned, automation apps); acts only with Third Ear's own token -->
+        <activity
+            android:name="app.thirdear.activities.ShortcutActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@style/AppTheme.NoDisplay" />
+
+        <!-- "create shortcut" picker for launchers, automation and button-mapping apps -->
+        <activity
+            android:name="app.thirdear.shortcuts.ShortcutPickerActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/te_shortcut_picker_label"
+            android:taskAffinity=""
+            android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.CREATE_SHORTCUT" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name=".activities.SplashActivity"
             android:exported="false"
