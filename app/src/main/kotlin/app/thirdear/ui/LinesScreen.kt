@@ -102,6 +102,8 @@ fun LinesScreen(host: MainActivity, editId: String?, onEditDone: () -> Unit, onO
     // a new line with its fields filled in (from a group without a line)
     var draft by remember { mutableStateOf<RecordAction?>(null) }
     var deleting by remember { mutableStateOf<RecordAction?>(null) }
+    val wnGroups by MarmotHost.groups.collectAsStateWithLifecycle()
+    val wnPhase by MarmotHost.phase.collectAsStateWithLifecycle()
 
     val editDone by rememberUpdatedState(onEditDone)
     LaunchedEffect(editId, actions) {
@@ -139,6 +141,17 @@ fun LinesScreen(host: MainActivity, editId: String?, onEditDone: () -> Unit, onO
                         problems.forEach {
                             Text(context.problemText(it), style = TeType.smallStrong, color = p.faultInk, modifier = Modifier.padding(top = 4.dp))
                         }
+                        // sends to a group Third Ear left or removed from this phone: say so before a recording fails
+                        val groupGone = a.destination == Destination.WHITE_NOISE && a.groupId != null &&
+                            wnPhase == MarmotHost.Phase.READY && wnGroups.none { it.id == a.groupId && it.joined }
+                        if (groupGone) {
+                            Text(
+                                stringResource(R.string.te_problem_group_gone),
+                                style = TeType.smallStrong,
+                                color = p.faultInk,
+                                modifier = Modifier.padding(top = 4.dp),
+                            )
+                        }
                     }
                     Row {
                         IconButton(onClick = { store.move(a.id, -1); ActionTileService.refreshAll(context); LineShortcuts.publish(context) }, enabled = i > 0) {
@@ -162,7 +175,8 @@ fun LinesScreen(host: MainActivity, editId: String?, onEditDone: () -> Unit, onO
             })
         }
         ExtendedFloatingActionButton(
-            onClick = { draft = null; creating = true },
+            // what was typed into a new line and closed without saving comes back
+            onClick = { draft = LineDraft.unsaved; creating = true },
             icon = { Icon(Icons.Outlined.Add, null) },
             text = { Text(stringResource(R.string.te_add_line), style = TeType.button) },
             containerColor = p.ink,
@@ -182,6 +196,7 @@ fun LinesScreen(host: MainActivity, editId: String?, onEditDone: () -> Unit, onO
             index = original?.let { o -> actions.indexOfFirst { it.id == o.id } } ?: actions.size,
             usedCords = actions.mapIndexed { i, a -> cordOf(a, i) }.toSet(),
             onSave = { a ->
+                if (original == null) LineDraft.unsaved = null
                 store.upsert(a)
                 ActionTileService.refreshAll(context)
                 LineShortcuts.publish(context)
@@ -192,6 +207,7 @@ fun LinesScreen(host: MainActivity, editId: String?, onEditDone: () -> Unit, onO
                 }
             },
             onDismiss = { creating = false; editing = null; draft = null },
+            onUnsaved = { LineDraft.unsaved = it },
         )
     }
     deleting?.let { a ->
@@ -209,6 +225,18 @@ fun LinesScreen(host: MainActivity, editId: String?, onEditDone: () -> Unit, onO
             onDismiss = { deleting = null },
         )
     }
+}
+
+/**
+ * A new line closed without saving, kept for the process: leaving the editor (to turn White Noise
+ * on, to look something up) does not throw away what was typed.
+ */
+private object LineDraft {
+    @Volatile var unsaved: RecordAction? = null
+
+    /** Worth keeping: something was typed or chosen. */
+    fun worthKeeping(a: RecordAction) = a.name.isNotBlank() || a.code != null || a.destination != RecordAction(name = "").destination ||
+        a.groupId != null || a.webhookUrl != null || a.webhookAuth != null
 }
 
 fun android.content.Context.problemText(p: ActionPlan.Problem) = getString(
@@ -230,6 +258,8 @@ private fun GroupsSection(host: MainActivity, actions: List<RecordAction>, onOpe
     val phase by MarmotHost.phase.collectAsStateWithLifecycle()
     var editing by remember { mutableStateOf<Pair<String, String>?>(null) }
     var leaving by remember { mutableStateOf<Pair<String, String>?>(null) }
+    // Third Ear is the group's last admin: it cannot leave, only drop the group from this phone
+    var lastAdmin by remember { mutableStateOf<Pair<String, String>?>(null) }
     var backingUp by remember { mutableStateOf(false) }
     val npub by MarmotHost.npub.collectAsStateWithLifecycle()
     var settingsVersion by remember { mutableIntStateOf(0) }
@@ -282,7 +312,7 @@ private fun GroupsSection(host: MainActivity, actions: List<RecordAction>, onOpe
         }
         Rule()
     }
-    val joined = groups.filter { it.member && !it.pending }
+    val joined = groups.filter { it.joined }
     if (joined.isEmpty()) {
         Text(stringResource(R.string.te_no_groups), style = TeType.small, color = p.inkMuted, modifier = Modifier.padding(16.dp))
         Rule()
@@ -300,6 +330,25 @@ private fun GroupsSection(host: MainActivity, actions: List<RecordAction>, onOpe
                 onAction = { onNewLine(g) },
             )
         }
+        Rule(inset = 16.dp)
+    }
+    // leaving: asked, waiting for the group's commit; left/removed: kept until removed from the list
+    groups.filter { it.member && it.leaving }.forEach { g ->
+        SettingRow(title = g.name.ifBlank { g.id.take(12) }, value = stringResource(R.string.te_wn_leaving))
+        Rule(inset = 16.dp)
+    }
+    groups.filter { !it.member && !it.pending }.forEach { g ->
+        SettingRow(
+            title = g.name.ifBlank { g.id.take(12) },
+            value = stringResource(if (g.removed) R.string.te_wn_removed else R.string.te_wn_left),
+            trailing = {
+                PlainButton(
+                    stringResource(R.string.te_wn_remove_from_list),
+                    { scope.launch { runCatching { MarmotHost.removeLocal(g.id) }.onFailure { host.toast(context.whiteNoiseError(it)) } } },
+                    color = p.inkMuted,
+                )
+            },
+        )
         Rule(inset = 16.dp)
     }
     if (joined.isNotEmpty() && npub != null && context.config.nsecShownFor != npub) {
@@ -328,9 +377,34 @@ private fun GroupsSection(host: MainActivity, actions: List<RecordAction>, onOpe
             destructive = true,
             onConfirm = {
                 editing = null
-                scope.launch { runCatching { MarmotHost.leave(id) }.onFailure { host.toast(it.message ?: "?") } }
+                scope.launch {
+                    runCatching { MarmotHost.leave(id) }
+                        .onSuccess { result ->
+                            when (result) {
+                                MarmotHost.LeaveResult.STARTED -> host.toast(context.getString(R.string.te_wn_leave_started))
+                                MarmotHost.LeaveResult.ALREADY_LEAVING -> host.toast(context.getString(R.string.te_wn_leaving))
+                                MarmotHost.LeaveResult.LAST_ADMIN -> lastAdmin = id to name
+                            }
+                        }
+                        .onFailure { host.toast(context.getString(R.string.te_wn_leave_failed, context.whiteNoiseError(it))) }
+                }
             },
             onDismiss = { leaving = null },
+        )
+    }
+    lastAdmin?.let { (id, name) ->
+        ConfirmDialog(
+            title = stringResource(R.string.te_wn_last_admin_title, name),
+            message = stringResource(R.string.te_wn_last_admin_desc),
+            confirm = stringResource(R.string.te_wn_remove_local),
+            destructive = true,
+            onConfirm = {
+                scope.launch {
+                    runCatching { MarmotHost.removeLocal(id) }
+                        .onFailure { host.toast(context.getString(R.string.te_wn_remove_failed, context.whiteNoiseError(it))) }
+                }
+            },
+            onDismiss = { lastAdmin = null },
         )
     }
 }
@@ -468,21 +542,37 @@ private fun LineEditor(
     onSave: (RecordAction) -> Unit,
     onDelete: (() -> Unit)?,
     onDismiss: () -> Unit,
+    onUnsaved: (RecordAction?) -> Unit,
 ) {
     val p = Te.colors
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val transcriber = remember { Transcriber(context).available(context.config.transcriber) }
     val firstFree = remember { (0 until Cords.all.size).firstOrNull { it !in usedCords } ?: index }
-    var a by remember { mutableStateOf(original ?: draft?.copy(cord = firstFree) ?: RecordAction(name = "", cord = firstFree)) }
+    // a restored draft keeps its own cord; one made from a group takes the first free one
+    var a by remember {
+        mutableStateOf(original ?: draft?.let { if (it === LineDraft.unsaved) it else it.copy(cord = firstFree) } ?: RecordAction(name = "", cord = firstFree))
+    }
     var pickGroup by remember { mutableStateOf(false) }
+    var creatingGroup by remember { mutableStateOf(false) }
     var tried by remember { mutableStateOf(false) }
+    // a new line that came back from an earlier, unsaved edit
+    var restored by remember { mutableStateOf(original == null && draft != null && draft === LineDraft.unsaved) }
+    val wnPhase by MarmotHost.phase.collectAsStateWithLifecycle()
+    val wnGroups by MarmotHost.groups.collectAsStateWithLifecycle()
+    var wnOn by remember { mutableStateOf(context.config.whiteNoiseEnabled) }
+    // closing a new line keeps what was typed; an edit of an existing one is simply cancelled
+    val close = {
+        if (original == null) onUnsaved(a.takeIf { LineDraft.worthKeeping(it) })
+        onDismiss()
+    }
     val cord = cordOf(a, index)
     val problems = ActionPlan.of(a).problems(transcriber)
     val blocking = problems.filter { it != ActionPlan.Problem.NO_TRANSCRIBER }
 
     FullDialog(
         title = stringResource(if (original == null) R.string.te_new_line else R.string.te_edit_line),
-        onDismiss = onDismiss,
+        onDismiss = close,
         onSave = {
             tried = true
             if (blocking.isEmpty()) {
@@ -492,6 +582,19 @@ private fun LineEditor(
         },
         saveEnabled = blocking.isEmpty(),
     ) {
+        if (restored) {
+            Notice(
+                stringResource(R.string.te_line_draft_restored),
+                Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
+                calm = true,
+                action = stringResource(R.string.te_line_draft_start_over),
+                onAction = {
+                    a = RecordAction(name = "", cord = firstFree)
+                    onUnsaved(null)
+                    restored = false
+                },
+            )
+        }
         // the key as it will sit on the board
         Box(Modifier.padding(horizontal = 16.dp).fillMaxWidth(0.5f)) {
             LineKey(
@@ -554,11 +657,44 @@ private fun LineEditor(
         Destination.entries.forEach { d -> RadioRow(context.destinationLabel(d), a.destination == d) { a = a.copy(destination = d) } }
 
         when (a.destination) {
-            Destination.WHITE_NOISE -> SettingRow(
-                title = stringResource(R.string.te_action_group),
-                value = a.groupName ?: stringResource(R.string.te_action_pick_group),
-                onClick = { pickGroup = true },
-            )
+            Destination.WHITE_NOISE -> {
+                val usable = wnOn && wnPhase == MarmotHost.Phase.READY && wnGroups.any { it.joined }
+                SettingRow(
+                    title = stringResource(R.string.te_action_group),
+                    value = a.groupName ?: stringResource(R.string.te_action_pick_group),
+                    enabled = usable || a.groupName != null,
+                    onClick = { if (usable) pickGroup = true },
+                )
+                // the way forward right here: no trip to Setup, nothing typed is lost
+                val noticeModifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                when {
+                    !MarmotHost.supported() -> Notice(stringResource(R.string.te_wn_unsupported), noticeModifier, fault = true)
+                    !wnOn -> Notice(
+                        stringResource(R.string.te_wn_off_in_editor),
+                        noticeModifier,
+                        calm = true,
+                        action = stringResource(R.string.te_wn_turn_on),
+                        onAction = {
+                            WhiteNoise.turnOn(context)
+                            wnOn = true
+                            scope.launch { runCatching { MarmotHost.start(context) } }
+                        },
+                    )
+                    wnPhase == MarmotHost.Phase.FAILED -> Notice(
+                        stringResource(R.string.te_wn_failed, MarmotHost.error.value ?: "?"),
+                        noticeModifier,
+                        fault = true,
+                    )
+                    wnPhase != MarmotHost.Phase.READY -> Notice(stringResource(R.string.te_wn_starting), noticeModifier, calm = true)
+                    wnGroups.none { it.joined } -> Notice(
+                        stringResource(R.string.te_wn_no_groups_in_editor),
+                        noticeModifier,
+                        calm = true,
+                        action = stringResource(R.string.te_wn_create_group_action),
+                        onAction = { creatingGroup = true },
+                    )
+                }
+            }
             Destination.WEBHOOK -> {
                 Field(
                     stringResource(R.string.te_action_webhook_url),
@@ -600,11 +736,27 @@ private fun LineEditor(
         }
     }
 
+    if (creatingGroup) {
+        TextDialog(
+            title = stringResource(R.string.te_wn_create_group),
+            initial = stringResource(R.string.te_wn_test_group_name),
+            confirm = stringResource(R.string.te_create),
+            message = stringResource(R.string.te_wn_create_group_desc),
+            onConfirm = { name ->
+                val n = name.trim().ifEmpty { context.getString(R.string.te_wn_test_group_name) }
+                scope.launch {
+                    runCatching { MarmotHost.createGroup(n) }
+                        .onSuccess { id -> a = a.copy(groupId = id, groupName = n) }
+                        .onFailure { (context as? MainActivity)?.toast(context.whiteNoiseError(it)) }
+                }
+            },
+            onDismiss = { creatingGroup = false },
+        )
+    }
     if (pickGroup) {
         val groups = remember { WhiteNoise.joinedGroups() }
         when {
-            !context.config.whiteNoiseEnabled -> { (context as? MainActivity)?.toast(context.getString(R.string.te_white_noise_off)); pickGroup = false }
-            groups.isEmpty() -> { (context as? MainActivity)?.toast(context.getString(R.string.te_no_groups)); pickGroup = false }
+            groups.isEmpty() -> pickGroup = false
             else -> ChoiceDialog(
                 title = stringResource(R.string.te_action_group),
                 options = groups.map { it to it.name },

@@ -50,7 +50,7 @@ data class ActionPlan(
     fun problems(transcriberAvailable: Boolean): List<Problem> = buildList {
         if (action.name.isBlank()) add(Problem.NO_NAME)
         if (action.destination == Destination.WHITE_NOISE && action.groupId.isNullOrBlank()) add(Problem.NO_GROUP)
-        if (action.destination == Destination.WEBHOOK && !isHttpUrl(action.webhookUrl)) add(Problem.NO_WEBHOOK_URL)
+        if (action.destination == Destination.WEBHOOK && !isHttpsUrl(action.webhookUrl)) add(Problem.NO_WEBHOOK_URL)
         if (transcribe && !transcriberAvailable) add(Problem.NO_TRANSCRIBER)
     }
 
@@ -67,9 +67,10 @@ data class ActionPlan(
 
         private val SENDING = setOf(Destination.SHARE, Destination.WHITE_NOISE, Destination.WEBHOOK)
 
-        fun isHttpUrl(url: String?): Boolean {
+        /** Only https: Android blocks cleartext anyway, and a webhook carries the recording and its transcript. */
+        fun isHttpsUrl(url: String?): Boolean {
             val u = url?.trim()?.lowercase() ?: return false
-            return (u.startsWith("https://") || u.startsWith("http://")) && u.length > "https://".length
+            return u.startsWith("https://") && u.length > "https://".length
         }
     }
 }

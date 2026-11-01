@@ -2,6 +2,7 @@ package app.thirdear.whitenoise
 
 import android.content.Context
 import android.util.Log
+import app.thirdear.extensions.config
 import dev.ipf.marmotkit.AccountSummaryFfi
 import dev.ipf.marmotkit.Marmot
 import dev.ipf.marmotkit.MarmotAndroid
@@ -59,7 +60,26 @@ object MarmotHost {
         "wss://nos.lol",
     )
 
-    data class Group(val id: String, val name: String, val pending: Boolean, val member: Boolean)
+    /**
+     * A group as the chat list has it. [member] is MLS membership; [leaving] means a leave was
+     * asked for and waits for the group's commit; [left] and [removed] are groups this account is
+     * no longer in, kept until the user removes them from the list.
+     */
+    data class Group(
+        val id: String,
+        val name: String,
+        val pending: Boolean,
+        val member: Boolean,
+        val leaving: Boolean = false,
+        val left: Boolean = false,
+        val removed: Boolean = false,
+    ) {
+        /** In the group and staying: can be sent to and shows its settings. */
+        val joined get() = member && !pending && !leaving
+    }
+
+    /** What a Leave did. */
+    enum class LeaveResult { STARTED, ALREADY_LEAVING, LAST_ADMIN }
 
     /** A message from someone else in a joined group. */
     data class Incoming(
@@ -78,6 +98,12 @@ object MarmotHost {
     val error = MutableStateFlow<String?>(null)
     val npub = MutableStateFlow<String?>(null)
     val groups = MutableStateFlow<List<Group>>(emptyList())
+
+    /** The display name others see (kind:0), as last read or published. */
+    val profileName = MutableStateFlow<String?>(null)
+
+    /** Groups with a leave in flight (MDK keeps the request durably; this mirrors it for the list). */
+    private val leavingIds = MutableStateFlow<Set<String>>(emptySet())
 
     @Volatile var onIncoming: ((Incoming) -> Unit)? = null
 
@@ -131,16 +157,18 @@ object MarmotHost {
                 val m = opened!!
                 m.start()
                 marmot = m
-                val acct = ensureAccount(m)
+                val acct = ensureAccount(m, context.config.whiteNoiseName ?: DEFAULT_NAME)
                 account = acct.label
                 accountHex = acct.accountIdHex
                 npub.value = m.npub(acct.accountIdHex)
+                profileName.value = runCatching { m.userProfile(acct.accountIdHex) }.getOrNull()?.let { it.displayName ?: it.name }
                 refreshGroups()
                 events = scope.launch { pump(m) }
                 phase.value = Phase.READY
                 Log.i(TAG, "ready as ${npub.value}")
                 val label = acct.label
                 scope.launch { ensureKeyPackage(context.applicationContext, m, label) }
+                scope.launch { findPendingLeaves(m, label) }
             } catch (t: Throwable) {
                 phase.value = Phase.FAILED
                 // some MarmotKit errors carry an empty message: name the error rather than show nothing
@@ -261,13 +289,43 @@ object MarmotHost {
         return false
     }
 
-    private suspend fun ensureAccount(m: Marmot): AccountSummaryFfi {
+    /** The name a new identity starts with; Setup can change it. */
+    const val DEFAULT_NAME = "Third Ear"
+
+    /** Leaves asked for before this start (MDK keeps them across restarts): show them as leaving. */
+    private suspend fun findPendingLeaves(m: Marmot, acct: String) {
+        val pending = groups.value.filter { it.member }.mapNotNull { g ->
+            runCatching { m.groupManagementState(acct, g.id) }.getOrNull()?.takeIf { it.leaveRequestPending }?.let { g.id }
+        }
+        if (pending.isNotEmpty()) {
+            leavingIds.value = leavingIds.value + pending
+            refreshGroups()
+        }
+    }
+
+    /**
+     * Publishes a new display name (kind:0), keeping the rest of the profile. Members of the
+     * groups see it from then on; their apps may take a while to fetch it.
+     */
+    suspend fun rename(name: String) = io { m, acct ->
+        val n = name.trim()
+        require(n.isNotEmpty()) { "empty name" }
+        val hex = accountHex ?: error("no White Noise identity")
+        val current = runCatching { m.userProfile(hex) }.getOrNull()
+            ?: UserProfileMetadataFfi(null, null, ABOUT, null, null, null, null)
+        val published = m.publishUserProfileUsingAccountRelays(acct, current.copy(name = n, displayName = n))
+        profileName.value = published.displayName ?: published.name ?: n
+    }
+
+    private const val ABOUT = "Voice recorder"
+
+    private suspend fun ensureAccount(m: Marmot, name: String): AccountSummaryFfi {
         val existing = m.listAccounts().firstOrNull()
         return when {
             existing == null -> {
                 Log.i(TAG, "creating identity")
                 // publishes the relay lists (10002, 10050 inbox), the profile and the first key package
-                val profile = UserProfileMetadataFfi("Third Ear", "Third Ear", "Voice recorder", null, null, null, null)
+                val profile = UserProfileMetadataFfi(name, name, ABOUT, null, null, null, null)
                 runCatching { m.createIdentityWithInitialProfile(profile, RELAYS, RELAYS, RELAYS).account }
                     .getOrElse { m.createIdentity(RELAYS, RELAYS, RELAYS) }
             }
@@ -316,8 +374,21 @@ object MarmotHost {
         val m = marmot ?: return
         val acct = account ?: return
         groups.value = runCatching {
-            m.chatList(acct, false).map {
-                Group(it.groupIdHex, it.groupName.ifBlank { it.title }, it.pendingConfirmation, it.selfMembership == SelfMembershipFfi.MEMBER)
+            // archived too: a group this account left may be archived, and must stay visible until removed
+            val rows = m.chatList(acct, true)
+            val member = rows.filter { it.selfMembership == SelfMembershipFfi.MEMBER }.map { it.groupIdHex }.toSet()
+            // a leave is over once the membership flips
+            leavingIds.value = leavingIds.value.intersect(member)
+            rows.map {
+                Group(
+                    id = it.groupIdHex,
+                    name = it.groupName.ifBlank { it.title },
+                    pending = it.pendingConfirmation,
+                    member = it.selfMembership == SelfMembershipFfi.MEMBER,
+                    leaving = it.groupIdHex in leavingIds.value,
+                    left = it.selfMembership == SelfMembershipFfi.LEFT,
+                    removed = it.selfMembership == SelfMembershipFfi.REMOVED,
+                )
             }
         }.getOrDefault(groups.value)
     }
@@ -332,10 +403,49 @@ object MarmotHost {
         refreshGroups()
     }
 
-    /** An MLS leave, sent to the group: the others see Third Ear go; it can come back only by a new invite. */
-    suspend fun leave(groupId: String) = io { m, acct ->
-        m.leaveGroup(acct, groupId)
+    /**
+     * An MLS leave, sent to the group: the others see Third Ear go; it can come back only by a new
+     * invite. MDK queues it until a commit removes this member, so the row turns "leaving" first.
+     * An admin has to give up admin rights before leaving (done here); the last admin cannot leave
+     * at all, which the caller turns into the choice of removing the group from this phone.
+     */
+    suspend fun leave(groupId: String): LeaveResult = io { m, acct ->
+        val state = runCatching { m.groupManagementState(acct, groupId) }.getOrNull()
+        when {
+            state?.leaveRequestPending == true -> {
+                markLeaving(groupId)
+                LeaveResult.ALREADY_LEAVING
+            }
+            state?.isLastAdmin == true -> LeaveResult.LAST_ADMIN
+            else -> {
+                if (state?.requiresSelfDemoteBeforeLeave == true) m.demoteAdmin(acct, groupId, state.myAccountIdHex)
+                try {
+                    m.leaveGroup(acct, groupId)
+                } catch (_: MarmotKitException.LeaveAlreadyRequested) {
+                    // the durable request from before: the same as having just asked
+                }
+                markLeaving(groupId)
+                LeaveResult.STARTED
+            }
+        }
+    }
+
+    private fun markLeaving(groupId: String) {
+        leavingIds.value = leavingIds.value + groupId
         refreshGroups()
+    }
+
+    /**
+     * Drops the group from this phone without an MLS leave: protocol state is reset (old invites
+     * to it are rejected, a new one works) and the chat row is deleted. For a group already left,
+     * or one Third Ear cannot leave (last admin); the other members are not told.
+     */
+    suspend fun removeLocal(groupId: String) = io { m, acct ->
+        val forgot = runCatching { m.forgetGroupLocal(acct, groupId) }
+        val deleted = runCatching { m.deleteGroupLocal(acct, groupId) }
+        leavingIds.value = leavingIds.value - groupId
+        refreshGroups()
+        if (forgot.isFailure && deleted.isFailure) throw deleted.exceptionOrNull()!!
     }
 
     /** A group with only Third Ear in it (to try sending without bothering anyone); others can be invited later. */

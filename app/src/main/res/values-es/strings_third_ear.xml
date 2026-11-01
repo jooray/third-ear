@@ -82,9 +82,8 @@
     <string name="te_action_move_down">Bajar</string>
     <string name="te_problem_no_name">Ponle un nombre a la acción</string>
     <string name="te_problem_no_group">Elige un grupo de White Noise</string>
-    <string name="te_problem_no_webhook">Escribe una URL de webhook que empiece por https:// o http://</string>
+    <string name="te_problem_no_webhook">Escribe una URL de webhook que empiece por https:// (no se admite http://: las grabaciones y transcripciones viajarían sin cifrar)</string>
     <string name="te_problem_no_transcriber">No hay ninguna app de transcripción: instala Offline Speech to Text</string>
-    <string name="te_white_noise_off">Primero activa White Noise en los ajustes</string>
     <string name="te_no_groups">Aún no hay grupos: invita el npub de Third Ear a un grupo en White Noise y acepta la invitación</string>
     <string name="te_at_least_one_action">Tiene que quedar al menos una acción</string>
 
@@ -114,7 +113,7 @@
     <string name="te_error_no_transcriber">ninguna app de transcripción (instala Offline Speech to Text)</string>
     <string name="te_error_no_speech">no se reconoció ninguna voz</string>
     <string name="te_error_no_speech_no_ostt">no se reconoció ninguna voz. Instala Offline Speech to Text (gratis, en Zapstore) para obtener transcripciones</string>
-    <string name="te_error_no_webhook">no hay URL de webhook</string>
+    <string name="te_error_no_webhook">no hay URL de webhook https://</string>
     <string name="te_error_no_group">no hay ningún grupo de White Noise elegido</string>
     <string name="te_error_background_start">Android solo deja iniciar el micrófono mientras Third Ear está abierta. Abre Third Ear e inténtalo de nuevo.</string>
     <string name="te_error_start">No se pudo iniciar la grabación: %s</string>
@@ -245,4 +244,33 @@
     <string name="te_shortcut_picker_hint">Elige qué hace el acceso directo. El de una línea empieza a grabar en ella; usado otra vez, para y envía.</string>
     <string name="te_shortcut_picker_lines">Líneas</string>
     <string name="te_shortcut_line_hint">Graba; úsalo otra vez para parar y enviar</string>
+    <string name="te_wn_leaving">Saliendo: esperando a que el grupo lo confirme</string>
+    <string name="te_wn_left">Saliste de este grupo</string>
+    <string name="te_wn_removed">Third Ear fue expulsado de este grupo</string>
+    <string name="te_wn_remove_from_list">Quitar</string>
+    <string name="te_wn_leave_started">Third Ear está saliendo del grupo. Será definitivo cuando el grupo lo confirme.</string>
+    <string name="te_wn_leave_failed">No se pudo salir del grupo: %s</string>
+    <string name="te_wn_last_admin_title">Third Ear es el único administrador de \"%s\"</string>
+    <string name="te_wn_last_admin_desc">Un grupo necesita un administrador, así que Third Ear no puede salir. Para salir de verdad, primero haz administrador a otro miembro en White Noise y luego sal aquí. O quita el grupo solo de este teléfono: los mensajes dejan de llegar y no se puede enviar nada allí, pero los demás siguen viendo a Third Ear como miembro. Una nueva invitación lo devuelve.</string>
+    <string name="te_wn_remove_local">Quitar de este teléfono</string>
+    <string name="te_wn_remove_failed">No se pudo quitar el grupo: %s</string>
+    <string name="te_wn_err_last_admin">Third Ear es el único administrador del grupo, así que no puede salir. Primero haz administrador a otro miembro en White Noise.</string>
+    <string name="te_wn_err_catching_up">El grupo aún se está poniendo al día en este teléfono. Inténtalo en un minuto.</string>
+    <string name="te_wn_err_undelivered">El último cambio del grupo aún no llegó a todos sus relays. Inténtalo en un minuto.</string>
+    <string name="te_wn_err_disbanding">El grupo se está disolviendo.</string>
+    <string name="te_wn_err_not_admin">Solo un administrador del grupo puede hacerlo.</string>
+    <string name="te_wn_err_unknown_group">Este teléfono no conoce (ya) ese grupo.</string>
+    <string name="te_line_draft_restored">Sigues donde lo dejaste: esta es la línea que estabas creando.</string>
+    <string name="te_line_draft_start_over">Empezar de nuevo</string>
+    <string name="te_wn_off_in_editor">White Noise está apagado. Enciéndelo para que esta línea envíe a un grupo; lo que escribiste se queda aquí.</string>
+    <string name="te_wn_turn_on">Encender</string>
+    <string name="te_wn_no_groups_in_editor">Aún no hay grupos. Crea un grupo de prueba para probarlo, o invita el npub de Third Ear (Ajustes → White Noise) a un grupo en White Noise y acepta la invitación en la pantalla Líneas.</string>
+    <string name="te_wn_create_group_action">Crear</string>
+    <string name="te_wn_name">Nombre en los grupos</string>
+    <string name="te_wn_name_short">lo que ven los miembros</string>
+    <string name="te_wn_name_desc">Los miembros de tus grupos ven este nombre junto a los mensajes de Third Ear. Que diga de quién es, por ejemplo \"Third Ear (teléfono de Ana)\".</string>
+    <string name="te_wn_name_published">Nombre publicado. Otras apps pueden tardar un poco en mostrarlo.</string>
+    <string name="te_wn_name_failed">No se pudo publicar el nombre: %s</string>
+    <string name="te_wn_name_empty">El nombre no puede estar vacío</string>
+    <string name="te_problem_group_gone">Third Ear ya no está en este grupo: elige otro</string>
 </resources>

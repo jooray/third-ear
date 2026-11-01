@@ -9,7 +9,7 @@ import org.json.JSONObject
 /**
  * Posts a recording as multipart/form-data: `metadata` (JSON), `transcript` (text, when there is
  * one) and `audio` (unless only text is sent). Works with n8n, Home Assistant webhooks, a
- * self-hosted agent; any 2xx counts as delivered. Same format as I Hear You.
+ * self-hosted agent; any 2xx counts as delivered. Same format as I Hear You. https only (ActionPlan.isHttpsUrl).
  */
 object Webhook {
     private const val CONNECT_TIMEOUT_MS = 20_000

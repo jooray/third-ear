@@ -68,6 +68,7 @@ import app.thirdear.pipeline.Transcriber
 import app.thirdear.tiles.ActionTileService
 import app.thirdear.whitenoise.GroupSettings
 import app.thirdear.whitenoise.MarmotHost
+import app.thirdear.whitenoise.WhiteNoise
 import app.thirdear.whitenoise.WhiteNoiseService
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.qrcode.QRCodeWriter
@@ -92,6 +93,7 @@ private sealed interface Pick {
     data object CreateGroup : Pick
     data object NsecWarning : Pick
     data object ImportNsec : Pick
+    data object WhiteNoiseName : Pick
     data object EmptyBin : Pick
     data object ListeningCue : Pick
     data object PlaybackSpeed : Pick
@@ -374,6 +376,27 @@ fun SetupScreen(host: MainActivity) {
             },
             onDismiss = { pick = null },
         )
+        Pick.WhiteNoiseName -> TextDialog(
+            title = stringResource(R.string.te_wn_name),
+            initial = MarmotHost.profileName.value ?: config.whiteNoiseName ?: MarmotHost.DEFAULT_NAME,
+            confirm = stringResource(R.string.te_save),
+            message = stringResource(R.string.te_wn_name_desc),
+            onConfirm = { name ->
+                val n = name.trim()
+                config.whiteNoiseName = n
+                changed()
+                // running: publish it now; otherwise the identity gets it when it is created
+                if (MarmotHost.phase.value == MarmotHost.Phase.READY) {
+                    scope.launch {
+                        runCatching { MarmotHost.rename(n) }
+                            .onSuccess { host.toast(context.getString(R.string.te_wn_name_published)) }
+                            .onFailure { host.toast(context.getString(R.string.te_wn_name_failed, context.whiteNoiseError(it))) }
+                    }
+                }
+            },
+            onDismiss = { pick = null },
+            validate = { if (it.isBlank()) context.getString(R.string.te_wn_name_empty) else null },
+        )
         Pick.NsecWarning -> NsecBackup(host, onDone = { pick = null; changed() })
         Pick.ImportNsec -> TextDialog(
             title = stringResource(R.string.te_wn_import_nsec),
@@ -434,14 +457,11 @@ private fun WhiteNoiseSection(host: MainActivity, onPick: (Pick) -> Unit, change
             host.toast(context.getString(R.string.te_wn_unsupported))
             return@SwitchRow
         }
-        config.whiteNoiseEnabled = enable
         if (enable) {
-            config.whiteNoiseRestored = false
-            // the user's choice: from here on a missing MDK directory is not a restored backup
-            java.io.File(context.noBackupFilesDir, "marmot").mkdirs()
-            WhiteNoiseService.start(context)
+            WhiteNoise.turnOn(context)
             scope.launch { runCatching { MarmotHost.start(context) } }
         } else {
+            config.whiteNoiseEnabled = false
             WhiteNoiseService.stop(context)
         }
         changed()
@@ -470,6 +490,14 @@ private fun WhiteNoiseSection(host: MainActivity, onPick: (Pick) -> Unit, change
             style = TeType.small,
             color = if (phase == MarmotHost.Phase.FAILED) p.faultInk else p.inkMuted,
             modifier = Modifier.padding(top = 2.dp, start = 4.dp),
+        )
+    }
+    if (MarmotHost.supported()) {
+        val shownName by MarmotHost.profileName.collectAsStateWithLifecycle()
+        SettingRow(
+            stringResource(R.string.te_wn_name),
+            value = (shownName ?: config.whiteNoiseName ?: MarmotHost.DEFAULT_NAME) + " · " + stringResource(R.string.te_wn_name_short),
+            onClick = { onPick(Pick.WhiteNoiseName) },
         )
     }
     if (on) {
@@ -505,7 +533,13 @@ private fun WhiteNoiseSection(host: MainActivity, onPick: (Pick) -> Unit, change
         )
         Label(stringResource(R.string.te_wn_backup), Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 4.dp))
         if (context.config.nsecShownFor != n) {
-            Notice(stringResource(R.string.te_wn_backup_nudge), Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
+            // advice until there is something to lose: before any group it is calm, not an alarm
+            val groups by MarmotHost.groups.collectAsStateWithLifecycle()
+            Notice(
+                stringResource(R.string.te_wn_backup_nudge),
+                Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                calm = groups.none { it.joined },
+            )
         }
         SettingRow(stringResource(R.string.te_wn_show_nsec), onClick = { onPick(Pick.NsecWarning) })
         SettingRow(stringResource(R.string.te_wn_import_nsec), onClick = { onPick(Pick.ImportNsec) })

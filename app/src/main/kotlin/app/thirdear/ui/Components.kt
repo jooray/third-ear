@@ -355,18 +355,26 @@ fun Rule(modifier: Modifier = Modifier, inset: Dp = 0.dp) {
 
 /** A notice band: a word of state and what to do, never colour alone. */
 @Composable
-fun Notice(text: String, modifier: Modifier = Modifier, fault: Boolean = false, action: String? = null, onAction: (() -> Unit)? = null) {
+fun Notice(
+    text: String,
+    modifier: Modifier = Modifier,
+    fault: Boolean = false,
+    action: String? = null,
+    onAction: (() -> Unit)? = null,
+    calm: Boolean = false,
+) {
     val p = Te.colors
+    // calm: advice or a next step, not something going on: a steady unlit lamp and a plain border
     Row(
         modifier
             .fillMaxWidth()
             .clip(PlateShape)
             .background(p.recess)
-            .border(1.dp, if (fault) p.fault else p.busy, PlateShape)
+            .border(1.dp, if (fault) p.fault else if (calm) p.ruleStrong else p.busy, PlateShape)
             .padding(start = 12.dp, top = 10.dp, bottom = 10.dp, end = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Lamp(if (fault) LampState.FAULT else LampState.BUSY, size = 12.dp)
+        Lamp(if (fault) LampState.FAULT else if (calm) LampState.OFF else LampState.BUSY, size = 12.dp)
         Spacer(Modifier.width(6.dp))
         Text(text, style = TeType.small, color = p.ink, modifier = Modifier.weight(1f))
         if (action != null && onAction != null) PlainButton(action, onAction)

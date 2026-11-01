@@ -159,6 +159,11 @@ class Config(context: Context) : BaseConfig(context) {
         get() = prefs.getBoolean(WHITE_NOISE_ENABLED, false)
         set(v) = prefs.edit { putBoolean(WHITE_NOISE_ENABLED, v) }
 
+    /** The White Noise identity's display name (what group members see); null is "Third Ear". */
+    var whiteNoiseName: String?
+        get() = prefs.getString(WHITE_NOISE_NAME, null)
+        set(v) = prefs.edit { putString(WHITE_NOISE_NAME, v) }
+
     /** White Noise was on in a restored backup, but its identity (never backed up) is not here. */
     var whiteNoiseRestored: Boolean
         get() = prefs.getBoolean(WHITE_NOISE_RESTORED, false)

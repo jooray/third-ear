@@ -82,9 +82,8 @@
     <string name="te_action_move_down">Posunout níž</string>
     <string name="te_problem_no_name">Dej akci název</string>
     <string name="te_problem_no_group">Vyber skupinu ve White Noise</string>
-    <string name="te_problem_no_webhook">Zadej URL webhooku, která začíná https:// nebo http://</string>
+    <string name="te_problem_no_webhook">Zadej URL webhooku, která začíná https:// (http:// není povolené: nahrávky a přepisy by šly nešifrované)</string>
     <string name="te_problem_no_transcriber">Nenašla se aplikace na přepis: nainstaluj Offline Speech to Text</string>
-    <string name="te_white_noise_off">Nejdřív zapni White Noise v nastavení</string>
     <string name="te_no_groups">Zatím žádné skupiny: pozvi npub Third Ear do skupiny ve White Noise a přijmi pozvánku</string>
     <string name="te_at_least_one_action">Aspoň jedna akce musí zůstat</string>
 
@@ -116,7 +115,7 @@
     <string name="te_error_no_transcriber">žádná aplikace na přepis (nainstaluj Offline Speech to Text)</string>
     <string name="te_error_no_speech">nerozpoznala se žádná řeč</string>
     <string name="te_error_no_speech_no_ostt">nerozpoznala se žádná řeč. Pro přepis nainstaluj Offline Speech to Text (zdarma, na Zapstore)</string>
-    <string name="te_error_no_webhook">není zadaná URL webhooku</string>
+    <string name="te_error_no_webhook">není zadaná https:// URL webhooku</string>
     <string name="te_error_no_group">není vybraná skupina ve White Noise</string>
     <string name="te_error_background_start">Android spustí mikrofon, jen když je Third Ear otevřený. Otevři Third Ear a zkus to znovu.</string>
     <string name="te_error_start">Nahrávání se nepodařilo spustit: %s</string>
@@ -247,4 +246,33 @@
     <string name="te_shortcut_picker_hint">Vyberte, co zkratka udělá. Zkratka linky začne nahrávat na tu linku; dalším použitím zastaví a odešle.</string>
     <string name="te_shortcut_picker_lines">Linky</string>
     <string name="te_shortcut_line_hint">Nahrávejte, dalším použitím zastavte a odešlete</string>
+    <string name="te_wn_leaving">Odchází: čeká se, až to skupina potvrdí</string>
+    <string name="te_wn_left">Tuto skupinu jsi opustil</string>
+    <string name="te_wn_removed">Third Ear byl z této skupiny odebrán</string>
+    <string name="te_wn_remove_from_list">Odebrat</string>
+    <string name="te_wn_leave_started">Third Ear odchází ze skupiny. Platí to, až to skupina potvrdí.</string>
+    <string name="te_wn_leave_failed">Skupinu se nepodařilo opustit: %s</string>
+    <string name="te_wn_last_admin_title">Third Ear je jediný admin skupiny \"%s\"</string>
+    <string name="te_wn_last_admin_desc">Skupina potřebuje admina, proto ji Third Ear nemůže opustit. Chceš-li odejít pořádně, nejdřív ve White Noise udělej adminem jiného člena a pak skupinu opusť tady. Nebo skupinu odeber jen z tohoto telefonu: zprávy přestanou chodit a nedá se tam nic poslat, ale ostatní budou Third Ear dál vidět jako člena. Zpět ho vrátí nová pozvánka.</string>
+    <string name="te_wn_remove_local">Odebrat z tohoto telefonu</string>
+    <string name="te_wn_remove_failed">Skupinu se nepodařilo odebrat: %s</string>
+    <string name="te_wn_err_last_admin">Third Ear je jediný admin skupiny, proto ji nemůže opustit. Nejdřív ve White Noise udělej adminem jiného člena.</string>
+    <string name="te_wn_err_catching_up">Skupina se na tomto telefonu ještě dohání. Zkus to za minutu.</string>
+    <string name="te_wn_err_undelivered">Poslední změna skupiny se ještě nedostala na všechny její relaye. Zkus to za minutu.</string>
+    <string name="te_wn_err_disbanding">Skupina se právě ruší.</string>
+    <string name="te_wn_err_not_admin">To může udělat jen admin skupiny.</string>
+    <string name="te_wn_err_unknown_group">Tento telefon takovou skupinu (už) nezná.</string>
+    <string name="te_line_draft_restored">Pokračuješ, kde jsi skončil: tohle je linka, kterou jsi dělal.</string>
+    <string name="te_line_draft_start_over">Začít znovu</string>
+    <string name="te_wn_off_in_editor">White Noise je vypnutý. Zapni ho, aby tato linka posílala do skupiny; co jsi napsal, tady zůstane.</string>
+    <string name="te_wn_turn_on">Zapnout</string>
+    <string name="te_wn_no_groups_in_editor">Zatím žádné skupiny. Vytvoř si zkušební skupinu a vyzkoušej to, nebo pozvi npub Third Ear (Nastavení → White Noise) do skupiny ve White Noise a pozvánku přijmi na obrazovce Linky.</string>
+    <string name="te_wn_create_group_action">Vytvořit</string>
+    <string name="te_wn_name">Jméno ve skupinách</string>
+    <string name="te_wn_name_short">co vidí členové skupin</string>
+    <string name="te_wn_name_desc">Členové tvých skupin vidí toto jméno u zpráv od Third Ear. Ať je z něj jasné, čí je, například \"Third Ear (Annin telefon)\".</string>
+    <string name="te_wn_name_published">Jméno je zveřejněné. Jiným aplikacím může chvíli trvat, než ho ukážou.</string>
+    <string name="te_wn_name_failed">Jméno se nepodařilo zveřejnit: %s</string>
+    <string name="te_wn_name_empty">Jméno nemůže být prázdné</string>
+    <string name="te_problem_group_gone">Third Ear už v této skupině není: vyber jinou</string>
 </resources>

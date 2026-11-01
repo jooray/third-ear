@@ -116,13 +116,13 @@ fun MessagesScreen(modifier: Modifier = Modifier) {
     LaunchedEffect(ready, groups, messages) {
         if (!ready) return@LaunchedEffect
         latest = withContext(Dispatchers.IO) {
-            groups.filter { it.member && !it.pending }.mapNotNull { g ->
+            groups.filter { it.joined }.mapNotNull { g ->
                 runCatching { MarmotHost.timeline(g.id, 1).lastOrNull() }.getOrNull()?.let { g.id to it.line(messages) }
             }.toMap()
         }
     }
     val chats = remember(groups, messages, latest) {
-        val joined = groups.filter { it.member && !it.pending }.map { it.id to it.name }
+        val joined = groups.filter { it.joined }.map { it.id to it.name }
         val ids = joined.map { it.first }.toSet()
         // groups left or not loaded yet still show what was saved from them
         val saved = messages.map { it.groupId to it.groupName }

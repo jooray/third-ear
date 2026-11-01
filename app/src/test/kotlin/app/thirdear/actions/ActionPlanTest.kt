@@ -90,10 +90,11 @@ class ActionPlanTest {
 
     @Test
     fun `http urls`() {
-        assertTrue(ActionPlan.isHttpUrl("https://example.org/hook"))
-        assertTrue(ActionPlan.isHttpUrl(" http://192.168.1.2:8123/api "))
-        assertFalse(ActionPlan.isHttpUrl("https://"))
-        assertFalse(ActionPlan.isHttpUrl(null))
-        assertFalse(ActionPlan.isHttpUrl("example.org"))
+        assertTrue(ActionPlan.isHttpsUrl("https://example.org/hook"))
+        assertTrue(ActionPlan.isHttpsUrl(" https://192.168.1.2:8123/api "))
+        assertFalse(ActionPlan.isHttpsUrl("http://192.168.1.2:8123/api"))
+        assertFalse(ActionPlan.isHttpsUrl("https://"))
+        assertFalse(ActionPlan.isHttpsUrl(null))
+        assertFalse(ActionPlan.isHttpsUrl("example.org"))
     }
 }

@@ -225,7 +225,7 @@ class NotePipeline(private val context: Context, private val store: NoteStore = 
         when (action.destination) {
             Destination.SHARE -> share(audio, note.container.mime, delivery)
             Destination.WEBHOOK -> {
-                val url = action.webhookUrl?.takeIf { ActionPlan.isHttpUrl(it) } ?: error(context.getString(R.string.te_error_no_webhook))
+                val url = action.webhookUrl?.takeIf { ActionPlan.isHttpsUrl(it) } ?: error(context.getString(R.string.te_error_no_webhook))
                 val meta = JSONObject()
                     .put("app", "third-ear")
                     .put("id", note.id)

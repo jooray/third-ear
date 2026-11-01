@@ -35,10 +35,22 @@ object WhiteNoise {
         }
     }
 
+    /**
+     * Turns White Noise on (Setup's switch, and the line editor's "Turn on"); the caller starts
+     * the runtime. From here on a missing MDK directory is the user's choice, not a restored backup.
+     */
+    fun turnOn(context: Context) {
+        val c = context.config
+        c.whiteNoiseEnabled = true
+        c.whiteNoiseRestored = false
+        File(context.noBackupFilesDir, "marmot").mkdirs()
+        WhiteNoiseService.start(context)
+    }
+
     fun restoredWithoutIdentity(enabled: Boolean, localState: Boolean) = enabled && !localState
 
     fun joinedGroups(): List<GroupInfo> =
-        MarmotHost.groups.value.filter { it.member && !it.pending }.map { GroupInfo(it.id, it.name) }
+        MarmotHost.groups.value.filter { it.joined }.map { GroupInfo(it.id, it.name) }
 
     suspend fun ensureRunning(context: Context) {
         if (MarmotHost.phase.value != MarmotHost.Phase.READY) MarmotHost.start(context)
