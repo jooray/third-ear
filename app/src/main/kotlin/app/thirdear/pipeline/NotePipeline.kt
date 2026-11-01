@@ -209,7 +209,7 @@ class NotePipeline(private val context: Context, private val store: NoteStore = 
             }
             note
         } catch (t: Throwable) {
-            val why = (t as? Transcriber.Failed)?.let { if (it.noSpeech) context.getString(R.string.te_error_no_speech) else it.message }
+            val why = (t as? Transcriber.Failed)?.let { if (it.noSpeech) context.getString(if (transcriber.osttInstalled()) R.string.te_error_no_speech else R.string.te_error_no_speech_no_ostt) else it.message }
                 ?: t.message ?: t.javaClass.simpleName
             note.copy(transcriptError = why).also { store.put(it) }
         }

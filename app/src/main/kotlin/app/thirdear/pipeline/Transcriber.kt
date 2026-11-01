@@ -60,6 +60,9 @@ class Transcriber(private val context: Context) {
             .sortedBy { c -> PREFERRED.indexOf(c.packageName).let { if (it < 0) PREFERRED.size else it } }
     }.getOrDefault(emptyList())
 
+    /** Whether Offline Speech to Text (or a build of it) is installed; another recognizer, such as the system one, will not transcribe a file. */
+    fun osttInstalled(): Boolean = providers().any { it.packageName in PREFERRED }
+
     /** [flattened]: the user's choice; null or gone picks the best one found. */
     fun resolve(flattened: String?): ComponentName? {
         val all = providers()

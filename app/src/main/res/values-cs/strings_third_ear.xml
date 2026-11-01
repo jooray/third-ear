@@ -115,6 +115,7 @@
     <string name="te_error_network">Bez sítě (na GrapheneOS zkontroluj u aplikace oprávnění Síť)</string>
     <string name="te_error_no_transcriber">žádná aplikace na přepis (nainstaluj Offline Speech to Text)</string>
     <string name="te_error_no_speech">nerozpoznala se žádná řeč</string>
+    <string name="te_error_no_speech_no_ostt">nerozpoznala se žádná řeč. Pro přepis nainstaluj Offline Speech to Text (zdarma, na Zapstore)</string>
     <string name="te_error_no_webhook">není zadaná URL webhooku</string>
     <string name="te_error_no_group">není vybraná skupina ve White Noise</string>
     <string name="te_error_background_start">Android spustí mikrofon, jen když je Third Ear otevřený. Otevři Third Ear a zkus to znovu.</string>

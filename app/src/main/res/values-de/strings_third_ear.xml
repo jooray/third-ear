@@ -113,6 +113,7 @@
     <string name="te_error_network">Kein Netz (unter GrapheneOS die Netzwerkberechtigung der App prüfen)</string>
     <string name="te_error_no_transcriber">keine Transkriptions-App (installiere Offline Speech to Text)</string>
     <string name="te_error_no_speech">keine Sprache erkannt</string>
+    <string name="te_error_no_speech_no_ostt">keine Sprache erkannt. Installiere Offline Speech to Text (kostenlos, im Zapstore) für Transkripte</string>
     <string name="te_error_no_webhook">keine Webhook-URL eingestellt</string>
     <string name="te_error_no_group">keine White-Noise-Gruppe gewählt</string>
     <string name="te_error_background_start">Android startet das Mikrofon nur, solange Third Ear geöffnet ist. Öffne Third Ear und versuche es erneut.</string>

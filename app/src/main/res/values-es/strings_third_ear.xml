@@ -113,6 +113,7 @@
     <string name="te_error_network">Sin red (en GrapheneOS revisa el permiso de Red de la app)</string>
     <string name="te_error_no_transcriber">ninguna app de transcripción (instala Offline Speech to Text)</string>
     <string name="te_error_no_speech">no se reconoció ninguna voz</string>
+    <string name="te_error_no_speech_no_ostt">no se reconoció ninguna voz. Instala Offline Speech to Text (gratis, en Zapstore) para obtener transcripciones</string>
     <string name="te_error_no_webhook">no hay URL de webhook</string>
     <string name="te_error_no_group">no hay ningún grupo de White Noise elegido</string>
     <string name="te_error_background_start">Android solo deja iniciar el micrófono mientras Third Ear está abierta. Abre Third Ear e inténtalo de nuevo.</string>

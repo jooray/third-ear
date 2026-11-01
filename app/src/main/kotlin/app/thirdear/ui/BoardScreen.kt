@@ -171,7 +171,7 @@ private fun androidx.compose.foundation.layout.ColumnScope.BoardBody(
             RecordingControls(host, l, lines, columns, onDiscard)
         } else {
             val transcriberMissing = remember(actions) {
-                actions.any { ActionPlan.of(it).transcribe } && !Transcriber(context).available(context.config.transcriber)
+                actions.any { ActionPlan.of(it).transcribe } && Transcriber(context).let { !it.osttInstalled() || !it.available(context.config.transcriber) }
             }
             if (transcriberMissing) {
                 Spacer(Modifier.height(12.dp))
@@ -663,7 +663,7 @@ private fun SourceSwitch(host: MainActivity, from: Source, recording: Boolean, o
 /** A failure in words: the pipeline's own messages pass through, anything technical gets a plain sentence. */
 fun Context.plainFailure(error: String?): String {
     val known = listOf(
-        R.string.te_error_network, R.string.te_error_no_transcriber, R.string.te_error_no_speech, R.string.te_error_no_webhook,
+        R.string.te_error_network, R.string.te_error_no_transcriber, R.string.te_error_no_speech, R.string.te_error_no_speech_no_ostt, R.string.te_error_no_webhook,
         R.string.te_error_no_group, R.string.te_error_folder_access, R.string.te_error_background_start,
     ).map { getString(it) }
     return if (error != null && (error in known || error.startsWith(getString(R.string.te_error_save, "").trim()))) {
