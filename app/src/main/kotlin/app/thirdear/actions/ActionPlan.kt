@@ -69,7 +69,9 @@ data class ActionPlan(
 
         fun isHttpUrl(url: String?): Boolean {
             val u = url?.trim()?.lowercase() ?: return false
-            return (u.startsWith("https://") || u.startsWith("http://")) && u.length > "https://".length
+            // https only: a webhook carries the recording and its transcript; plain http would
+        // put both on the wire in cleartext (a LAN exception can be a deliberate, confirmed setting later).
+        return u.startsWith("https://") && u.length > "https://".length
         }
     }
 }
