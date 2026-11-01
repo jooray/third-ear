@@ -82,7 +82,7 @@
     <string name="te_action_move_down">Move down</string>
     <string name="te_problem_no_name">Give the action a name</string>
     <string name="te_problem_no_group">Pick a White Noise group</string>
-    <string name="te_problem_no_webhook">Enter a webhook URL starting with https:// or http://</string>
+    <string name="te_problem_no_webhook">Enter a webhook URL starting with https://</string>
     <string name="te_problem_no_transcriber">No transcription app found: install Offline Speech to Text</string>
     <string name="te_white_noise_off">Turn on White Noise in the settings first</string>
     <string name="te_no_groups">No groups yet: invite Third Ear\'s npub to a group in White Noise and accept the invite</string>

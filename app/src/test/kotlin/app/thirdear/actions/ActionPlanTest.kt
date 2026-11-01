@@ -83,6 +83,9 @@ class ActionPlanTest {
         assertEquals(listOf(ActionPlan.Problem.NO_GROUP), noGroup.problems(transcriberAvailable = true))
         val badUrl = ActionPlan.of(RecordAction(name = "a", destination = Destination.WEBHOOK, webhookUrl = "ftp://x"))
         assertEquals(listOf(ActionPlan.Problem.NO_WEBHOOK_URL), badUrl.problems(true))
+        // cleartext http would ship the recording and the transcript in the clear
+        val httpUrl = ActionPlan.of(RecordAction(name = "a", destination = Destination.WEBHOOK, webhookUrl = "http://x"))
+        assertEquals(listOf(ActionPlan.Problem.NO_WEBHOOK_URL), httpUrl.problems(true))
         val noTranscriber = ActionPlan.of(RecordAction(name = " ", destination = Destination.COPY_TRANSCRIPT))
         assertEquals(listOf(ActionPlan.Problem.NO_NAME, ActionPlan.Problem.NO_TRANSCRIBER), noTranscriber.problems(false))
         assertTrue(plan(Destination.SAVE).problems(false).isEmpty())
