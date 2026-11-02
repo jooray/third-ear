@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Android Auto media screen (car/RecorderMediaService), shown while nothing records -->
+    <string name="te_car_media_idle">Zum Aufnehmen auf Aufnehmen oder eine Leitung tippen</string>
+</resources>

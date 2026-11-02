@@ -27,7 +27,7 @@ class MediaPauser : NotificationListenerService() {
         }
 
         /** Pauses every playing session; returns their packages for [resume]. */
-        fun pausePlaying(): List<String> = instance?.sessions().orEmpty()
+        fun pausePlaying(): List<String> = instance?.others().orEmpty()
             .filter { it.playbackState?.state == PlaybackState.STATE_PLAYING }
             .map { c ->
                 c.transportControls.pause()
@@ -36,7 +36,7 @@ class MediaPauser : NotificationListenerService() {
 
         /** Resumes those of [packages] that are still paused, if nothing else started meanwhile. */
         fun resume(packages: List<String>) {
-            val list = instance?.sessions().orEmpty()
+            val list = instance?.others().orEmpty()
             if (list.any { it.playbackState?.state == PlaybackState.STATE_PLAYING }) return
             list.filter { it.packageName in packages && it.playbackState?.state == PlaybackState.STATE_PAUSED }
                 .forEach { it.transportControls.play() }
@@ -50,6 +50,9 @@ class MediaPauser : NotificationListenerService() {
     override fun onListenerDisconnected() {
         instance = null
     }
+
+    /** Other apps' sessions: Third Ear's own (the Android Auto recording session) plays while it records. */
+    private fun others(): List<MediaController> = sessions().filter { it.packageName != packageName }
 
     private fun sessions(): List<MediaController> {
         val msm = getSystemService(MediaSessionManager::class.java) ?: return emptyList()
