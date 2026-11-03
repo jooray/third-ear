@@ -8,8 +8,8 @@ import app.thirdear.actions.RecordAction
  * Android Auto shows a sideloaded *media* app (Unknown sources) but never a sideloaded *template*
  * app (docs/ANDROID-AUTO-PLAY-CHECK.md), so [RecorderMediaService] presents recording as media:
  * a browse tab of lines (tap = record with it; while recording, tap = stop → that line), the
- * Now Playing screen as the recording screen (pause, Save, Discard, Stop → other lines), and the
- * car's steering wheel buttons on the session.
+ * Now Playing screen as the recording screen (pause, stop and save, discard), and the car's
+ * steering wheel buttons on the session. Android Auto opens on the line list while nothing records.
  */
 object CarMedia {
 
@@ -22,40 +22,31 @@ object CarMedia {
     /** Lines in the record tab; Android Auto cuts longer lists while driving anyway. */
     const val MAX_LINES = 8
 
-    /** "Stop → line" buttons on the Now Playing screen besides Save and Discard. */
-    const val MAX_STOP_BUTTONS = 2
     const val MAX_MESSAGES = 10
 
     const val CUSTOM_SAVE = "app.thirdear.car.SAVE"
     const val CUSTOM_DISCARD = "app.thirdear.car.DISCARD"
-    private const val CUSTOM_STOP = "app.thirdear.car.STOP:"
 
     fun recordId(actionId: String?) = REC + actionId.orEmpty()
     fun messageId(id: String) = MSG + id
-    fun stopCustom(actionId: String) = CUSTOM_STOP + actionId
 
     data class Item(val mediaId: String, val title: String, val subtitle: String, val actionIndex: Int?)
 
     /**
-     * The record tab. Idle: "Record" (the default line) and the lines. Recording: "Stop → line" for
-     * each line, the started one first, so the list does what the template car screen's stop rows do.
+     * The record tab. Idle: the lines (tap = record with it). Recording: "Stop → line" for each
+     * line, the started one first, so the list does what the template car screen's stop rows do.
+     * There is no "record now, choose at the stop" entry: Now Playing can only stop to the started
+     * line, so its choice would be hidden behind the back arrow.
      */
     fun recordItems(
         actions: List<RecordAction>,
         startedWithId: String?,
-        recordTitle: String,
-        recordSubtitle: String,
         describe: (RecordAction) -> String,
         stopLabel: (String) -> String,
-    ): List<Item> {
-        if (startedWithId == null) {
-            return listOf(Item(recordId(null), recordTitle, recordSubtitle, null)) +
-                actions.take(MAX_LINES - 1).mapIndexed { i, a -> Item(recordId(a.id), a.name, describe(a), i) }
-        }
-        return actions.withIndex().sortedByDescending { it.value.id == startedWithId }.take(MAX_LINES).map { (i, a) ->
-            Item(recordId(a.id), stopLabel(a.name), describe(a), i)
-        }
-    }
+    ): List<Item> = actions.withIndex()
+        .sortedByDescending { it.value.id == startedWithId }
+        .take(MAX_LINES)
+        .map { (i, a) -> Item(recordId(a.id), if (startedWithId == null) a.name else stopLabel(a.name), describe(a), i) }
 
     sealed interface Command {
         data class Start(val actionId: String?) : Command
@@ -86,18 +77,13 @@ object CarMedia {
 
     fun onPause(recording: Boolean, paused: Boolean): Command = if (recording && !paused) Command.TogglePause else Command.None
 
-    /** Stop and skip-to-next (the steering wheel's "next") save with the started line. */
+    /** Stop and the steering wheel's "next" save with the started line. */
     fun onStop(recording: Boolean): Command = if (recording) Command.Stop(null) else Command.None
 
     fun onCustom(action: String, recording: Boolean): Command = when {
         !recording -> Command.None
         action == CUSTOM_SAVE -> Command.Stop(null)
         action == CUSTOM_DISCARD -> Command.Discard
-        action.startsWith(CUSTOM_STOP) -> Command.Stop(action.removePrefix(CUSTOM_STOP))
         else -> Command.None
     }
-
-    /** The other lines offered as "Stop → line" buttons while recording. */
-    fun stopButtons(actions: List<RecordAction>, startedWithId: String): List<RecordAction> =
-        actions.filter { it.id != startedWithId }.take(MAX_STOP_BUTTONS)
 }

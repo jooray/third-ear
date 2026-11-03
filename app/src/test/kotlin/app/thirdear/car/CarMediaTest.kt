@@ -1,7 +1,6 @@
 package app.thirdear.car
 
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 import app.thirdear.actions.RecordAction
 import app.thirdear.car.CarMedia.Command
 import org.junit.Test
@@ -11,17 +10,16 @@ class CarMediaTest {
     private val actions = (1..10).map { RecordAction(id = "a$it", name = "Action $it") }
 
     private fun items(startedWith: String?) =
-        CarMedia.recordItems(actions, startedWith, "Record", "pick at stop", { "does ${it.name}" }) { "Stop → $it" }
+        CarMedia.recordItems(actions, startedWith, { "does ${it.name}" }) { "Stop → $it" }
 
     @Test
-    fun `idle tab offers Record first, then the lines, capped`() {
+    fun `idle tab lists the lines in order, capped, without a choose-later entry`() {
         val i = items(null)
         assertEquals(CarMedia.MAX_LINES, i.size)
-        assertEquals(CarMedia.recordId(null), i[0].mediaId)
-        assertNull(i[0].actionIndex)
-        assertEquals("Action 1", i[1].title)
-        assertEquals("does Action 1", i[1].subtitle)
-        assertEquals(0, i[1].actionIndex)
+        assertEquals(CarMedia.recordId("a1"), i[0].mediaId)
+        assertEquals("Action 1", i[0].title)
+        assertEquals("does Action 1", i[0].subtitle)
+        assertEquals(0, i[0].actionIndex)
     }
 
     @Test
@@ -59,13 +57,7 @@ class CarMediaTest {
         assertEquals(Command.None, CarMedia.onStop(recording = false))
         assertEquals(Command.Stop(null), CarMedia.onCustom(CarMedia.CUSTOM_SAVE, recording = true))
         assertEquals(Command.Discard, CarMedia.onCustom(CarMedia.CUSTOM_DISCARD, recording = true))
-        assertEquals(Command.Stop("a4"), CarMedia.onCustom(CarMedia.stopCustom("a4"), recording = true))
         assertEquals(Command.None, CarMedia.onCustom(CarMedia.CUSTOM_DISCARD, recording = false))
         assertEquals(Command.None, CarMedia.onCustom("other", recording = true))
-    }
-
-    @Test
-    fun `stop buttons skip the started line`() {
-        assertEquals(listOf("a1", "a3"), CarMedia.stopButtons(actions.take(4), "a2").map { it.id })
     }
 }

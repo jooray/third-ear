@@ -1,6 +1,7 @@
 package app.thirdear.car
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.media.MediaDescription
@@ -13,9 +14,11 @@ import android.os.Process
 import android.os.SystemClock
 import android.service.media.MediaBrowserService
 import android.util.Log
+import android.view.KeyEvent
 import androidx.annotation.DrawableRes
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat
+import androidx.core.content.IntentCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -144,13 +147,10 @@ class RecorderMediaService : MediaBrowserService() {
         val items = CarMedia.recordItems(
             actions,
             RecorderService.live.value?.action?.id,
-            getString(R.string.te_car_record),
-            getString(R.string.te_car_record_desc),
             { describe(it) },
         ) { getString(R.string.te_car_stop, it) }
         return items.map { item ->
-            val bitmap = item.actionIndex?.let { i -> icon(this, R.drawable.ic_car_line, lineColor(this, i), ICON_PX) }
-                ?: icon(this, R.drawable.ic_microphone_widget_icon, null, ICON_PX)
+            val bitmap = icon(this, R.drawable.ic_car_line, item.actionIndex?.let { i -> lineColor(this, i) }, ICON_PX)
             MediaItem(
                 MediaDescription.Builder().setMediaId(item.mediaId).setTitle(item.title).setSubtitle(item.subtitle).setIconBitmap(bitmap).build(),
                 MediaItem.FLAG_PLAYABLE,
@@ -183,15 +183,9 @@ class RecorderMediaService : MediaBrowserService() {
         }
         if (l == null) {
             shown = null
+            // nothing to show in Now Playing: no metadata and STATE_NONE make Android Auto open the line list
             session.setPlaybackState(idleState())
-            session.setMetadata(
-                MediaMetadata.Builder()
-                    .putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, getString(R.string.te_car_title))
-                    .putString(MediaMetadata.METADATA_KEY_TITLE, getString(R.string.te_car_title))
-                    .putString(MediaMetadata.METADATA_KEY_DISPLAY_SUBTITLE, getString(R.string.te_car_media_idle))
-                    .putBitmap(MediaMetadata.METADATA_KEY_ART, icon(this, R.drawable.ic_microphone_widget_icon, null, ART_PX))
-                    .build(),
-            )
+            session.setMetadata(null)
             session.isActive = false
             return
         }
@@ -232,23 +226,18 @@ class RecorderMediaService : MediaBrowserService() {
             )
             .setActions(
                 PlaybackState.ACTION_PLAY or PlaybackState.ACTION_PAUSE or PlaybackState.ACTION_PLAY_PAUSE or
-                    PlaybackState.ACTION_STOP or PlaybackState.ACTION_SKIP_TO_NEXT or PlaybackState.ACTION_PLAY_FROM_MEDIA_ID,
+                    PlaybackState.ACTION_STOP or PlaybackState.ACTION_PLAY_FROM_MEDIA_ID,
             )
+            // three buttons, three different icons: pause (Android Auto's), stop and save, discard.
+            // "Stop → another line" is the record tab's list (back arrow): icons cannot say which line.
             .addCustomAction(
                 PlaybackState.CustomAction.Builder(
-                    CarMedia.CUSTOM_SAVE, getString(R.string.te_car_stop, l.action.name), R.drawable.ic_check_vector_te,
+                    CarMedia.CUSTOM_SAVE, getString(R.string.te_car_stop, l.action.name), R.drawable.ic_car_stop,
                 ).build(),
             )
-        for (a in CarMedia.stopButtons(actions, l.action.id)) {
-            state.addCustomAction(
-                PlaybackState.CustomAction.Builder(
-                    CarMedia.stopCustom(a.id), getString(R.string.te_car_stop, a.name), R.drawable.ic_save_recording_vector,
-                ).build(),
+            .addCustomAction(
+                PlaybackState.CustomAction.Builder(CarMedia.CUSTOM_DISCARD, getString(R.string.te_car_discard), R.drawable.ic_cancel_recording_vector).build(),
             )
-        }
-        state.addCustomAction(
-            PlaybackState.CustomAction.Builder(CarMedia.CUSTOM_DISCARD, getString(R.string.te_car_discard), R.drawable.ic_cancel_recording_vector).build(),
-        )
         session.setPlaybackState(state.build())
     }
 
@@ -260,7 +249,7 @@ class RecorderMediaService : MediaBrowserService() {
         if (e != null) {
             b.setState(PlaybackState.STATE_ERROR, 0, 0f).setErrorMessage(e)
         } else {
-            b.setState(PlaybackState.STATE_STOPPED, 0, 0f)
+            b.setState(PlaybackState.STATE_NONE, 0, 0f)
         }
         return b.build()
     }
@@ -293,7 +282,16 @@ class RecorderMediaService : MediaBrowserService() {
         override fun onPlay() = run(CarMedia.onPlay(recording, paused))
         override fun onPause() = run(CarMedia.onPause(recording, paused))
         override fun onStop() = run(CarMedia.onStop(recording))
-        override fun onSkipToNext() = run(CarMedia.onStop(recording))
+
+        /** The steering wheel's "next" saves; not offered as an on-screen skip button (it would be a fourth, unclear icon). */
+        override fun onMediaButtonEvent(intent: Intent): Boolean {
+            val key = IntentCompat.getParcelableExtra(intent, Intent.EXTRA_KEY_EVENT, KeyEvent::class.java)
+            if (key?.keyCode == KeyEvent.KEYCODE_MEDIA_NEXT && recording) {
+                if (key.action == KeyEvent.ACTION_UP) run(CarMedia.onStop(recording))
+                return true
+            }
+            return super.onMediaButtonEvent(intent)
+        }
         override fun onPlayFromMediaId(mediaId: String?, extras: Bundle?) = run(CarMedia.onTap(mediaId, recording))
         override fun onCustomAction(action: String, extras: Bundle?) = run(CarMedia.onCustom(action, recording))
     }
