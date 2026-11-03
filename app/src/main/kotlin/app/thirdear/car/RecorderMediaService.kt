@@ -186,27 +186,7 @@ class RecorderMediaService : MediaBrowserService() {
             if (recording) error = null
         }
         if (l == null) {
-            shown = null
-            // STATE_NONE makes Android Auto open the line list next time. Without metadata a Now Playing
-            // screen that is still open spins on "Getting your selection…", so a stop leaves "Saving… · line".
-            session.setPlaybackState(idleState())
-            val to = savedTo
-            val title = when {
-                discarded -> getString(R.string.te_car_discarded)
-                to != null -> getString(R.string.te_step_saving)
-                else -> null
-            }
-            session.setMetadata(
-                title?.let {
-                    MediaMetadata.Builder()
-                        .putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, it)
-                        .putString(MediaMetadata.METADATA_KEY_TITLE, it)
-                        .putString(MediaMetadata.METADATA_KEY_DISPLAY_SUBTITLE, if (discarded) null else to)
-                        .putString(MediaMetadata.METADATA_KEY_ARTIST, if (discarded) null else to)
-                        .build()
-                },
-            )
-            session.isActive = false
+            publishIdle()
             return
         }
         val now = System.currentTimeMillis()
@@ -260,6 +240,30 @@ class RecorderMediaService : MediaBrowserService() {
                 PlaybackState.CustomAction.Builder(CarMedia.CUSTOM_DISCARD, getString(R.string.te_car_discard), R.drawable.ic_cancel_recording_vector).build(),
             )
         session.setPlaybackState(state.build())
+    }
+
+    private fun publishIdle() {
+        shown = null
+        // STATE_NONE makes Android Auto open the line list next time. Without metadata a Now Playing
+        // screen that is still open spins on "Getting your selection…", so a stop leaves "Saving… · line".
+        session.setPlaybackState(idleState())
+        val to = savedTo
+        val title = when {
+            discarded -> getString(R.string.te_car_discarded)
+            to != null -> getString(R.string.te_step_saving)
+            else -> null
+        }
+        session.setMetadata(
+            title?.let {
+                MediaMetadata.Builder()
+                    .putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, it)
+                    .putString(MediaMetadata.METADATA_KEY_TITLE, it)
+                    .putString(MediaMetadata.METADATA_KEY_DISPLAY_SUBTITLE, if (discarded) null else to)
+                    .putString(MediaMetadata.METADATA_KEY_ARTIST, if (discarded) null else to)
+                    .build()
+            },
+        )
+        session.isActive = false
     }
 
     private fun idleState(): PlaybackState {
