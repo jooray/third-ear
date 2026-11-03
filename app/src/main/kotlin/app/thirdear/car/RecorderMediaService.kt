@@ -69,6 +69,10 @@ class RecorderMediaService : MediaBrowserService() {
     private var tappedAt = 0L
     private var error: String? = null
 
+    /** The line the last recording went to, for the "Saving…" frame after a stop. */
+    private var savedTo: String? = null
+    private var discarded = false
+
     override fun onCreate() {
         super.onCreate()
         session = MediaSession(this, TAG).apply {
@@ -183,9 +187,25 @@ class RecorderMediaService : MediaBrowserService() {
         }
         if (l == null) {
             shown = null
-            // nothing to show in Now Playing: no metadata and STATE_NONE make Android Auto open the line list
+            // STATE_NONE makes Android Auto open the line list next time. Without metadata a Now Playing
+            // screen that is still open spins on "Getting your selection…", so a stop leaves "Saving… · line".
             session.setPlaybackState(idleState())
-            session.setMetadata(null)
+            val to = savedTo
+            val title = when {
+                discarded -> getString(R.string.te_car_discarded)
+                to != null -> getString(R.string.te_step_saving)
+                else -> null
+            }
+            session.setMetadata(
+                title?.let {
+                    MediaMetadata.Builder()
+                        .putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, it)
+                        .putString(MediaMetadata.METADATA_KEY_TITLE, it)
+                        .putString(MediaMetadata.METADATA_KEY_DISPLAY_SUBTITLE, if (discarded) null else to)
+                        .putString(MediaMetadata.METADATA_KEY_ARTIST, if (discarded) null else to)
+                        .build()
+                },
+            )
             session.isActive = false
             return
         }
@@ -197,6 +217,7 @@ class RecorderMediaService : MediaBrowserService() {
         val status = l.status
         val actions = recordActions()
         val index = actions.indexOfFirst { it.id == l.action.id }
+        if (savedTo == null || firstFrame) savedTo = l.action.name
         val title = getString(R.string.te_car_recording, l.action.name)
         val subtitle = inputLabel(status) + if (status.paused) " · " + getString(R.string.paused) else ""
         if (firstFrame) session.isActive = true
@@ -260,6 +281,8 @@ class RecorderMediaService : MediaBrowserService() {
             is CarMedia.Command.Start -> {
                 if (RecorderService.isRunning) return
                 error = null
+                savedTo = null
+                discarded = false
                 tappedAt = System.currentTimeMillis()
                 if (!RecorderService.start(this, c.actionId)) {
                     error = getString(R.string.te_car_open_phone)
@@ -267,8 +290,14 @@ class RecorderMediaService : MediaBrowserService() {
                 }
             }
 
-            is CarMedia.Command.Stop -> RecorderService.stop(this, c.actionId)
-            CarMedia.Command.Discard -> RecorderService.discard(this)
+            is CarMedia.Command.Stop -> {
+                recordActions().firstOrNull { it.id == c.actionId }?.let { savedTo = it.name }
+                RecorderService.stop(this, c.actionId)
+            }
+            CarMedia.Command.Discard -> {
+                discarded = true
+                RecorderService.discard(this)
+            }
             CarMedia.Command.TogglePause -> RecorderService.togglePause(this)
             is CarMedia.Command.PlayMessage -> WhiteNoiseService.playMessage(this, c.messageId)
             CarMedia.Command.None -> Unit

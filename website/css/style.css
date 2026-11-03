@@ -93,4 +93,5 @@ h2,h3{font-weight:700}
 .car-shots{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:28px;margin:28px 0 12px}
 .car-shots figure.car{margin:0;max-width:440px;justify-self:center;width:100%}
 .car-shots figure.car img{display:block;width:100%;height:auto;border-radius:14px;background:#0b0a08;padding:8px;border:1px solid var(--line);box-shadow:0 6px 24px rgba(0,0,0,.35)}
+.car-shots figure.car:nth-child(odd):last-child{grid-column:1/-1}
 .car-shots figcaption{margin-top:10px;font-size:.9rem;color:var(--mute);text-align:center}

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Android Auto Now Playing (car/RecorderMediaService) after Discard -->
+    <string name="te_car_discarded">Nahrávka zahozena</string>
+</resources>
