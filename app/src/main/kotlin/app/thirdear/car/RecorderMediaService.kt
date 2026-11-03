@@ -35,6 +35,9 @@ import app.thirdear.whitenoise.IncomingStore
 import app.thirdear.whitenoise.MessageNotifier
 import app.thirdear.whitenoise.WhiteNoiseService
 
+/** Browse icons, in pixels (Android Auto scales them). */
+private const val ICON_PX = 128
+
 /**
  * Android Auto as a media app: the route that works sideloaded (Unknown sources on), where the
  * template car screens ([ThirdEarCarAppService]) need a Play install. Android Auto draws
@@ -50,7 +53,6 @@ class RecorderMediaService : MediaBrowserService() {
     companion object {
         private const val TAG = "RecorderMediaService"
         private const val AUTO = "com.google.android.projection.gearhead"
-        private const val ICON_PX = 128
         private const val ART_PX = 320
         private const val SENDER_CHARS = 8
 
@@ -130,8 +132,8 @@ class RecorderMediaService : MediaBrowserService() {
         result.sendResult(
             when (parentId) {
                 CarMedia.ROOT -> mutableListOf(
-                    tab(CarMedia.TAB_RECORD, getString(R.string.te_car_record), R.drawable.ic_microphone_widget_icon),
-                    tab(CarMedia.TAB_MESSAGES, getString(R.string.te_car_messages) + unreadSuffix(this), R.drawable.ic_send_vector_te),
+                    tab(this, CarMedia.TAB_RECORD, getString(R.string.te_car_record), R.drawable.ic_microphone_widget_icon),
+                    tab(this, CarMedia.TAB_MESSAGES, getString(R.string.te_car_messages) + unreadSuffix(this), R.drawable.ic_send_vector_te),
                 )
 
                 CarMedia.TAB_RECORD -> recordItems()
@@ -140,11 +142,6 @@ class RecorderMediaService : MediaBrowserService() {
             },
         )
     }
-
-    private fun tab(id: String, title: String, @DrawableRes icon: Int): MediaItem = MediaItem(
-        MediaDescription.Builder().setMediaId(id).setTitle(title).setIconBitmap(icon(this, icon, null, ICON_PX)).build(),
-        MediaItem.FLAG_BROWSABLE,
-    )
 
     private fun recordItems(): MutableList<MediaItem> {
         val actions = recordActions()
@@ -350,3 +347,9 @@ private fun unreadSuffix(context: Context): String {
     val n = IncomingStore(context).load().count { !it.read && it.ignoredBy == null }
     return if (n > 0) " ($n)" else ""
 }
+
+/** A browse tab (Android Auto shows the root's browsable children as tabs). */
+private fun tab(context: Context, id: String, title: String, @DrawableRes icon: Int): MediaItem = MediaItem(
+    MediaDescription.Builder().setMediaId(id).setTitle(title).setIconBitmap(icon(context, icon, null, ICON_PX)).build(),
+    MediaItem.FLAG_BROWSABLE,
+)
