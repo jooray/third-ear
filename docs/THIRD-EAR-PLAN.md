@@ -24,7 +24,7 @@ the first unchecked item. Commits are local only (never pushed).
 | Sample rate | the encoder's rate is fixed per recording (user's setting); `AudioRecord` is opened at that rate for both sources and Android resamples Bluetooth input | a source switch cannot change the file's format |
 | Transcription | OSTT file API (`SpeechRecognizer` headless, `app.offlinespeechtotext.extra.AUDIO_URI`, our FileProvider `content:` Uri granted to the package), fallback: Android 13 caller audio (`EXTRA_AUDIO_SOURCE`, the file decoded and resampled to 16 kHz mono PCM16). Busy → retry 5, 15, 30, 60 s, then every 2 min (I Hear You's schedule). | |
 | White Noise | MarmotKit 0.14.0, fetched by `tools/marmotkit/fetch.sh` (sha256-pinned, git-ignored), Third Ear's own identity; arm64 only — on other ABIs the section says it is unavailable | |
-| Android Auto | Car App Library, category IOT (grid of actions; sideloaded apps need AA developer settings → Unknown sources), plus MessagingStyle notifications with Reply and Mark-as-read | optional, the app fully works without it |
+| Android Auto | Car App Library, category IOT (grid of actions, recording screen), plus MessagingStyle notifications with Reply and Mark-as-read. AA only gives its screen to apps it can verify: sideloaded it is messages-only, the grid needs a Play install or a rooted phone with a patched AA | optional, the app fully works without it |
 
 ## Architecture (new code)
 

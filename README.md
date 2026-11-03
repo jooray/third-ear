@@ -46,10 +46,13 @@ bin, **Lines** to edit them and **Setup**. The design system is in [DESIGN.md](D
 - **Replies, per group**: off / play voice messages / play voice and read text; automatically or
   on request ("Read aloud" in the notification or the message list); an ignore list (default 🎙️,
   the echo of your own transcript). Text is read with Android's text-to-speech.
-- **Android Auto** (optional): a grid of your actions on the car screen, a recording screen with
-  "Stop → action" rows and the microphone in use, the recent messages; incoming White Noise
-  messages as car notifications with Reply and Mark as read, so Android Auto announces them and
-  offers to read them. In the car nothing is played automatically.
+- **Android Auto** (optional): a media app in the car. The Record tab lists your lines (tap =
+  record with it; while recording it turns into "Stop → line"), Now Playing is the recording
+  screen (pause, ■ stop and save, ✕ discard), the steering wheel's play/pause and next pause and
+  save while a recording runs, and a Messages tab plays recent White Noise messages. Incoming
+  messages also arrive as car notifications with Reply and Mark as read. In the car nothing is
+  played automatically, and "play" never starts a recording. A car-app (template) grid is still in
+  the app for installs Android Auto lets it run (Google Play, root, the Desktop Head Unit).
 
 ## Requirements
 
@@ -60,16 +63,24 @@ bin, **Lines** to edit them and **Setup**. The design system is in [DESIGN.md](D
 
 ## Android Auto setup
 
-Third Ear is not from the Play Store, so Android Auto ignores it until you allow unknown sources:
+1. Open Third Ear on the phone once after installing it (folder, microphone).
+2. Android Auto settings on the phone → tap **Version** ten times → allow developer mode →
+   ⋮ → **Developer settings** → check **Unknown sources**.
+3. Connect to the car. Android Auto caches the app list per connection, so force-stop Android Auto
+   and connect again if Third Ear does not appear. **Customize launcher** moves it forward.
 
-1. Android Auto settings → tap **Version** ten times → allow **Developer settings**.
-2. ⋮ → Developer settings → **Unknown sources** → on.
-3. Android Auto settings → **Customize launcher** → make sure Third Ear is shown.
-4. In Third Ear: Setup → **Use a Bluetooth microphone** on, so recordings use the car's
-   microphone (hands-free over Bluetooth). Without it the phone's microphone records.
+Why a media app: since Android Auto 17.x, a car app built with the Car App Library (a "template"
+app, Third Ear's grid) runs only when Google Play installed it. Sideloaded ones are rejected with
+`Package DENIED; failed all other checks`, OsmAnd and Home Assistant included, and Unknown sources
+does not cover them. It does cover media apps, so Third Ear presents recording as media: lines are
+the browse list, the player is the recorder. Details: [docs/ANDROID-AUTO-PLAY-CHECK.md](docs/ANDROID-AUTO-PLAY-CHECK.md).
+Where Android Auto does allow the template app (Play install, rooted phone with a patched Android
+Auto, Google's Desktop Head Unit) it shows the grid instead; there is one Third Ear icon either way.
 
-Android 14+ starts a microphone only for an app the user has in front; the car screen counts while
-it is shown. After a reboot, open Third Ear on the phone once.
+In the car Third Ear records with the phone's microphone; the line under the Now Playing title says
+which microphone is in use. Starting a recording from the car list works from the background:
+Android lets a media app start its microphone service in answer to a tap that reaches its media
+session.
 
 ## Building
 

@@ -29,7 +29,7 @@ A voice recorder that also does something with what you said: records reliably (
 ## Operating Context
 
 - Phone in a pocket or on a mount; headset, hearing aids or car hands-free; screen often off or locked during transcription and replies.
-- Android Auto (optional, sideloaded: needs AA developer settings → Unknown sources): action grid, recording screen with "Stop → action" rows, recent messages, messaging notifications with Reply / Mark as read. Nothing plays automatically in the car.
+- Android Auto (optional; installed from a store it is messages-only, the grid and recording screen need a Play install or root): action grid, recording screen with "Stop → action" rows, recent messages, messaging notifications with Reply / Mark as read. Nothing plays automatically in the car.
 - Companion apps: Offline Speech to Text (Juraj's fork `app.offlinespeechtotext` with the file API, or stock OSTT on Android 13+), White Noise groups (MarmotKit), I Hear You.
 - Distribution: Zapstore (not published yet: "Coming soon to Zapstore"), source on GitHub.
 

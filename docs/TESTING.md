@@ -73,7 +73,9 @@ are in daily use.
 
 ## In the car (Android Auto)
 
-Enable unknown sources first (see README). Then, connected to the car:
+The grid and recording screen only appear for a Play-installed build (an internal test track is
+enough) or on a rooted phone with a patched Android Auto; a plain sideload gets the messaging
+notifications only. See README for why. With that in place, connected to the car:
 
 1. The launcher shows Third Ear; it opens a grid of your actions.
 2. Tap an action: the recording screen shows the microphone (with *Use a Bluetooth microphone* on:

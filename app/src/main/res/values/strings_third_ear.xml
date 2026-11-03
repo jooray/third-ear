@@ -143,7 +143,7 @@
     <string name="te_setting_white_noise">White Noise</string>
     <string name="te_setting_white_noise_desc">Send recordings to White Noise groups and hear replies</string>
     <string name="te_setting_android_auto">Android Auto</string>
-    <string name="te_setting_android_auto_desc">Third Ear shows its actions on the car screen and incoming White Noise messages as car notifications. Sideloaded apps need Android Auto\'s developer settings → Unknown sources.</string>
+    <string name="te_setting_android_auto_desc">Third Ear shows incoming White Noise messages as car notifications, with Reply. The action grid and the recording screen need a Play install or a rooted phone.</string>
     <string name="te_transcriber_file_api">%s (file API)</string>
     <string name="te_transcriber_caller_audio">%s (audio stream)</string>
 

@@ -145,7 +145,7 @@
     <string name="te_setting_white_noise">White Noise</string>
     <string name="te_setting_white_noise_desc">Posielať nahrávky do skupín vo White Noise a počúvať odpovede</string>
     <string name="te_setting_android_auto">Android Auto</string>
-    <string name="te_setting_android_auto_desc">Third Ear ukazuje svoje akcie na obrazovke auta a prichádzajúce správy z White Noise ako upozornenia v aute. Aplikácie nainštalované mimo obchodu potrebujú v Android Auto nastaveniach pre vývojárov voľbu Neznáme zdroje.</string>
+    <string name="te_setting_android_auto_desc">Third Ear zobrazuje prichádzajúce správy z White Noise ako upozornenia v aute, s odpoveďou. Mriežka akcií a obrazovka nahrávania potrebujú inštaláciu z Google Play alebo rootnutý telefón.</string>
     <string name="te_transcriber_file_api">%s (súborové rozhranie)</string>
     <string name="te_transcriber_caller_audio">%s (zvukový prúd)</string>
 
