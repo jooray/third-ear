@@ -759,14 +759,20 @@ private fun LineEditor(
             groups.isEmpty() -> pickGroup = false
             else -> ChoiceDialog(
                 title = stringResource(R.string.te_action_group),
-                options = groups.map { it to it.name },
+                options = groups.map<_, Pair<Any, String>> { it to it.name } +
+                    (CreateGroupChoice to stringResource(R.string.te_wn_create_group)),
                 selected = groups.firstOrNull { it.id == a.groupId },
-                onPick = { g -> a = a.copy(groupId = g.id, groupName = g.name) },
+                onPick = { g ->
+                    if (g is WhiteNoise.GroupInfo) a = a.copy(groupId = g.id, groupName = g.name) else creatingGroup = true
+                },
                 onDismiss = { pickGroup = false },
             )
         }
     }
 }
+
+/** Sentinel row in the group picker that opens the create-group dialog. */
+private object CreateGroupChoice
 
 private val CORD_NAMES = listOf(
     R.string.te_cord_red, R.string.te_cord_green, R.string.te_cord_blue, R.string.te_cord_yellow,
