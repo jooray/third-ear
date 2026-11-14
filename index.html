@@ -2,167 +2,34 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<title>Third Ear has moved</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Third Ear: the voice recorder for the space age</title>
-<meta name="description" content="The most modern voice recorder for Android. Free and open source. Records from the phone, Bluetooth headsets, LE Audio hearing aids and the car, transcribes on the device, works with White Noise and Android Auto.">
-<meta name="theme-color" content="#16130f">
-<meta property="og:title" content="Third Ear: the voice recorder for the space age">
-<meta property="og:description" content="The most modern voice recorder for Android. Free and open source. Records from the phone, Bluetooth headsets, LE Audio hearing aids and the car, transcribes on the device, works with White Noise and Android Auto.">
-<meta property="og:type" content="website">
-<meta property="og:image" content="img/recorder.png">
-<link rel="alternate" hreflang="en" href="./">
-<link rel="alternate" hreflang="sk" href="sk/">
-<link rel="alternate" hreflang="cs" href="cs/">
-<link rel="alternate" hreflang="de" href="de/">
-<link rel="alternate" hreflang="es" href="es/">
-<link rel="alternate" hreflang="x-default" href="./">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="18 18 72 72"%3E %3Crect x="18" y="18" width="72" height="72" rx="16" fill="#16130F"/%3E %3Cpath fill="#2A251F" stroke="#4A4337" stroke-width="1.5" d="M28,27 h52 a4,4 0 0 1 4,4 v50 h-60 v-50 a4,4 0 0 1 4,-4 z"/%3E %3Crect x="30" y="33" width="20" height="11" rx="1.5" fill="#C8321E"/%3E %3Ccircle cx="74" cy="38.5" r="9" fill="#F7F4EA" fill-opacity="0.2"/%3E %3Ccircle cx="74" cy="38.5" r="6.5" fill="#4A4337"/%3E %3Ccircle cx="74" cy="38.5" r="5" fill="#F7F4EA"/%3E %3Crect x="31" y="51" width="31.5" height="3" rx="1.5" fill="#EDE8DA"/%3E %3Crect x="24" y="67" width="60" height="14" fill="#E6E0CE"/%3E %3Cpath fill="#B4AD9B" d="M43,67 h1 v14 h-1 z M63,67 h1 v14 h-1 z"/%3E %3Cpath fill="#1E1A14" d="M28,72.5 h11 v3 h-11 z M48,72.5 h11 v3 h-11 z M68,72.5 h12 v3 h-12 z"/%3E %3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;700&family=Saira+Condensed:wght@600;700&display=swap">
-<link rel="stylesheet" href="css/style.css">
-<script src="vendor/nostr-live.js?v=1.0.1" defer></script>
+<meta name="color-scheme" content="light dark">
+<link rel="canonical" href="https://cypherpunk.today/third-ear/">
+<meta http-equiv="refresh" content="3; url=https://cypherpunk.today/third-ear/">
+<style>
+  html { color-scheme: light dark; }
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 16px; box-sizing: border-box;
+         font: 1.0625rem/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: #f6f5f2; color: #1d1d1b; }
+  main { max-width: 28rem; text-align: center; }
+  h1 { font-size: 1.5rem; margin: 0 0 .5rem; }
+  p { margin: 0 0 .75rem; }
+  a { color: #0b5cad; word-break: break-all; }
+  @media (prefers-color-scheme: dark) { body { background: #17181a; color: #ecebe8; } a { color: #8ab8f0; } }
+</style>
+<script>
+  // Keep language folder, deep path, query and hash.
+  (function () {
+    var rest = location.pathname.replace(/^\/third-ear(\/|$)/, "");
+    location.replace("https://cypherpunk.today/third-ear/" + rest + location.search + location.hash);
+  })();
+</script>
 </head>
 <body>
-<a class="skip" href="#main">Skip to content</a>
-<header class="top">
- <div class="wrap bar">
-  <a class="brand" href="./"><svg xmlns="http://www.w3.org/2000/svg" viewBox="18 18 72 72" width="28" height="28" aria-hidden="true"> <rect x="18" y="18" width="72" height="72" rx="16" fill="#16130F"/> <path fill="#2A251F" stroke="#4A4337" stroke-width="1.5" d="M28,27 h52 a4,4 0 0 1 4,4 v50 h-60 v-50 a4,4 0 0 1 4,-4 z"/> <rect x="30" y="33" width="20" height="11" rx="1.5" fill="#C8321E"/> <circle cx="74" cy="38.5" r="9" fill="#F7F4EA" fill-opacity="0.2"/> <circle cx="74" cy="38.5" r="6.5" fill="#4A4337"/> <circle cx="74" cy="38.5" r="5" fill="#F7F4EA"/> <rect x="31" y="51" width="31.5" height="3" rx="1.5" fill="#EDE8DA"/> <rect x="24" y="67" width="60" height="14" fill="#E6E0CE"/> <path fill="#B4AD9B" d="M43,67 h1 v14 h-1 z M63,67 h1 v14 h-1 z"/> <path fill="#1E1A14" d="M28,72.5 h11 v3 h-11 z M48,72.5 h11 v3 h-11 z M68,72.5 h12 v3 h-12 z"/> </svg>Third Ear</a>
-  <nav class="links" aria-label="Sections"><a href="#actions">Actions</a><a href="#agents">Agents</a><a href="#bluetooth">Bluetooth</a><a href="#ostt">Transcription</a><a href="#whitenoise">White Noise</a><a href="#car">Android Auto</a><a href="#news">News</a><a href="#get">Get it</a></nav>
-  <nav class="lang" aria-label="Language"><a href="./" hreflang="en" lang="en" aria-current="page">EN</a><a href="sk/" hreflang="sk" lang="sk">SK</a><a href="cs/" hreflang="cs" lang="cs">CS</a><a href="de/" hreflang="de" lang="de">DE</a><a href="es/" hreflang="es" lang="es">ES</a></nav>
- </div>
-</header>
-<main id="main">
-<section class="hero wrap">
- <div class="hero-text">
-  <h1>The voice recorder for the space age</h1>
-  <p class="lead">The most modern voice recorder for Android, and a third ear for everything you would otherwise forget to write down. It records from your phone, a Bluetooth headset, LE Audio hearing aids or your car. The transcript is made on the phone, and the result (transcript or audio) goes wherever the button you tapped says: phone storage, the clipboard, a White Noise (Marmot) group or an HTTPS request.</p>
-  <p class="lead">And it is the best way to talk to your AI agents, <a href="https://github.com/NousResearch/hermes-agent">hermes-agent</a> included. Tap, speak, and the agent gets your words; its answer is read back into your ears.</p>
-  <ul class="badges"><li>Free</li><li>Open source (GPLv3)</li><li>No account, no analytics</li><li>Android 12+</li></ul>
-  <p class="cta"><a class="btn primary" href="#get">Get Third Ear</a> <a class="btn" href="https://github.com/jooray/third-ear">Source code</a></p>
- </div>
- <div class="hero-shot"><img class="shot hero-img" src="img/recorder.webp" width="720" height="1616" alt="Third Ear Board: six lines (Ask Hermes, Family, Transcript to clipboard, Meeting notes, Log to n8n, Save), each with a coloured code, a lamp and a printed strip saying what it does" loading="lazy" decoding="async"></div>
-</section>
-
-<section id="actions" class="wrap stack">
- <div class="copy">
-  <h2>A button for every destination, like a small mission control</h2>
-  <p>Most recorders have one record button and a lot of hope. Third Ear has the buttons you define: a name and what happens afterwards.</p>
-  <ul class="list"><li>Save the recording only</li><li>Copy the transcript to the clipboard</li><li>Share the file or the text</li><li>Send audio, transcript or both to a White Noise group</li><li>Post to a webhook: n8n, Home Assistant, your own server</li></ul>
-  <p>Tap one and recording starts. While you record, every button turns into "Stop → name" and says what it will do, so you can still pick a different destination at the moment you stop. Afterwards a notification shows each step (saving, transcribing, waiting for the transcription app, sending) and can speak it too, for example "Saved, transcribing."</p>
-  <p>Every line on the Board has its own cord colour, a short code and a lamp, so you read the state of everything at a glance:</p>
-  <ul class="lamps"><li><i class="busy"></i>amber: transcribing or sending</li><li><i class="reply"></i>white: a reply is waiting from that line&#x27;s group</li><li><i class="fault"></i>red: not delivered; the recording is saved and Retry is one tap away</li></ul>
- </div>
- <div class="shots three">
-  <figure><img class="shot" src="img/recording.webp" width="720" height="1616" alt="Recording screen: a large timer, and the line the recording started on as one big &quot;Stop →&quot; key, with Pause below and the other lines folded away" loading="lazy" decoding="async"><figcaption>While recording, the line you started on is one big Stop key; the other lines fold away below it.</figcaption></figure>
-  <figure><img class="shot" src="img/notification.webp" width="720" height="1616" alt="Recording notification in the line&#x27;s colour, with Pause and &quot;Stop → Meeting notes&quot;" loading="lazy" decoding="async"></figure>
-  <figure><img class="shot" src="img/action-editor.webp" width="720" height="1616" alt="Editing a line: the key as it will look, name, line code, cord colour and destination" loading="lazy" decoding="async"></figure>
- </div>
-</section>
-
-<section id="agents" class="wrap">
- <div class="card">
-  <h2>The best way to talk to your agents</h2>
-  <p>Typing to an agent on a phone is slow, and the voice modes of apps want you to look at the screen. Third Ear turns any agent into someone you talk to while walking, driving or cooking: one tap (or a Quick Settings tile, the widget, the car screen) records, the phone transcribes, and the words go to the agent.</p>
-  <ul class="list"><li>Through White Noise: put Third Ear and the agent in one encrypted group. <a href="https://github.com/NousResearch/hermes-agent">hermes-agent</a> joins White Noise groups through the MDK connector. The answer comes back and is read aloud or played, in your headset or hearing aids.</li><li>Through HTTPS: post the transcript or the audio to the agent's webhook, to n8n or to your own server.</li><li>Every agent, or every kind of request, gets its own button: “Ask Hermes”, “Add to my notes”, “Log to n8n”.</li></ul>
-  <p>The agent's echo of your transcript is skipped by the 🎙️ ignore entry, so you hear only the answer.</p>
-  <p class="note">Agents behind the MDK connector must allow Third Ear's npub (<code>--allow-welcomer</code> or <code>--allow-user</code>).</p>
- </div>
-</section>
-
-<section id="bluetooth" class="band">
- <div class="wrap split rev">
-  <div class="copy">
-   <h2>Bluetooth microphones that actually pick up</h2>
-   <p>Android hands a Bluetooth microphone only to apps that behave like a phone call, so Third Ear behaves like one. It does the routing for you, and you can record from headsets, LE Audio hearing aids and the hands-free microphone in your car.</p>
-   <ul class="list"><li>It waits for LE Audio to start ("Waiting for the Bluetooth microphone…", typically 1.7 to 3.5 seconds).</li><li>When the microphone really delivers sound, a spoken "go ahead" tells you to start talking.</li><li>The source button on the recording screen shows which microphone is actually recording.</li><li>If the Bluetooth microphone does not come up or disconnects, Third Ear falls back to the phone microphone once, with an audible cue.</li><li>You can switch microphones in the middle of a recording. It continues in the same file.</li></ul>
-   <p class="note">Verified on a Pixel with LE Audio hearing aids.</p>
-  </div>
-  <div class="art"><img src="img/hero-art.webp" width="1024" height="1024" alt="Illustration: a hearing aid, a car and a phone connected by switchboard cords in red, green, blue and yellow, with a lit white lamp and an amber one" loading="lazy" decoding="async"></div>
- </div>
-</section>
-
-<section id="ostt" class="wrap">
- <div class="card ostt">
-  <h2>Works best with Offline Speech to Text</h2>
-  <p>Third Ear has no speech engine of its own. It hands the finished file to Offline Speech to Text (OSTT), a free app that transcribes on the device, offline. Think of OSTT as the brain behind the ears. This runs in the background, and a locked screen is fine.</p>
-  <ul class="list"><li>If OSTT is busy (say its keyboard is dictating), Third Ear waits and retries for about 10 minutes.</li><li>Transcripts are saved as .txt files next to the recording, and you can copy them.</li></ul>
-  <p><a class="btn primary" href="https://zapstore.dev/apps/app.offlinespeechtotext">Get Offline Speech to Text on Zapstore</a></p>
-  <h3 class="sub">Meeting notes and dictation</h3>
-  <p>Make a "Meeting notes" action: record, get the transcript. Or use "Transcript to clipboard" to dictate into any app: record, tap, paste. The transcripts are plain text files next to the audio, so you can search them.</p>
- </div>
-</section>
-
-<section id="whitenoise" class="wrap split">
- <div class="copy">
-  <h2>Voice notes in White Noise, and answers back</h2>
-  <p>White Noise is an end-to-end encrypted messenger built on nostr (Marmot/MLS). Third Ear has its own identity there, shown as an npub with a QR code. Invite it to a group, accept, and an action sends your voice note with the transcript as caption, or just the text.</p>
-  <p>Replies come back. For each group you choose: off, play voice messages, or play voice and read text aloud with text-to-speech. That happens automatically or on request with "Read aloud" in the notification. An ignore list (default 🎙️) skips messages you do not want read. The Messages tab lists your groups like a chat app, with Play, Read aloud and Mark all as read. You can back up your key by exporting and importing the nsec.</p>
- </div>
- <div class="shots two">
-  <figure><img class="shot" src="img/conversation.webp" width="720" height="1616" alt="Messages, the Hermes group: a voice message with its waveform at 1×, the question asked from Third Ear, the unread answer with Read aloud, and an echoed transcript ignored by the 🎙️ entry" loading="lazy" decoding="async"></figure>
-  <figure><img class="shot" src="img/board-busy.webp" width="720" height="1616" alt="Board right after a stop: Ask Hermes is transcribing (amber lamp), Family was not delivered (red lamp)" loading="lazy" decoding="async"><figcaption>Right after the stop: the amber lamp follows the recording through transcription and sending.</figcaption></figure>
- </div>
-</section>
-
-<section id="car" class="band">
- <div class="wrap narrow">
-  <h2>In the car, with Android Auto</h2>
-  <p>Third Ear shows up in Android Auto as a media app. Your lines are the list, and Now Playing is the recording screen. Tap a line and it records; tap ■ and it goes where that line sends it.</p>
-  <div class="car-shots"><figure class="car"><img src="img/car-lines.webp" width="850" height="480" alt="Android Auto: Third Ear's Record tab lists the lines Ask Hermes, Family and Transcript to clipboard, each with its colour and what it does; a Messages (1) tab next to it" loading="lazy" decoding="async"><figcaption>Tap a line to record with it</figcaption></figure><figure class="car"><img src="img/car-recording-media.webp" width="850" height="480" alt="Android Auto Now Playing while recording: Recording · Family, Phone microphone, 0:04, and three buttons: pause, a square for stop and save, and a cross for discard" loading="lazy" decoding="async"><figcaption>Recording: pause, ■ stop and save, ✕ discard</figcaption></figure><figure class="car"><img src="img/car-stop-lines.webp" width="850" height="480" alt="While recording, the Record tab turns into Stop → Ask Hermes, Stop → Family and Stop → Transcript to clipboard" loading="lazy" decoding="async"><figcaption>Back arrow while recording: stop on another line</figcaption></figure></div>
-  <ul class="list"><li><b>Record:</b> tap a line. Now Playing opens with three buttons: pause, <b>■</b> stop and save with that line, <b>✕</b> discard.</li><li><b>Changed your mind about where it goes?</b> Tap the back arrow while recording. The list now reads "Stop → line"; tap the one you want.</li><li><b>Steering wheel:</b> while a recording runs, play/pause pauses it and "next" saves it. Afterwards the buttons go back to your music app.</li><li><b>Messages</b> tab: your recent White Noise messages, tap one to play it. New messages also arrive as car notifications with Reply and Mark as read.</li><li>"Play" never starts a recording: not when the car connects and Android Auto resumes the last media app, and not from your headphones. Only a tap on a line does.</li><li>It records with the <b>phone's microphone</b>; the line under the title says which microphone is in use. Keep the phone where it can hear you.</li></ul>
-  <h3 id="car-setup">Set it up once</h3>
-  <ol class="steps"><li>Open Third Ear on the phone once after installing it, so it has its folder and Android lets it use the microphone.</li><li>Open Android Auto's settings on the phone (Settings → Connected devices → Connection preferences → Android Auto). Scroll down and tap <b>Version</b> ten times, then allow developer mode.</li><li>In the ⋮ menu, open <b>Developer settings</b> and check <b>Unknown sources</b>.</li><li>Connect to the car. Third Ear is in the app launcher. If it isn't, force-stop Android Auto and connect again: it keeps its app list per connection. <b>Customize launcher</b> moves it to the front.</li></ol>
-  <h3>Why a media app?</h3>
-  <p>Android Auto has two kinds of apps that could do this. <b>Car apps</b>, built with Google's Car App Library, draw their own grids and screens. <b>Media apps</b> hand Android Auto a list and a player, and Android Auto draws them. Since Android Auto 17.x, a car app runs only if Google Play installed it: from Zapstore, F-Droid or a downloaded APK it is turned away with <code>Package DENIED; failed all other checks</code>, OsmAnd and Home Assistant included, and the Unknown sources switch does not cover car apps. It does cover media apps. So Third Ear presents recording as media: your lines are the "tracks" and the player is the recorder. The details and the code are in <a href="https://github.com/jooray/third-ear/blob/main/docs/ANDROID-AUTO-PLAY-CHECK.md">Android Auto's Play-only check</a>.</p>
-  <p class="note">The car-app version, a grid of your lines with a "Stop → line" screen, is still in the app. Where Android Auto allows it (an install from Google Play, a rooted phone with a patched Android Auto, Google's Desktop Head Unit), Android Auto shows the grid instead of the list. Either way there is one Third Ear icon.</p>
- </div>
-</section>
-
-<section id="reliability" class="wrap grid2">
- <div class="card">
-  <h2>Built for long recordings, even with the screen off</h2>
-  <ul class="list"><li>Keeps recording with the screen off and the phone locked until you stop it.</li><li>Crash-safe: if the app is killed, what was recorded is recovered and saved on the next launch. At most the last second is lost.</li><li>A silence watchdog warns you when the microphone delivers digital silence, for example because the mic switch is off or another app holds it.</li><li>Formats: AAC (.m4a), Opus (.ogg) and MP3.</li></ul>
- </div>
- <div class="card">
-  <h3 class="sub">Everywhere you are</h3>
-  <p>Three Quick Settings tiles, each bound to one of your actions, a home-screen widget, and app shortcuts: long-press the icon, or bind any line to a button or an automation (Key Mapper, Tasker). The Third Ear screens are in English, Slovak, Czech, German and Spanish.</p>
-  <h2 class="h2b">Free, open source, private</h2>
-  <p>Third Ear is free software under the GPLv3. There is no account and no analytics. Transcription happens on your phone, not on some server in orbit.</p>
-  <p>It is a fork of <a href="https://github.com/FossifyOrg/Voice-Recorder">Fossify Voice Recorder</a>, made by Juraj Bednár.</p>
- </div>
-</section>
-
-<section id="geek" class="wrap">
- <div class="card">
-  <h2>For the geeks: recording from Bluetooth is surprisingly hard</h2>
-  <p>On Android, a Bluetooth microphone is a phone-call microphone. An app that simply picks it as the input records from the phone's own microphone instead, without any error. Most voice recorders get this wrong.</p>
-  <p>Even done right, the headset's microphone takes 2.5 to 3 seconds to come up after recording starts, and some LE Audio hearing aids deliver nothing but digital silence unless something plays into them at the same time. Third Ear routes the call microphone, waits for the first real sound, tells you when to speak, and falls back to the phone microphone with an audible cue.</p>
-  <p>We wrote down everything we learned, with code, so other apps can get it right too: <a href="https://github.com/jooray/android-bluetooth-microphone">Recording from a Bluetooth microphone on Android</a>. It also works as a skill for coding agents, and it covers transcription on the phone with Offline Speech to Text.</p>
- </div>
-</section>
-
-<section id="news" class="band">
- <div class="wrap">
-  <h2>Latest from the project</h2>
-  <p class="lead">Release notes and tips, posted on Nostr as they happen.</p>
-  <div class="news" data-nostr-live data-nprofile="nprofile1qqsqdaacrlv5lludl9wsnjdkzfl2vlmh3zw2gek38kce60dhjp83htgpr3mhxue69uhkummnw3ezucmewp5x2unsw4hxktn5dajxz7gpzemhxue69uhhyetvv9ujuurjd9kkzmpwdejhgqg5waehxw309aex2mrp0yhxgctdw4eju6t0trqquu" data-relays="wss://nostr.cypherpunk.today,wss://relay.primal.net" data-layout="cards" data-limit="3" data-lang="en"></div>
- </div>
-</section>
-
-<section id="get" class="wrap get">
- <h2>Get Third Ear</h2>
- <p>Ready for launch? Get Third Ear on Zapstore, or download the APK from the GitHub release. It needs Android 12 or newer.</p>
- <p class="cta"><a class="btn primary" href="https://zapstore.dev/apps/app.thirdear">Get it on Zapstore</a>
- <a class="btn" href="https://github.com/jooray/third-ear/releases/latest">Download the APK</a>
- <a class="btn" href="https://github.com/jooray/third-ear">Source on GitHub</a></p>
- <p class="note"><a href="https://zapstore.dev/apps/app.offlinespeechtotext">Install Offline Speech to Text first, it does the transcribing.</a></p>
-</section>
+<main>
+  <h1>Third Ear has moved</h1>
+  <p>The website now lives at <a href="https://cypherpunk.today/third-ear/">cypherpunk.today/third-ear</a>. You are being redirected.</p>
+  <p>If nothing happens, follow the link.</p>
 </main>
-<footer class="foot">
- <div class="wrap">
-  <p>Third Ear is open source under the GPLv3. Fossify Voice Recorder, Juraj Bednár.</p>
- </div>
-</footer>
 </body>
 </html>
