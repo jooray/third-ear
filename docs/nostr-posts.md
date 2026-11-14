@@ -15,7 +15,7 @@ Most recorders have one record button and a lot of hope. Third Ear has the butto
 
 Free, open source (GPLv3), no account, no analytics. Android 12+.
 
-Web: https://jooray.github.io/third-ear/
+Web: https://cypherpunk.today/third-ear/
 Zapstore: https://zapstore.dev/apps/app.thirdear
 
 #android #foss #nostr #whitenoise
@@ -34,7 +34,7 @@ With Third Ear you tap a button (or a Quick Settings tile, the widget, the car s
 
 Walking, driving, cooking. No screen needed.
 
-Web: https://jooray.github.io/third-ear/
+Web: https://cypherpunk.today/third-ear/
 Zapstore: https://zapstore.dev/apps/app.thirdear
 
 #ai #agents #whitenoise #marmot
@@ -55,7 +55,7 @@ Voice messages get a real player: length, a waveform you can tap or drag to jump
 
 Also: the recordings folder is simply the folder you pick.
 
-Web: https://jooray.github.io/third-ear/
+Web: https://cypherpunk.today/third-ear/
 Zapstore: https://zapstore.dev/apps/app.thirdear
 
 #whitenoise #marmot #nostr #android
@@ -74,7 +74,7 @@ Recording from a Bluetooth microphone on Android is surprisingly hard. Most apps
 
 Third Ear gets it right: headsets, LE Audio hearing aids and the car's hands-free microphone. It waits for the Bluetooth mic to come up (usually 2.5 to 3 seconds), tells you when to start talking, shows which microphone is actually recording, and falls back to the phone with an audible cue if the headset gives up. You can switch microphones mid-recording and it stays one file.
 
-Web: https://jooray.github.io/third-ear/
+Web: https://cypherpunk.today/third-ear/
 Zapstore: https://zapstore.dev/apps/app.thirdear
 
 #android #bluetooth #hearingaids #accessibility
@@ -93,7 +93,7 @@ Make a "Meeting notes" button: record, get the transcript. Or "Transcript to cli
 
 Your voice doesn't leave the phone unless you tell it to, and when it does, it can go end-to-end encrypted.
 
-Web: https://jooray.github.io/third-ear/
+Web: https://cypherpunk.today/third-ear/
 Zapstore: https://zapstore.dev/apps/app.thirdear
 Offline Speech to Text: https://zapstore.dev/apps/app.offlinespeechtotext
 
@@ -113,7 +113,7 @@ Your buttons show up as a grid on the car screen, it records with the car's micr
 
 It isn't from the Play Store, so Android Auto needs "Unknown sources" turned on once. The website has the steps.
 
-Web: https://jooray.github.io/third-ear/
+Web: https://cypherpunk.today/third-ear/
 Zapstore: https://zapstore.dev/apps/app.thirdear
 
 #androidauto #android #foss
@@ -132,7 +132,7 @@ If the app gets killed, what was recorded is recovered on the next launch; at mo
 
 AAC, Opus or MP3. Tiles, a widget, five languages.
 
-Web: https://jooray.github.io/third-ear/
+Web: https://cypherpunk.today/third-ear/
 Zapstore: https://zapstore.dev/apps/app.thirdear
 
 #android #foss
@@ -155,7 +155,7 @@ Only your own shortcuts work, so no other app can start a recording behind your 
 
 Thanks to the user who asked for this!
 
-Web: https://jooray.github.io/third-ear/
+Web: https://cypherpunk.today/third-ear/
 Zapstore: https://zapstore.dev/apps/app.thirdear
 
 #android #foss #nostr #whitenoise

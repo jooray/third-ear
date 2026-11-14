@@ -17,7 +17,7 @@ tags:
     - nostr
     - android-auto
 license: GPL-3.0-only
-website: https://jooray.github.io/third-ear/
+website: https://cypherpunk.today/third-ear/
 icon: ./graphics/icon-512.png
 images:
     - ./website/img/recorder.png
