@@ -39,11 +39,13 @@ import app.thirdear.services.RecorderService
 import app.thirdear.ui.Destination
 import app.thirdear.ui.ThirdEarApp
 import app.thirdear.ui.ThirdEarTheme
-import org.fossify.commons.extensions.appLaunched
+import org.fossify.commons.extensions.baseConfig
 import org.fossify.commons.extensions.checkAppSideloading
+import org.fossify.commons.extensions.getInternalStoragePath
 import org.fossify.commons.extensions.openNotificationSettings
 import org.fossify.commons.extensions.openPathIntent
 import org.fossify.commons.extensions.sharePathsIntent
+import org.fossify.commons.extensions.updateSDCardPath
 import org.fossify.commons.helpers.PERMISSION_RECORD_AUDIO
 import org.fossify.commons.helpers.ensureBackgroundThread
 import org.greenrobot.eventbus.EventBus
@@ -85,7 +87,11 @@ class MainActivity : SimpleActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        appLaunched(BuildConfig.APPLICATION_ID)
+        // Only the storage setup from Fossify's appLaunched(): it also shows Fossify's own
+        // support prompt every few launches. Third Ear will ask for support its own way.
+        baseConfig.internalStoragePath = getInternalStoragePath()
+        updateSDCardPath()
+        baseConfig.appId = BuildConfig.APPLICATION_ID
         if (checkAppSideloading()) return
 
         setContent {
