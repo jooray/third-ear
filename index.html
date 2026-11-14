@@ -21,13 +21,14 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;700&family=Saira+Condensed:wght@600;700&display=swap">
 <link rel="stylesheet" href="css/style.css">
+<script src="vendor/nostr-live.js?v=1.0.0" defer></script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
 <header class="top">
  <div class="wrap bar">
   <a class="brand" href="./"><svg xmlns="http://www.w3.org/2000/svg" viewBox="18 18 72 72" width="28" height="28" aria-hidden="true"> <rect x="18" y="18" width="72" height="72" rx="16" fill="#16130F"/> <path fill="#2A251F" stroke="#4A4337" stroke-width="1.5" d="M28,27 h52 a4,4 0 0 1 4,4 v50 h-60 v-50 a4,4 0 0 1 4,-4 z"/> <rect x="30" y="33" width="20" height="11" rx="1.5" fill="#C8321E"/> <circle cx="74" cy="38.5" r="9" fill="#F7F4EA" fill-opacity="0.2"/> <circle cx="74" cy="38.5" r="6.5" fill="#4A4337"/> <circle cx="74" cy="38.5" r="5" fill="#F7F4EA"/> <rect x="31" y="51" width="31.5" height="3" rx="1.5" fill="#EDE8DA"/> <rect x="24" y="67" width="60" height="14" fill="#E6E0CE"/> <path fill="#B4AD9B" d="M43,67 h1 v14 h-1 z M63,67 h1 v14 h-1 z"/> <path fill="#1E1A14" d="M28,72.5 h11 v3 h-11 z M48,72.5 h11 v3 h-11 z M68,72.5 h12 v3 h-12 z"/> </svg>Third Ear</a>
-  <nav class="links" aria-label="Sections"><a href="#actions">Actions</a><a href="#agents">Agents</a><a href="#bluetooth">Bluetooth</a><a href="#ostt">Transcription</a><a href="#whitenoise">White Noise</a><a href="#car">Android Auto</a><a href="#get">Get it</a></nav>
+  <nav class="links" aria-label="Sections"><a href="#actions">Actions</a><a href="#agents">Agents</a><a href="#bluetooth">Bluetooth</a><a href="#ostt">Transcription</a><a href="#whitenoise">White Noise</a><a href="#car">Android Auto</a><a href="#news">News</a><a href="#get">Get it</a></nav>
   <nav class="lang" aria-label="Language"><a href="./" hreflang="en" lang="en" aria-current="page">EN</a><a href="sk/" hreflang="sk" lang="sk">SK</a><a href="cs/" hreflang="cs" lang="cs">CS</a><a href="de/" hreflang="de" lang="de">DE</a><a href="es/" hreflang="es" lang="es">ES</a></nav>
  </div>
 </header>
@@ -138,6 +139,14 @@
   <p>On Android, a Bluetooth microphone is a phone-call microphone. An app that simply picks it as the input records from the phone's own microphone instead, without any error. Most voice recorders get this wrong.</p>
   <p>Even done right, the headset's microphone takes 2.5 to 3 seconds to come up after recording starts, and some LE Audio hearing aids deliver nothing but digital silence unless something plays into them at the same time. Third Ear routes the call microphone, waits for the first real sound, tells you when to speak, and falls back to the phone microphone with an audible cue.</p>
   <p>We wrote down everything we learned, with code, so other apps can get it right too: <a href="https://github.com/jooray/android-bluetooth-microphone">Recording from a Bluetooth microphone on Android</a>. It also works as a skill for coding agents, and it covers transcription on the phone with Offline Speech to Text.</p>
+ </div>
+</section>
+
+<section id="news" class="band">
+ <div class="wrap">
+  <h2>Latest from the project</h2>
+  <p class="lead">Release notes and tips, posted on Nostr as they happen.</p>
+  <div class="news" data-nostr-live data-nprofile="nprofile1qqsqdaacrlv5lludl9wsnjdkzfl2vlmh3zw2gek38kce60dhjp83htgpr3mhxue69uhkummnw3ezucmewp5x2unsw4hxktn5dajxz7gpzemhxue69uhhyetvv9ujuurjd9kkzmpwdejhgqg5waehxw309aex2mrp0yhxgctdw4eju6t0trqquu" data-relays="wss://nostr.cypherpunk.today,wss://relay.primal.net,wss://relay.damus.io" data-layout="cards" data-limit="3" data-lang="en"></div>
  </div>
 </section>
 

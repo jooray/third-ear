@@ -95,3 +95,10 @@ h2,h3{font-weight:700}
 .car-shots figure.car img{display:block;width:100%;height:auto;border-radius:14px;background:#0b0a08;padding:8px;border:1px solid var(--line);box-shadow:0 6px 24px rgba(0,0,0,.35)}
 .car-shots figure.car:nth-child(odd):last-child{grid-column:1/-1}
 .car-shots figcaption{margin-top:10px;font-size:.9rem;color:var(--mute);text-align:center}
+
+/* Nostr feed (vendored nostr-live), in the site's tokens */
+.news{--nl-fg:var(--text);--nl-muted:var(--mute);--nl-card-bg:var(--card);--nl-border:var(--line);--nl-accent:var(--acc);--nl-accent-fg:var(--accfg);--nl-link:var(--link);--nl-radius:6px;--nl-media-radius:6px;--nl-gap:20px;--nl-font:"Atkinson Hyperlegible Next",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--nl-heading-font:"Saira Condensed",sans-serif;--nl-avatar-radius:6px;--nl-card-pad:20px;font-size:.97rem;min-height:22rem}
+.news .nl__name{text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.news .nl__btn{font-weight:700;letter-spacing:.02em}
+.news a:focus-visible,.news button:focus-visible{outline:3px solid var(--link);outline-offset:3px}
+@media(max-width:600px){.news{min-height:30rem}}
