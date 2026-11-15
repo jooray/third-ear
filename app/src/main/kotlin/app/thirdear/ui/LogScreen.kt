@@ -72,7 +72,10 @@ import app.thirdear.activities.MainActivity
 import app.thirdear.extensions.config
 import app.thirdear.extensions.recordActions
 import app.thirdear.models.Recording
+import app.thirdear.pipeline.NoteState
 import app.thirdear.pipeline.NoteStore
+import app.thirdear.services.RecorderService
+import app.thirdear.support.SupportAsk
 import app.thirdear.whitenoise.IncomingMessage
 import app.thirdear.whitenoise.IncomingStore
 import app.thirdear.whitenoise.WhiteNoise
@@ -188,6 +191,15 @@ fun LogScreen(host: MainActivity, tab: LogTab, onTab: (LogTab) -> Unit, replies:
                 )
                 LogTab.DELETED -> DeletedList(host, trashed.filter { q.isEmpty() || it.title.contains(q, true) }, player)
             }
+        }
+        // the support ask: under the recordings (the results), never while recording or processing
+        val busy = RecorderService.isRunning || notes.any { it.state == NoteState.RECORDING || it.state == NoteState.PROCESSING }
+        val onRecordings = shownTab == LogTab.RECORDINGS && recordings.isNotEmpty() && q.isEmpty()
+        LaunchedEffect(onRecordings, busy) {
+            if (onRecordings) withContext(Dispatchers.IO) { SupportAsk.consider(context, busy) }
+        }
+        if (onRecordings && player.current == null && !busy) {
+            SupportStrip(Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 12.dp))
         }
         if (player.current != null && shownTab == LogTab.RECORDINGS) PlayerPlate(player)
     }

@@ -36,6 +36,7 @@ import app.thirdear.models.Events
 import app.thirdear.models.Recording
 import app.thirdear.pipeline.NoteStore
 import app.thirdear.services.RecorderService
+import app.thirdear.support.SupportAsk
 import app.thirdear.ui.Destination
 import app.thirdear.ui.ThirdEarApp
 import app.thirdear.ui.ThirdEarTheme
@@ -134,6 +135,7 @@ class MainActivity : SimpleActivity() {
     override fun onResume() {
         super.onResume()
         visible = true
+        SupportAsk.onLaunch(this)
         // fossify's base activity paints the bars from its own theme; the face decides here
         val dark = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
             android.content.res.Configuration.UI_MODE_NIGHT_YES

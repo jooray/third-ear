@@ -35,6 +35,7 @@ import app.thirdear.audio.Finaliser
 import app.thirdear.extensions.config
 import app.thirdear.models.Events
 import app.thirdear.services.RecorderService
+import app.thirdear.support.SupportAsk
 import app.thirdear.whitenoise.WhiteNoise
 import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
@@ -172,6 +173,8 @@ class NotePipeline(private val context: Context, private val store: NoteStore = 
             // the user's copy exists; the working copies only cost space (a share target may
             // still be reading the shared copy, so that one stays until the note is pruned)
             if (plan.action.destination != Destination.SHARE) store.dropAudio(note)
+            // one finished recording for the support ask (spec/ask.md section 7); recovered ones were never sent
+            if (!note.recovered) SupportAsk.onAction(context)
             val sent = plan.action.destination !in setOf(Destination.SAVE, Destination.COPY_TRANSCRIPT, Destination.SHARE)
             if (note.recovered) {
                 simpleNotification(context.getString(R.string.te_recovered_title), context.getString(R.string.te_recovered_body, note.savedName))

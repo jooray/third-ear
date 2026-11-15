@@ -265,4 +265,10 @@
     <string name="te_wn_name_failed">Couldn\'t publish the name: %s</string>
     <string name="te_wn_name_empty">The name cannot be empty</string>
     <string name="te_problem_group_gone">Third Ear is no longer in this group: pick another one</string>
+    <string name="te_support_ask">Third Ear is free and open source. Support it and get an e-book.</string>
+    <string name="te_support_yes">Support</string>
+    <string name="te_support_later">Not now</string>
+    <string name="te_support_never">Don\'t ask again</string>
+    <string name="te_support_menu">Support the project</string>
+    <string name="te_support_menu_desc">Opens the checkout in your browser · e-book included</string>
 </resources>

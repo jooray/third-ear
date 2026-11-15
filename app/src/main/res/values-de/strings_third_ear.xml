@@ -273,4 +273,10 @@
     <string name="te_wn_name_failed">Name konnte nicht veröffentlicht werden: %s</string>
     <string name="te_wn_name_empty">Der Name darf nicht leer sein</string>
     <string name="te_problem_group_gone">Third Ear ist nicht mehr in dieser Gruppe: wähle eine andere</string>
+    <string name="te_support_ask">Third Ear ist kostenlos und Open Source. Unterstütze es und erhalte ein E-Book.</string>
+    <string name="te_support_yes">Unterstützen</string>
+    <string name="te_support_later">Nicht jetzt</string>
+    <string name="te_support_never">Nicht mehr fragen</string>
+    <string name="te_support_menu">Projekt unterstützen</string>
+    <string name="te_support_menu_desc">Öffnet die Zahlung im Browser · E-Book inklusive</string>
 </resources>

@@ -275,4 +275,10 @@
     <string name="te_wn_name_failed">Jméno se nepodařilo zveřejnit: %s</string>
     <string name="te_wn_name_empty">Jméno nemůže být prázdné</string>
     <string name="te_problem_group_gone">Third Ear už v této skupině není: vyber jinou</string>
+    <string name="te_support_ask">Third Ear je zdarma a open source. Podpoř ho a dostaneš e-knihu.</string>
+    <string name="te_support_yes">Podpořit</string>
+    <string name="te_support_later">Teď ne</string>
+    <string name="te_support_never">Už nezobrazovat</string>
+    <string name="te_support_menu">Podpořit projekt</string>
+    <string name="te_support_menu_desc">Otevře platbu v prohlížeči · e-kniha v ceně</string>
 </resources>

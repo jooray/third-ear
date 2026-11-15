@@ -65,6 +65,8 @@ import app.thirdear.helpers.SAMPLING_RATE_BITRATE_LIMITS
 import app.thirdear.pipeline.Cues
 import app.thirdear.pipeline.MediaPauser
 import app.thirdear.pipeline.Transcriber
+import app.thirdear.support.SupportAsk
+import app.thirdear.support.SupportCheckout
 import app.thirdear.tiles.ActionTileService
 import app.thirdear.whitenoise.GroupSettings
 import app.thirdear.whitenoise.MarmotHost
@@ -231,6 +233,10 @@ fun SetupScreen(host: MainActivity) {
                 })
             }
             SettingRow(stringResource(R.string.te_setup_version), value = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})")
+            val dark = Te.colors.dark
+            SettingRow(stringResource(R.string.te_support_menu), value = stringResource(R.string.te_support_menu_desc), onClick = {
+                SupportCheckout.open(context, SupportAsk.REF_MENU, dark)
+            })
             SettingRow(stringResource(R.string.te_setup_source), value = stringResource(R.string.te_setup_source_desc), onClick = {
                 runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(context.getString(R.string.te_source_url)))) }
             })
