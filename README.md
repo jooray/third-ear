@@ -40,7 +40,7 @@ bin, **Lines** to edit them and **Setup**. The design system is in [DESIGN.md](D
 - **App shortcuts**: long-press the icon for the first four lines and "Stop recording". Launchers,
   automation and button-mapping apps (Key Mapper, Tasker…) can bind any line or "Stop recording"
   through the "Record on a line" shortcut picker. A line shortcut toggles like the widget.
-- **White Noise** (MarmotKit 0.14.0): Third Ear gets its own npub (copy, QR). Accept group
+- **White Noise** (MarmotKit 0.17.0): Third Ear gets its own npub (copy, QR). Accept group
   invites, send recordings as voice notes (transcript as caption when chosen) or text,
   export/import the nsec.
 - **Replies, per group**: off / play voice messages / play voice and read text; automatically or
@@ -85,7 +85,7 @@ session.
 ## Building
 
 ```sh
-tools/marmotkit/fetch.sh                  # MarmotKit 0.14.0, sha256-pinned, ~180 MB, git-ignored
+tools/marmotkit/fetch.sh                  # MarmotKit 0.17.0, sha256-pinned, ~180 MB, git-ignored
 export JAVA_HOME=$(brew --prefix openjdk@21)
 ./gradlew :app:assembleFossDebug          # app/build/outputs/apk/foss/debug/thirdear-1-foss-debug.apk
 ./gradlew :app:testFossDebugUnitTest :app:lintFossDebug

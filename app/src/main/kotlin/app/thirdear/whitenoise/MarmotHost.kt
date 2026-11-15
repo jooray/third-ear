@@ -34,7 +34,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 
 /**
- * Third Ear's own White Noise (Marmot) identity, through MarmotKit 0.14.0 (from I Hear You): it is
+ * Third Ear's own White Noise (Marmot) identity, through MarmotKit 0.17.0 (from I Hear You): it is
  * invited into a group like any contact, sends recordings there, and hands incoming messages on.
  * One runtime per process (MDK owns its root directory), opened when White Noise is turned on.
  */
@@ -249,12 +249,14 @@ object MarmotHost {
                     m.publishNewKeyPackage(label)
                 }
                 // a package from an older MDK may not be one newer White Noise apps can invite
+                // (0.14.0's lack the account-devices component that groups made by 0.15+ require)
                 prefs.getString(KEY_PACKAGE_BUILD, null) != built -> {
                     Log.i(TAG, "MarmotKit changed, rotating the key package")
                     m.rotateKeyPackage(label)
                 }
             }
             prefs.edit().putString(KEY_PACKAGE_BUILD, built).apply()
+            // MDK (0.15+) also replaces its key package every 6 to 7 days while it runs
             m.runDueMaintenance(label)
         }.onFailure { Log.w(TAG, "key package check failed", it) }
     }
@@ -262,9 +264,10 @@ object MarmotHost {
     private const val KEY_PACKAGE_BUILD = "key_package_marmotkit"
 
     /**
-     * MDK migrates its store forward only. When an older MarmotKit finds a store a newer one wrote
-     * (here: back from a 0.15 nightly to 0.14.0), it cannot open it: White Noise starts over with a
-     * fresh identity, which is fine while it is in no group.
+     * MDK migrates its store forward only (0.17.0 takes a 0.14.0 account from schema 116 to 207 on
+     * first open). When an older MarmotKit finds a store a newer one wrote (say a 0.14.0 build
+     * installed over a 0.17.0 one), it cannot open it: White Noise starts over with a fresh
+     * identity, which is fine while it is in no group.
      */
     private fun startOverAfterDowngrade(context: Context, root: File) {
         val prefs = context.getSharedPreferences("third_ear_marmot", Context.MODE_PRIVATE)
@@ -301,6 +304,26 @@ object MarmotHost {
             leavingIds.value = leavingIds.value + pending
             refreshGroups()
         }
+        settleBlockedLeaves(m, acct)
+    }
+
+    /**
+     * A leave accepted while another admin left too can leave Third Ear the last admin: the leave
+     * never finishes (MDK neither retries nor reverses it) and the row would read "leaving" for
+     * good. Cancel it, so the group is joined again; the next Leave then offers removing it from
+     * this phone, as for any last admin.
+     */
+    private suspend fun settleBlockedLeaves(m: Marmot, acct: String) {
+        var cancelled = false
+        for (id in leavingIds.value) {
+            val state = runCatching { m.groupManagementState(acct, id) }.getOrNull() ?: continue
+            if (state.leaveBlocked && state.canCancelLeave && runCatching { m.cancelLeave(acct, id) }.isSuccess) {
+                Log.i(TAG, "leave blocked (last admin): cancelled")
+                leavingIds.value = leavingIds.value - id
+                cancelled = true
+            }
+        }
+        if (cancelled) refreshGroups()
     }
 
     /**
@@ -338,20 +361,27 @@ object MarmotHost {
     private suspend fun pump(m: Marmot) {
         val sub = m.subscribeEvents()
         try {
-            while (scope.isActive) {
-                when (val e = sub.next() ?: break) {
-                    is MarmotEventFfi.MessageReceived -> onMessage(m, e.received.message)
-                    is MarmotEventFfi.GroupJoined, is MarmotEventFfi.GroupStateUpdated,
-                    is MarmotEventFfi.WelcomeDeliveryPending, is MarmotEventFfi.ProjectionUpdated -> refreshGroups()
-
-                    is MarmotEventFfi.AccountError -> Log.w(TAG, "account error")
-                    else -> {}
-                }
-            }
+            while (scope.isActive) onEvent(m, sub.next() ?: break)
         } catch (t: Throwable) {
             Log.w(TAG, "event stream ended: ${t.javaClass.simpleName}")
         } finally {
             runCatching { sub.close() }
+        }
+    }
+
+    private suspend fun onEvent(m: Marmot, e: MarmotEventFfi) {
+        when (e) {
+            is MarmotEventFfi.MessageReceived -> onMessage(m, e.received.message)
+            is MarmotEventFfi.GroupStateUpdated -> {
+                refreshGroups()
+                account?.takeIf { leavingIds.value.isNotEmpty() }?.let { settleBlockedLeaves(m, it) }
+            }
+
+            is MarmotEventFfi.GroupJoined, is MarmotEventFfi.WelcomeDeliveryPending,
+            is MarmotEventFfi.ProjectionUpdated -> refreshGroups()
+
+            is MarmotEventFfi.AccountError -> Log.w(TAG, "account error")
+            else -> {}
         }
     }
 
@@ -361,7 +391,7 @@ object MarmotHost {
         val acct = account ?: return
         // media references come resolved on the timeline record, not on the raw message
         val media = runCatching {
-            m.timelineMessages(acct, TimelineMessageQueryFfi(msg.groupIdHex, null, null, null, null, null, 30u))
+            m.timelineMessages(acct, latest(msg.groupIdHex, 30u))
                 .messages.firstOrNull { it.messageIdHex == msg.messageIdHex }
                 ?.media?.filterIsInstance<MediaAttachmentOutcomeFfi.Accepted>()?.map { it.reference }
         }.getOrNull().orEmpty()
@@ -398,9 +428,20 @@ object MarmotHost {
         refreshGroups()
     }
 
+    /**
+     * An invite that makes Third Ear an admin (a White Noise direct chat makes both sides admins)
+     * can be declined only after stepping down (MarmotKit 0.15+, else AdminCannotSelfRemove).
+     */
     suspend fun decline(groupId: String) = io { m, acct ->
-        m.declineGroupInvite(acct, groupId)
-        refreshGroups()
+        try {
+            val state = runCatching { m.groupManagementState(acct, groupId) }.getOrNull()
+            if (state?.requiresSelfDemoteBeforeLeave == true) m.selfDemoteAdmin(acct, groupId)
+            m.declineGroupInvite(acct, groupId)
+        } finally {
+            // a decline that timed out may still complete: show the state MDK has, not the old row
+            refreshGroups()
+        }
+        Unit
     }
 
     /**
@@ -412,13 +453,20 @@ object MarmotHost {
     suspend fun leave(groupId: String): LeaveResult = io { m, acct ->
         val state = runCatching { m.groupManagementState(acct, groupId) }.getOrNull()
         when {
+            // an earlier leave that cannot finish (last admin): take it back, offer removing locally
+            state?.leaveBlocked == true -> {
+                if (state.canCancelLeave) runCatching { m.cancelLeave(acct, groupId) }
+                leavingIds.value = leavingIds.value - groupId
+                refreshGroups()
+                LeaveResult.LAST_ADMIN
+            }
             state?.leaveRequestPending == true -> {
                 markLeaving(groupId)
                 LeaveResult.ALREADY_LEAVING
             }
             state?.isLastAdmin == true -> LeaveResult.LAST_ADMIN
             else -> {
-                if (state?.requiresSelfDemoteBeforeLeave == true) m.demoteAdmin(acct, groupId, state.myAccountIdHex)
+                if (state?.requiresSelfDemoteBeforeLeave == true) m.selfDemoteAdmin(acct, groupId)
                 try {
                     m.leaveGroup(acct, groupId)
                 } catch (_: MarmotKitException.LeaveAlreadyRequested) {
@@ -450,7 +498,10 @@ object MarmotHost {
 
     /** A group with only Third Ear in it (to try sending without bothering anyone); others can be invited later. */
     suspend fun createGroup(name: String): String = io { m, acct ->
-        m.createGroup(acct, name, emptyList(), null).also { refreshGroups() }
+        // MarmotKit 0.17+ reports per-member outcomes; with no members a creator-only group is always made
+        val created = m.createGroup(acct, name, emptyList(), null)
+        refreshGroups()
+        created.groupIdHex ?: error("no group created")
     }
 
     /** Uploads (encrypted, to the group's media servers) and sends in one message. */
@@ -486,7 +537,7 @@ object MarmotHost {
     /** The group's latest chat messages, oldest first (system events and deleted messages left out). */
     suspend fun timeline(groupId: String, limit: Int = 100): List<TimelineMessage> = io { m, acct ->
         val self = accountHex
-        m.timelineMessages(acct, TimelineMessageQueryFfi(groupId, null, null, null, null, null, limit.toUInt()))
+        m.timelineMessages(acct, latest(groupId, limit.toUInt()))
             .messages
             .filter { it.kind == 9uL && !it.deleted && it.groupSystem == null }
             .map { r ->
@@ -501,6 +552,21 @@ object MarmotHost {
             }
             .sortedBy { it.at }
     }
+
+    /** The group's newest [limit] timeline rows, unfiltered (MarmotKit 0.15+ added search filters, all left off). */
+    private fun latest(groupId: String, limit: UInt) = TimelineMessageQueryFfi(
+        groupIdHex = groupId,
+        search = null,
+        sender = null,
+        since = null,
+        until = null,
+        cursorGroupId = null,
+        before = null,
+        beforeMessageId = null,
+        after = null,
+        afterMessageId = null,
+        limit = limit,
+    )
 
     fun displayName(pubkey: String): String? = marmot?.let { m -> runCatching { m.displayName(pubkey) }.getOrNull() }
 
