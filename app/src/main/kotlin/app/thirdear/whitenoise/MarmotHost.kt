@@ -16,6 +16,8 @@ import dev.ipf.marmotkit.MediaFileUploadAttachmentRequestFfi
 import dev.ipf.marmotkit.MediaFileUploadRequestFfi
 import dev.ipf.marmotkit.SecretStore
 import dev.ipf.marmotkit.SelfMembershipFfi
+import dev.ipf.marmotkit.SendAcceptDispositionFfi
+import dev.ipf.marmotkit.SendSummaryFfi
 import dev.ipf.marmotkit.TimelineMessageQueryFfi
 import dev.ipf.marmotkit.UserProfileMetadataFfi
 import dev.ipf.marmotkit.marmotDeploymentWhiteNoise
@@ -34,7 +36,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 
 /**
- * Third Ear's own White Noise (Marmot) identity, through MarmotKit 0.17.0 (from I Hear You): it is
+ * Third Ear's own White Noise (Marmot) identity, through MarmotKit 0.18.0 (from I Hear You): it is
  * invited into a group like any contact, sends recordings there, and hands incoming messages on.
  * One runtime per process (MDK owns its root directory), opened when White Noise is turned on.
  */
@@ -249,7 +251,8 @@ object MarmotHost {
                     m.publishNewKeyPackage(label)
                 }
                 // a package from an older MDK may not be one newer White Noise apps can invite
-                // (0.14.0's lack the account-devices component that groups made by 0.15+ require)
+                // (0.14.0's lack the account-devices component that groups made by 0.15+ require;
+                // 0.18.0's, with device groups always on, also advertise the device-roster component)
                 prefs.getString(KEY_PACKAGE_BUILD, null) != built -> {
                     Log.i(TAG, "MarmotKit changed, rotating the key package")
                     m.rotateKeyPackage(label)
@@ -264,10 +267,11 @@ object MarmotHost {
     private const val KEY_PACKAGE_BUILD = "key_package_marmotkit"
 
     /**
-     * MDK migrates its store forward only (0.17.0 takes a 0.14.0 account from schema 116 to 207 on
-     * first open). When an older MarmotKit finds a store a newer one wrote (say a 0.14.0 build
-     * installed over a 0.17.0 one), it cannot open it: White Noise starts over with a fresh
-     * identity, which is fine while it is in no group.
+     * MDK migrates its store forward only (0.17.0 took a 0.14.0 account from schema 116 to 207,
+     * 0.18.0 takes it on to 216 on first open). When an older MarmotKit finds a store a newer one
+     * wrote (say a 0.17.0 build installed over a 0.18.0 one), it refuses to open it
+     * (UnsupportedSchemaVersion): White Noise starts over with a fresh identity, which is fine
+     * while it is in no group.
      */
     private fun startOverAfterDowngrade(context: Context, root: File) {
         val prefs = context.getSharedPreferences("third_ear_marmot", Context.MODE_PRIVATE)
@@ -305,25 +309,50 @@ object MarmotHost {
             refreshGroups()
         }
         settleBlockedLeaves(m, acct)
+        logChangesNotDelivered(m, acct)
     }
 
     /**
      * A leave accepted while another admin left too can leave Third Ear the last admin: the leave
      * never finishes (MDK neither retries nor reverses it) and the row would read "leaving" for
      * good. Cancel it, so the group is joined again; the next Leave then offers removing it from
-     * this phone, as for any last admin.
+     * this phone, as for any last admin. A leave MDK no longer holds (0.18 gives up a group change
+     * that reached no relay after ten minutes) stops reading "leaving" too.
      */
     private suspend fun settleBlockedLeaves(m: Marmot, acct: String) {
-        var cancelled = false
-        for (id in leavingIds.value) {
-            val state = runCatching { m.groupManagementState(acct, id) }.getOrNull() ?: continue
-            if (state.leaveBlocked && state.canCancelLeave && runCatching { m.cancelLeave(acct, id) }.isSuccess) {
-                Log.i(TAG, "leave blocked (last admin): cancelled")
-                leavingIds.value = leavingIds.value - id
-                cancelled = true
+        val settled = leavingIds.value.filter { id ->
+            val state = runCatching { m.groupManagementState(acct, id) }.getOrNull()
+            when {
+                state == null -> false
+                state.leaveBlocked && state.canCancelLeave && runCatching { m.cancelLeave(acct, id) }.isSuccess -> {
+                    Log.i(TAG, "leave blocked (last admin): cancelled")
+                    true
+                }
+
+                !state.leaveRequestPending && !state.leaveBlocked -> {
+                    Log.i(TAG, "leave no longer pending")
+                    true
+                }
+
+                else -> false
             }
         }
-        if (cancelled) refreshGroups()
+        if (settled.isNotEmpty()) {
+            leavingIds.value = leavingIds.value - settled.toSet()
+            refreshGroups()
+        }
+    }
+
+    /**
+     * Group changes MDK gave up after their call returned (0.18: no relay took them). Third Ear
+     * has no screen for them; logged for diagnosis, and kept by MDK until acknowledged.
+     */
+    private suspend fun logChangesNotDelivered(m: Marmot, acct: String) {
+        for (g in groups.value.filter { it.member }) {
+            runCatching { m.groupChangesNotDelivered(acct, g.id) }.getOrNull().orEmpty().forEach {
+                Log.w(TAG, "group change not delivered: ${it.intentKind} (${it.reason})")
+            }
+        }
     }
 
     /**
@@ -431,12 +460,20 @@ object MarmotHost {
     /**
      * An invite that makes Third Ear an admin (a White Noise direct chat makes both sides admins)
      * can be declined only after stepping down (MarmotKit 0.15+, else AdminCannotSelfRemove).
+     * With device groups on (always, since 0.18) MDK steps a nonlast admin down itself and
+     * reports no demote as required; should a decline still refuse, step down and decline again.
+     * While the group's own last commit is unconfirmed a decline fails with GroupCommitPending.
      */
     suspend fun decline(groupId: String) = io { m, acct ->
         try {
             val state = runCatching { m.groupManagementState(acct, groupId) }.getOrNull()
             if (state?.requiresSelfDemoteBeforeLeave == true) m.selfDemoteAdmin(acct, groupId)
-            m.declineGroupInvite(acct, groupId)
+            try {
+                m.declineGroupInvite(acct, groupId)
+            } catch (_: MarmotKitException.AdminCannotSelfRemove) {
+                m.selfDemoteAdmin(acct, groupId)
+                m.declineGroupInvite(acct, groupId)
+            }
         } finally {
             // a decline that timed out may still complete: show the state MDK has, not the old row
             refreshGroups()
@@ -447,8 +484,10 @@ object MarmotHost {
     /**
      * An MLS leave, sent to the group: the others see Third Ear go; it can come back only by a new
      * invite. MDK queues it until a commit removes this member, so the row turns "leaving" first.
-     * An admin has to give up admin rights before leaving (done here); the last admin cannot leave
-     * at all, which the caller turns into the choice of removing the group from this phone.
+     * An admin has to give up admin rights before leaving (MarmotKit 0.18 does it inside the leave
+     * and no longer asks for it; the flag is still honoured); the last admin cannot leave at all, which
+     * the caller turns into the choice of removing the group from this phone. A member's leave
+     * fails with GroupCommitPending while the group's own last commit is unconfirmed.
      */
     suspend fun leave(groupId: String): LeaveResult = io { m, acct ->
         val state = runCatching { m.groupManagementState(acct, groupId) }.getOrNull()
@@ -504,7 +543,11 @@ object MarmotHost {
         created.groupIdHex ?: error("no group created")
     }
 
-    /** Uploads (encrypted, to the group's media servers) and sends in one message. */
+    /**
+     * Uploads (encrypted, to the group's media servers) and sends in one message. An upload is
+     * encrypted for the group's current epoch: when the group moved on before the send
+     * (MediaReferenceStaleEpoch), it is uploaded once more.
+     */
     suspend fun sendVoice(groupId: String, file: File, fileName: String, mime: String, caption: String?) = io { m, acct ->
         val request = MediaFileUploadRequestFfi(
             attachments = listOf(MediaFileUploadAttachmentRequestFfi(file.path, file.length().toULong(), fileName, mime, null, null)),
@@ -512,12 +555,25 @@ object MarmotHost {
             send = true,
             blossomServer = null,
         )
-        val result = m.uploadMediaFiles(acct, groupId, request, MediaFileTransferControlFfi())
-        if (result.sent == null) error("uploaded but not sent")
+        val result = try {
+            m.uploadMediaFiles(acct, groupId, request, MediaFileTransferControlFfi())
+        } catch (_: MarmotKitException.MediaReferenceStaleEpoch) {
+            Log.i(TAG, "group moved on during the upload, uploading again")
+            m.uploadMediaFiles(acct, groupId, request, MediaFileTransferControlFfi())
+        }
+        logQueued(result.sent ?: error("uploaded but not sent"))
     }
 
     suspend fun sendText(groupId: String, text: String) = io { m, acct ->
-        m.sendText(acct, groupId, text)
+        logQueued(m.sendText(acct, groupId, text))
+    }
+
+    /**
+     * An accepted send that did not publish yet (MarmotKit 0.18 holds messages while the group's
+     * own last commit is unconfirmed, and sends them once it resolves): not a failure.
+     */
+    private fun logQueued(sent: SendSummaryFfi) {
+        if (sent.acceptDisposition != SendAcceptDispositionFfi.PUBLISHED) Log.i(TAG, "send accepted, ${sent.acceptDisposition}")
     }
 
     suspend fun download(groupId: String, ref: MediaAttachmentReferenceFfi): ByteArray = io { m, acct ->

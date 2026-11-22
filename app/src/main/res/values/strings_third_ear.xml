@@ -252,6 +252,8 @@
     <string name="te_wn_err_disbanding">The group is being disbanded.</string>
     <string name="te_wn_err_not_admin">Only a group admin can do that.</string>
     <string name="te_wn_err_unknown_group">This phone does not know that group (any more).</string>
+    <string name="te_wn_err_commit_pending">The group\'s last change is still being sent. Try again once it has gone through.</string>
+    <string name="te_wn_err_no_usable_relay">None of the group\'s relays can be used from this phone, so nothing was sent. The group\'s relays have to change first.</string>
     <string name="te_line_draft_restored">Back where you left off: this is the line you were making.</string>
     <string name="te_line_draft_start_over">Start over</string>
     <string name="te_wn_off_in_editor">White Noise is off. Turn it on to send this line to a group; what you typed stays here.</string>

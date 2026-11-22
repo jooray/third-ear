@@ -260,6 +260,8 @@
     <string name="te_wn_err_disbanding">El grupo se está disolviendo.</string>
     <string name="te_wn_err_not_admin">Solo un administrador del grupo puede hacerlo.</string>
     <string name="te_wn_err_unknown_group">Este teléfono no conoce (ya) ese grupo.</string>
+    <string name="te_wn_err_commit_pending">El último cambio del grupo aún se está enviando. Inténtalo de nuevo cuando se haya enviado.</string>
+    <string name="te_wn_err_no_usable_relay">Ninguno de los relays del grupo se puede usar desde este teléfono, así que no se envió nada. Primero hay que cambiar los relays del grupo.</string>
     <string name="te_line_draft_restored">Sigues donde lo dejaste: esta es la línea que estabas creando.</string>
     <string name="te_line_draft_start_over">Empezar de nuevo</string>
     <string name="te_wn_off_in_editor">White Noise está apagado. Enciéndelo para que esta línea envíe a un grupo; lo que escribiste se queda aquí.</string>

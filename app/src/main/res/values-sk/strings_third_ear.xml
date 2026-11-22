@@ -262,6 +262,8 @@
     <string name="te_wn_err_disbanding">Skupina sa práve ruší.</string>
     <string name="te_wn_err_not_admin">To môže urobiť len admin skupiny.</string>
     <string name="te_wn_err_unknown_group">Tento telefón takú skupinu (už) nepozná.</string>
+    <string name="te_wn_err_commit_pending">Posledná zmena skupiny sa ešte odosiela. Skús to znova, keď prejde.</string>
+    <string name="te_wn_err_no_usable_relay">Na žiadny relay skupiny sa z tohto telefónu nedá posielať, preto sa nič neodoslalo. Najprv treba zmeniť relaye skupiny.</string>
     <string name="te_line_draft_restored">Pokračuješ, kde si skončil: toto je linka, ktorú si robil.</string>
     <string name="te_line_draft_start_over">Začať odznova</string>
     <string name="te_wn_off_in_editor">White Noise je vypnutý. Zapni ho, aby táto linka posielala do skupiny; čo si napísal, tu ostane.</string>

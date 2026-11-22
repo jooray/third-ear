@@ -18,6 +18,12 @@ fun Context.whiteNoiseError(t: Throwable): String = when (t) {
     is MarmotKitException.GroupDisbanding -> getString(R.string.te_wn_err_disbanding)
     is MarmotKitException.NotGroupAdmin, is MarmotKitException.NotAdmin -> getString(R.string.te_wn_err_not_admin)
     is MarmotKitException.UnknownGroup -> getString(R.string.te_wn_err_unknown_group)
+    // MarmotKit 0.18: one commit at a time; a change, a member's leave or a decline waits for the last one
+    // (media encrypted before it cannot be sent until it settles)
+    is MarmotKitException.GroupCommitPending, is MarmotKitException.MediaReferenceEpochUnsettled,
+    is MarmotKitException.MediaReferenceStaleEpoch -> getString(R.string.te_wn_err_commit_pending)
+    // 0.18 (was Publish): no relay of the group may be sent to; a retry fails the same way
+    is MarmotKitException.NoUsableRelay -> getString(R.string.te_wn_err_no_usable_relay)
     else -> readableMessage(t)
 }
 

@@ -5,6 +5,8 @@ import android.util.Log
 import java.io.File
 import app.thirdear.extensions.config
 import app.thirdear.services.RecorderService
+import app.thirdear.ui.whiteNoiseError
+import dev.ipf.marmotkit.MarmotKitException
 
 /** Whether the phone is connected to Android Auto (set by the car module's CarConnection observer). */
 object CarState {
@@ -59,12 +61,24 @@ object WhiteNoise {
 
     suspend fun sendVoice(context: Context, groupId: String, file: File, fileName: String, mime: String, caption: String?) {
         ensureRunning(context)
-        MarmotHost.sendVoice(groupId, file, fileName, mime, caption)
+        readable(context) { MarmotHost.sendVoice(groupId, file, fileName, mime, caption) }
     }
 
     suspend fun sendText(context: Context, groupId: String, text: String) {
         ensureRunning(context)
-        MarmotHost.sendText(groupId, text)
+        readable(context) { MarmotHost.sendText(groupId, text) }
+    }
+
+    /**
+     * A failed send in words for the recording's failure notice: several MarmotKit errors carry
+     * no message at all (NoUsableRelay, new in 0.18) or only ids.
+     */
+    private suspend fun readable(context: Context, send: suspend () -> Unit) {
+        try {
+            send()
+        } catch (e: MarmotKitException) {
+            throw IllegalStateException(context.whiteNoiseError(e), e)
+        }
     }
 
     /** An incoming message: stored, notified, and played or offered as the group's settings say. */

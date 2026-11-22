@@ -301,12 +301,12 @@ private fun GroupsSection(host: MainActivity, actions: List<RecordAction>, onOpe
             Row {
                 PlainButton(
                     stringResource(R.string.te_wn_accept),
-                    { scope.launch { runCatching { MarmotHost.accept(g.id) }.onFailure { host.toast(it.message ?: "?") } } },
+                    { scope.launch { runCatching { MarmotHost.accept(g.id) }.onFailure { host.toast(context.whiteNoiseError(it)) } } },
                     icon = Icons.Outlined.Check,
                 )
                 PlainButton(
                     stringResource(R.string.te_wn_decline),
-                    { scope.launch { runCatching { MarmotHost.decline(g.id) }.onFailure { host.toast(it.message ?: "?") } } },
+                    { scope.launch { runCatching { MarmotHost.decline(g.id) }.onFailure { host.toast(context.whiteNoiseError(it)) } } },
                     color = p.inkMuted,
                 )
             }
