@@ -427,7 +427,7 @@ object MarmotHost {
         }.getOrNull().orEmpty()
         val at = msg.recordedAt.toLong().let { if (it > MILLIS_THRESHOLD) it else it * 1000 }
         val name = msg.senderDisplayName ?: runCatching { m.displayName(msg.sender) }.getOrNull()
-        onIncoming?.invoke(Incoming(msg.groupIdHex, msg.messageIdHex, msg.sender, name, msg.plaintext, media, at))
+        onIncoming?.invoke(Incoming(msg.groupIdHex, msg.messageIdHex, msg.sender, name, readable(m, msg.plaintext), media, at))
     }
 
     fun refreshGroups() {
@@ -653,7 +653,7 @@ object MarmotHost {
                     id = r.messageIdHex,
                     mine = r.sender == self,
                     sender = r.sender,
-                    text = r.plaintext,
+                    text = readable(m, r.plaintext),
                     audio = r.media.filterIsInstance<MediaAttachmentOutcomeFfi.Accepted>().map { it.reference }.filter { it.mediaType.startsWith("audio/") },
                     at = r.timelineAt.toLong().let { if (it > MILLIS_THRESHOLD) it else it * 1000 },
                     failed = r.invalidationStatus == "local_publish_failed",
@@ -676,6 +676,10 @@ object MarmotHost {
         afterMessageId = null,
         limit = limit,
     )
+
+    /** Mentions in a message's text as `@Name` (Third Ear itself by its own profile name). */
+    private fun readable(m: Marmot, text: String): String =
+        Mentions.readable(text) { hex -> runCatching { m.displayName(hex) }.getOrNull() }
 
     fun displayName(pubkey: String): String? = marmot?.let { m -> runCatching { m.displayName(pubkey) }.getOrNull() }
 
