@@ -160,3 +160,24 @@ Zapstore: https://zapstore.dev/apps/app.thirdear
 
 #android #foss #nostr #whitenoise
 ```
+
+## 8. Mentions for agents, delete for everyone (0.1.9)
+
+```text
+Third Ear 0.1.9 is out.
+
+Agents that only answer when mentioned now hear you. A White Noise group's settings have "Mention with every message": pick a member, say your agent, and every voice note, typed message and reply Third Ear sends there mentions it. The text stays as you said it. Off by default, so nothing changes until you choose.
+
+Sent something you shouldn't have? Your own messages now have Delete, and it disappears for everyone in the group. Mentions others write show up, and are read aloud, as names instead of 63 characters of npub.
+
+Webhooks: type the address without https:// and it's added. Plain http:// works again after you confirm it per line, for a webhook on Tailscale or Nostr VPN, which encrypt the traffic themselves.
+
+Also: MarmotKit 0.18.0, so White Noise groups recover better when a change doesn't reach a relay.
+
+Thanks to everyone who filed issues!
+
+Web: https://cypherpunk.today/third-ear/
+Zapstore: https://zapstore.dev/apps/app.thirdear
+
+#whitenoise #marmot #nostr #agents #android
+```
