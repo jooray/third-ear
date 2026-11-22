@@ -75,14 +75,14 @@
     <string name="te_action_copy">Zkopírovat přepis do schránky</string>
     <string name="te_action_group">Skupina ve White Noise</string>
     <string name="te_action_pick_group">Vyber skupinu</string>
-    <string name="te_action_webhook_url">URL webhooku (https://…)</string>
+    <string name="te_action_webhook_url">URL webhooku</string>
     <string name="te_action_webhook_auth">Hlavička Authorization (nepovinná, např. Bearer …)</string>
     <string name="te_action_delete_confirm">Smazat akci „%s“?</string>
     <string name="te_action_move_up">Posunout výš</string>
     <string name="te_action_move_down">Posunout níž</string>
     <string name="te_problem_no_name">Dej akci název</string>
     <string name="te_problem_no_group">Vyber skupinu ve White Noise</string>
-    <string name="te_problem_no_webhook">Zadej URL webhooku, která začíná https:// (http:// není povolené: nahrávky a přepisy by šly nešifrované)</string>
+    <string name="te_problem_no_webhook">Zadej adresu webhooku, například example.org/hook (když https:// vynecháš, doplní se)</string>
     <string name="te_problem_no_transcriber">Nenašla se aplikace na přepis: nainstaluj Offline Speech to Text</string>
     <string name="te_no_groups">Zatím žádné skupiny: pozvi npub Third Ear do skupiny ve White Noise a přijmi pozvánku</string>
     <string name="te_at_least_one_action">Aspoň jedna akce musí zůstat</string>
@@ -115,7 +115,7 @@
     <string name="te_error_no_transcriber">žádná aplikace na přepis (nainstaluj Offline Speech to Text)</string>
     <string name="te_error_no_speech">nerozpoznala se žádná řeč</string>
     <string name="te_error_no_speech_no_ostt">nerozpoznala se žádná řeč. Pro přepis nainstaluj Offline Speech to Text (zdarma, na Zapstore)</string>
-    <string name="te_error_no_webhook">není zadaná https:// URL webhooku</string>
+    <string name="te_error_no_webhook">není zadaná URL webhooku (nebo nepotvrzené čisté http)</string>
     <string name="te_error_no_group">není vybraná skupina ve White Noise</string>
     <string name="te_error_background_start">Android spustí mikrofon, jen když je Third Ear otevřený. Otevři Third Ear a zkus to znovu.</string>
     <string name="te_error_start">Nahrávání se nepodařilo spustit: %s</string>
@@ -281,4 +281,9 @@
     <string name="te_support_never">Už nezobrazovat</string>
     <string name="te_support_menu">Podpořit projekt</string>
     <string name="te_support_menu_desc">Otevře platbu v prohlížeči · e-kniha v ceně</string>
+    <string name="te_problem_webhook_cleartext">Potvrď, že tento webhook smí použít čisté http</string>
+    <string name="te_webhook_cleartext_warning">Čisté http: nahrávka a přepis jdou nešifrované. V pořádku v síti, která šifruje sama (Tailscale, Nostr VPN, WireGuard); jinde použij https.</string>
+    <string name="te_webhook_cleartext_allow">Použít http</string>
+    <string name="te_webhook_cleartext_on">Posílá se přes čisté http. Jen v síti, která ho šifruje, například Tailscale nebo Nostr VPN.</string>
+    <string name="te_webhook_cleartext_undo">Zrušit</string>
 </resources>

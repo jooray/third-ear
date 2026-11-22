@@ -45,12 +45,16 @@ data class ActionPlan(
     }
 
     /** Problems that make the action unusable as configured, for the editor and before sending. */
-    enum class Problem { NO_NAME, NO_GROUP, NO_WEBHOOK_URL, NO_TRANSCRIBER }
+    enum class Problem { NO_NAME, NO_GROUP, NO_WEBHOOK_URL, WEBHOOK_CLEARTEXT, NO_TRANSCRIBER }
 
     fun problems(transcriberAvailable: Boolean): List<Problem> = buildList {
         if (action.name.isBlank()) add(Problem.NO_NAME)
         if (action.destination == Destination.WHITE_NOISE && action.groupId.isNullOrBlank()) add(Problem.NO_GROUP)
-        if (action.destination == Destination.WEBHOOK && !isHttpsUrl(action.webhookUrl)) add(Problem.NO_WEBHOOK_URL)
+        if (action.destination == Destination.WEBHOOK) {
+            val url = webhookUrl(action.webhookUrl)
+            if (!isHttpsUrl(url) && !isHttpUrl(url)) add(Problem.NO_WEBHOOK_URL)
+            else if (isHttpUrl(url) && !action.webhookCleartext) add(Problem.WEBHOOK_CLEARTEXT)
+        }
         if (transcribe && !transcriberAvailable) add(Problem.NO_TRANSCRIBER)
     }
 
@@ -67,10 +71,29 @@ data class ActionPlan(
 
         private val SENDING = setOf(Destination.SHARE, Destination.WHITE_NOISE, Destination.WEBHOOK)
 
-        /** Only https: Android blocks cleartext anyway, and a webhook carries the recording and its transcript. */
         fun isHttpsUrl(url: String?): Boolean {
             val u = url?.trim()?.lowercase() ?: return false
             return u.startsWith("https://") && u.length > "https://".length
+        }
+
+        fun isHttpUrl(url: String?): Boolean {
+            val u = url?.trim()?.lowercase() ?: return false
+            return u.startsWith("http://") && u.length > "http://".length
+        }
+
+        /** The webhook URL as typed, with https:// assumed when no scheme is given. */
+        fun webhookUrl(raw: String?): String? {
+            val u = raw?.trim()?.takeIf { it.isNotEmpty() } ?: return null
+            return if ("://" in u) u else "https://$u"
+        }
+
+        /**
+         * Where the webhook posts: https, or plain http the user confirmed for this line (a webhook on
+         * a Tailscale or Nostr VPN address is encrypted by that layer). Null: nowhere to send.
+         */
+        fun webhookTarget(action: RecordAction): String? {
+            val url = webhookUrl(action.webhookUrl)
+            return url?.takeIf { isHttpsUrl(it) || (isHttpUrl(it) && action.webhookCleartext) }?.trim()
         }
     }
 }

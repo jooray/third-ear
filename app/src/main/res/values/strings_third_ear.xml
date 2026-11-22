@@ -75,14 +75,14 @@
     <string name="te_action_copy">Copy the transcript to the clipboard</string>
     <string name="te_action_group">White Noise group</string>
     <string name="te_action_pick_group">Pick a group</string>
-    <string name="te_action_webhook_url">Webhook URL (https://…)</string>
+    <string name="te_action_webhook_url">Webhook URL</string>
     <string name="te_action_webhook_auth">Authorization header (optional, e.g. Bearer …)</string>
     <string name="te_action_delete_confirm">Delete the action \"%s\"?</string>
     <string name="te_action_move_up">Move up</string>
     <string name="te_action_move_down">Move down</string>
     <string name="te_problem_no_name">Give the action a name</string>
     <string name="te_problem_no_group">Pick a White Noise group</string>
-    <string name="te_problem_no_webhook">Enter a webhook URL starting with https:// (plain http:// is not allowed: recordings and transcripts would travel unencrypted)</string>
+    <string name="te_problem_no_webhook">Enter the webhook address, for example example.org/hook (https:// is added when you leave it out)</string>
     <string name="te_problem_no_transcriber">No transcription app found: install Offline Speech to Text</string>
     <string name="te_no_groups">No groups yet: invite Third Ear\'s npub to a group in White Noise and accept the invite</string>
     <string name="te_at_least_one_action">Keep at least one action</string>
@@ -113,7 +113,7 @@
     <string name="te_error_no_transcriber">no transcription app (install Offline Speech to Text)</string>
     <string name="te_error_no_speech">no speech recognised</string>
     <string name="te_error_no_speech_no_ostt">no speech recognised. Install Offline Speech to Text (free, on Zapstore) to get transcripts</string>
-    <string name="te_error_no_webhook">no https:// webhook URL set</string>
+    <string name="te_error_no_webhook">no webhook URL set (or plain http not confirmed)</string>
     <string name="te_error_no_group">no White Noise group chosen</string>
     <string name="te_error_background_start">Android lets the microphone start only while Third Ear is open. Open Third Ear and try again.</string>
     <string name="te_error_start">Could not start recording: %s</string>
@@ -271,4 +271,9 @@
     <string name="te_support_never">Don\'t ask again</string>
     <string name="te_support_menu">Support the project</string>
     <string name="te_support_menu_desc">Opens the checkout in your browser · e-book included</string>
+    <string name="te_problem_webhook_cleartext">Confirm that this webhook may use plain http</string>
+    <string name="te_webhook_cleartext_warning">Plain http: the recording and transcript travel unencrypted. Fine on a network that encrypts by itself (Tailscale, Nostr VPN, WireGuard); elsewhere use https.</string>
+    <string name="te_webhook_cleartext_allow">Use http</string>
+    <string name="te_webhook_cleartext_on">Sent over plain http. Only on a network that encrypts it, such as Tailscale or Nostr VPN.</string>
+    <string name="te_webhook_cleartext_undo">Undo</string>
 </resources>

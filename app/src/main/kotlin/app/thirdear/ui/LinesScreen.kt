@@ -244,6 +244,7 @@ fun android.content.Context.problemText(p: ActionPlan.Problem) = getString(
         ActionPlan.Problem.NO_NAME -> R.string.te_problem_no_name
         ActionPlan.Problem.NO_GROUP -> R.string.te_problem_no_group
         ActionPlan.Problem.NO_WEBHOOK_URL -> R.string.te_problem_no_webhook
+        ActionPlan.Problem.WEBHOOK_CLEARTEXT -> R.string.te_problem_webhook_cleartext
         ActionPlan.Problem.NO_TRANSCRIBER -> R.string.te_problem_no_transcriber
     },
 )
@@ -699,9 +700,29 @@ private fun LineEditor(
                 Field(
                     stringResource(R.string.te_action_webhook_url),
                     a.webhookUrl.orEmpty(),
-                    { a = a.copy(webhookUrl = it.trim().ifEmpty { null }) },
+                    // a new address needs its own confirmation for plain http
+                    { a = a.copy(webhookUrl = it.trim().ifEmpty { null }, webhookCleartext = false) },
                     error = tried && ActionPlan.Problem.NO_WEBHOOK_URL in problems,
                 )
+                if (ActionPlan.isHttpUrl(ActionPlan.webhookUrl(a.webhookUrl))) {
+                    if (a.webhookCleartext) {
+                        Notice(
+                            stringResource(R.string.te_webhook_cleartext_on),
+                            Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                            calm = true,
+                            action = stringResource(R.string.te_webhook_cleartext_undo),
+                            onAction = { a = a.copy(webhookCleartext = false) },
+                        )
+                    } else {
+                        Notice(
+                            stringResource(R.string.te_webhook_cleartext_warning),
+                            Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                            fault = tried,
+                            action = stringResource(R.string.te_webhook_cleartext_allow),
+                            onAction = { a = a.copy(webhookCleartext = true) },
+                        )
+                    }
+                }
                 Field(stringResource(R.string.te_action_webhook_auth), a.webhookAuth.orEmpty(), { a = a.copy(webhookAuth = it.trim().ifEmpty { null }) })
             }
             else -> {}

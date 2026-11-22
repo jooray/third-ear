@@ -2,6 +2,7 @@ package app.thirdear.actions
 
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import app.thirdear.actions.ActionPlan.Delivery
 import app.thirdear.actions.ActionPlan.Step
@@ -96,5 +97,22 @@ class ActionPlanTest {
         assertFalse(ActionPlan.isHttpsUrl("https://"))
         assertFalse(ActionPlan.isHttpsUrl(null))
         assertFalse(ActionPlan.isHttpsUrl("example.org"))
+    }
+
+    @Test
+    fun `a webhook without a scheme is https, plain http needs the user's confirmation`() {
+        assertEquals("https://example.org/hook", ActionPlan.webhookUrl(" example.org/hook "))
+        assertEquals("http://100.64.0.2:8080/x", ActionPlan.webhookUrl("http://100.64.0.2:8080/x"))
+        val bare = RecordAction(name = "a", destination = Destination.WEBHOOK, webhookUrl = "example.org/hook")
+        assertTrue(ActionPlan.of(bare).problems(true).isEmpty())
+        assertEquals("https://example.org/hook", ActionPlan.webhookTarget(bare))
+
+        val http = RecordAction(name = "a", destination = Destination.WEBHOOK, webhookUrl = "http://100.64.0.2:8080/x")
+        assertEquals(listOf(ActionPlan.Problem.WEBHOOK_CLEARTEXT), ActionPlan.of(http).problems(true))
+        assertNull(ActionPlan.webhookTarget(http))
+        val confirmed = http.copy(webhookCleartext = true)
+        assertTrue(ActionPlan.of(confirmed).problems(true).isEmpty())
+        assertEquals("http://100.64.0.2:8080/x", ActionPlan.webhookTarget(confirmed))
+        assertEquals(confirmed, RecordAction.fromJson(confirmed.toJson()))
     }
 }

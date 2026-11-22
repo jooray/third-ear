@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Plain http is allowed only because a line's webhook may point at a Tailscale or Nostr VPN
+     address (encrypted by that layer). The editor asks for confirmation per line before it is
+     used (ActionPlan.webhookTarget); everything else Third Ear talks to is https or Nostr wss. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>

@@ -42,6 +42,8 @@ data class RecordAction(
     val groupName: String? = null,
     val webhookUrl: String? = null,
     val webhookAuth: String? = null,
+    /** The user confirmed sending this line's webhook over plain http (unencrypted unless a VPN encrypts it). */
+    val webhookCleartext: Boolean = false,
     /** Cord colour (index into the line palette); null: picked from the action's position. */
     val cord: Int? = null,
     /** Short line code shown on the key, tile and car grid (HRM, FAM); null: made from the name. */
@@ -58,6 +60,7 @@ data class RecordAction(
         .putOpt("groupName", groupName)
         .putOpt("webhookUrl", webhookUrl)
         .putOpt("webhookAuth", webhookAuth)
+        .put("webhookCleartext", webhookCleartext)
         .putOpt("cord", cord)
         .putOpt("code", code)
 
@@ -73,6 +76,7 @@ data class RecordAction(
             groupName = o.optStringOrNull("groupName"),
             webhookUrl = o.optStringOrNull("webhookUrl"),
             webhookAuth = o.optStringOrNull("webhookAuth"),
+            webhookCleartext = o.optBoolean("webhookCleartext"),
             cord = if (o.has("cord") && !o.isNull("cord")) o.optInt("cord") else null,
             code = o.optStringOrNull("code"),
         )

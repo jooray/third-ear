@@ -75,14 +75,14 @@
     <string name="te_action_copy">Skopírovať prepis do schránky</string>
     <string name="te_action_group">Skupina vo White Noise</string>
     <string name="te_action_pick_group">Vyber skupinu</string>
-    <string name="te_action_webhook_url">URL webhooku (https://…)</string>
+    <string name="te_action_webhook_url">URL webhooku</string>
     <string name="te_action_webhook_auth">Hlavička Authorization (nepovinná, napr. Bearer …)</string>
     <string name="te_action_delete_confirm">Vymazať akciu „%s“?</string>
     <string name="te_action_move_up">Posunúť vyššie</string>
     <string name="te_action_move_down">Posunúť nižšie</string>
     <string name="te_problem_no_name">Daj akcii názov</string>
     <string name="te_problem_no_group">Vyber skupinu vo White Noise</string>
-    <string name="te_problem_no_webhook">Zadaj URL webhooku, ktorá začína https:// (http:// nie je povolené: nahrávky a prepisy by išli nešifrované)</string>
+    <string name="te_problem_no_webhook">Zadaj adresu webhooku, napríklad example.org/hook (ak https:// vynecháš, doplní sa)</string>
     <string name="te_problem_no_transcriber">Nenašla sa aplikácia na prepis: nainštaluj Offline Speech to Text</string>
     <string name="te_no_groups">Zatiaľ žiadne skupiny: pozvi npub Third Ear do skupiny vo White Noise a prijmi pozvánku</string>
     <string name="te_at_least_one_action">Aspoň jedna akcia musí ostať</string>
@@ -115,7 +115,7 @@
     <string name="te_error_no_transcriber">žiadna aplikácia na prepis (nainštaluj Offline Speech to Text)</string>
     <string name="te_error_no_speech">nerozpoznala sa žiadna reč</string>
     <string name="te_error_no_speech_no_ostt">nerozpoznala sa žiadna reč. Na prepis nainštaluj Offline Speech to Text (zadarmo, na Zapstore)</string>
-    <string name="te_error_no_webhook">nie je zadaná https:// URL webhooku</string>
+    <string name="te_error_no_webhook">nie je zadaná URL webhooku (alebo nepotvrdené čisté http)</string>
     <string name="te_error_no_group">nie je vybraná skupina vo White Noise</string>
     <string name="te_error_background_start">Android spustí mikrofón, len keď je Third Ear otvorený. Otvor Third Ear a skús znova.</string>
     <string name="te_error_start">Nahrávanie sa nepodarilo spustiť: %s</string>
@@ -281,4 +281,9 @@
     <string name="te_support_never">Už neukazovať</string>
     <string name="te_support_menu">Podporiť projekt</string>
     <string name="te_support_menu_desc">Otvorí platbu v prehliadači · e-kniha v cene</string>
+    <string name="te_problem_webhook_cleartext">Potvrď, že tento webhook smie použiť čisté http</string>
+    <string name="te_webhook_cleartext_warning">Čisté http: nahrávka a prepis idú nešifrované. V poriadku v sieti, ktorá šifruje sama (Tailscale, Nostr VPN, WireGuard); inde použi https.</string>
+    <string name="te_webhook_cleartext_allow">Použiť http</string>
+    <string name="te_webhook_cleartext_on">Posiela sa cez čisté http. Len v sieti, ktorá ho šifruje, napríklad Tailscale alebo Nostr VPN.</string>
+    <string name="te_webhook_cleartext_undo">Zrušiť</string>
 </resources>
