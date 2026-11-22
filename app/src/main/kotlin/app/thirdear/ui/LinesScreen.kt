@@ -363,6 +363,7 @@ private fun GroupsSection(host: MainActivity, actions: List<RecordAction>, onOpe
     if (backingUp) NsecBackup(host, onDone = { backingUp = false; settingsVersion++ })
     editing?.let { (id, name) ->
         GroupDialog(
+            id,
             name,
             settingsStore.get(id),
             onSave = { settingsStore.put(id, it); settingsVersion++ },
@@ -418,23 +419,30 @@ fun android.content.Context.groupSummary(s: GroupSettings): String {
             ReplyMode.VOICE_AND_TEXT -> R.string.te_replies_voice_text
         },
     )
-    if (s.replies == ReplyMode.OFF) return replies
+    val mention = s.mention?.let { getString(R.string.te_group_mention_summary, s.mentionName ?: MarmotHost.Member.short(it)) }
+    if (s.replies == ReplyMode.OFF) return listOfNotNull(replies, mention).joinToString(" · ")
     val read = getString(if (s.read == ReadMode.AUTO) R.string.te_reading_auto else R.string.te_reading_ask)
-    return listOfNotNull(replies, read, s.speed?.let(::speedLabel)).joinToString(" · ")
+    return listOfNotNull(replies, read, s.speed?.let(::speedLabel), mention).joinToString(" · ")
 }
 
 @Composable
-private fun GroupDialog(name: String, initial: GroupSettings, onSave: (GroupSettings) -> Unit, onLeave: () -> Unit, onDismiss: () -> Unit) {
+private fun GroupDialog(groupId: String, name: String, initial: GroupSettings, onSave: (GroupSettings) -> Unit, onLeave: () -> Unit, onDismiss: () -> Unit) {
     val p = Te.colors
     var replies by remember { mutableStateOf(initial.replies) }
     var read by remember { mutableStateOf(initial.read) }
     var ignore by remember { mutableStateOf(initial.ignore.joinToString("\n")) }
     var speed by remember { mutableStateOf(initial.speed) }
+    var mention by remember { mutableStateOf(initial.mention?.let { it to initial.mentionName }) }
+    var members by remember { mutableStateOf<List<MarmotHost.Member>?>(null) }
+    LaunchedEffect(groupId) { members = runCatching { MarmotHost.members(groupId) }.getOrDefault(emptyList()) }
     val appSpeed = LocalContext.current.config.playbackSpeed
     FullDialog(
         title = name,
         onDismiss = onDismiss,
-        onSave = { onSave(GroupSettings(replies, read, GroupSettings.parseIgnore(ignore), speed)); onDismiss() },
+        onSave = {
+            onSave(GroupSettings(replies, read, GroupSettings.parseIgnore(ignore), speed, mention?.first, mention?.second))
+            onDismiss()
+        },
     ) {
         Label(stringResource(R.string.te_group_replies), Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
         listOf(
@@ -452,6 +460,7 @@ private fun GroupDialog(name: String, initial: GroupSettings, onSave: (GroupSett
         Label(stringResource(R.string.te_group_speed), Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 8.dp))
         RadioRow(stringResource(R.string.te_speed_default, speedLabel(appSpeed)), speed == null) { speed = null }
         GroupSettings.SPEEDS.forEach { v -> RadioRow(speedLabel(v), speed == v) { speed = v } }
+        MentionChoice(members, mention, onPick = { mention = it })
         Label(stringResource(R.string.te_group_ignore), Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 8.dp))
         OutlinedTextField(
             value = ignore,

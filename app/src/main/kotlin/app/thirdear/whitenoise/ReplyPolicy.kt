@@ -1,6 +1,7 @@
 package app.thirdear.whitenoise
 
 import app.thirdear.actions.enumOr
+import app.thirdear.actions.optStringOrNull
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -33,15 +34,26 @@ data class GroupSettings(
     val ignore: List<String> = listOf(DEFAULT_IGNORE),
     /** Voice messages from this group play at this speed; null: the app's default (an agent may already speak fast, people not). */
     val speed: Float? = null,
+    /**
+     * A member (account pubkey hex) every message Third Ear sends here mentions with a `["p", hex]`
+     * tag: for agents that answer only when mentioned (wn-agent groupActivation=mention). Null: no
+     * mention, the default; the text is never changed.
+     */
+    val mention: String? = null,
+    /** The mentioned member's name when it was picked, for the summary and the dialog. */
+    val mentionName: String? = null,
 ) {
     fun toJson(): JSONObject = JSONObject()
         .put("replies", replies.name)
         .put("read", read.name)
         .put("ignore", JSONArray(ignore))
         .putOpt("speed", speed?.toDouble())
+        .putOpt("mention", mention)
+        .putOpt("mentionName", mentionName)
 
     companion object {
         const val DEFAULT_IGNORE = "🎙️"
+        private const val PUBKEY_HEX_LENGTH = 64
 
         /** The speeds offered for voice messages. */
         val SPEEDS = listOf(1f, 1.25f, 1.5f, 1.75f, 2f)
@@ -54,6 +66,8 @@ data class GroupSettings(
                 read = enumOr(o.optString("read"), ReadMode.ASK),
                 ignore = if (arr == null) listOf(DEFAULT_IGNORE) else (0 until arr.length()).map { arr.getString(it) }.filter { it.isNotBlank() },
                 speed = if (o.has("speed") && !o.isNull("speed")) o.optDouble("speed").toFloat() else null,
+                mention = o.optStringOrNull("mention")?.takeIf { it.length == PUBKEY_HEX_LENGTH && it.all { c -> c in "0123456789abcdef" } },
+                mentionName = o.optStringOrNull("mentionName"),
             )
         }
 

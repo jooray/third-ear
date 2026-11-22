@@ -288,4 +288,15 @@
     <string name="te_webhook_cleartext_allow">Použít http</string>
     <string name="te_webhook_cleartext_on">Posílá se přes čisté http. Jen v síti, která ho šifruje, například Tailscale nebo Nostr VPN.</string>
     <string name="te_webhook_cleartext_undo">Zrušit</string>
+    <string name="te_group_mention">Zmínit u každé zprávy</string>
+    <string name="te_group_mention_none">Nikoho (výchozí)</string>
+    <string name="te_group_mention_note">Pro agenty, kteří odpovídají jen na zmínku (například brána wn-agent ve skupině s více lidmi). Third Ear ke všemu, co sem pošle (linky i odpovědi), přidá neviditelnou zmínku tohoto člena. Text se nemění.</string>
+    <string name="te_group_mention_summary">zmiňuje %s</string>
+    <string name="te_msg_delete">Smazat</string>
+    <string name="te_msg_delete_title">Smazat pro všechny?</string>
+    <string name="te_msg_delete_body">Zpráva zmizí všem členům skupiny. Jejich aplikace mohou ukázat, že zpráva byla smazána.</string>
+    <string name="te_msg_discard">Zahodit</string>
+    <string name="te_msg_discard_title">Zahodit neodeslanou zprávu?</string>
+    <string name="te_msg_discard_body">Do skupiny se nedostala: odstraní se jen z tohoto telefonu.</string>
+    <string name="te_msg_delete_failed">Zprávu se nepodařilo smazat. Zkontroluj připojení a zkus to znovu.</string>
 </resources>

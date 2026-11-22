@@ -24,6 +24,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.VolumeUp
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.DoneAll
 import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.PlayArrow
@@ -254,6 +255,7 @@ private fun Conversation(chat: Chat, messages: List<IncomingMessage>, ready: Boo
     // what Third Ear itself sent (a typed message, a note through the pipeline) shows up as well
     val notes by NoteStore.notes.collectAsStateWithLifecycle()
     var sent by remember { mutableIntStateOf(0) }
+    var deleting by remember { mutableStateOf<MarmotHost.TimelineMessage?>(null) }
     LaunchedEffect(chat.id, ready, messages, notes, sent) {
         if (ready) timeline = withContext(Dispatchers.IO) { runCatching { MarmotHost.timeline(chat.id) }.getOrNull() }
     }
@@ -303,12 +305,16 @@ private fun Conversation(chat: Chat, messages: List<IncomingMessage>, ready: Boo
                     // a short conversation sits at the bottom, by the composer
                     verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Bottom),
                 ) {
-                    items(lines.asReversed(), key = { it.id }) { m -> Bubble(chat.id, m, player, speed) }
+                    items(lines.asReversed(), key = { it.id }) { m ->
+                        val own = m.timeline?.takeIf { it.mine && chat.joined && ready }
+                        Bubble(chat.id, m, player, speed, onDelete = own?.let { { deleting = it } })
+                    }
                 }
             }
         }
         if (chat.joined && ready) Composer(chat, notes, onSendDone = { sent++ })
     }
+    deleting?.let { t -> DeleteDialog(chat.id, t, onDone = { deleting = null; sent++ }) }
 }
 
 /** The id prefix of a conversation's record key, an action that is not a line. */
@@ -443,8 +449,44 @@ private fun Toggle(text: String, selected: Boolean, onClick: () -> Unit) {
     )
 }
 
+/** Takes back an own message for everyone, or discards a send that never left the phone. */
 @Composable
-private fun Bubble(groupId: String, m: ChatLine, player: ChatPlayer, speed: Float) {
+private fun DeleteDialog(groupId: String, t: MarmotHost.TimelineMessage, onDone: () -> Unit) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    ConfirmDialog(
+        title = stringResource(if (t.failed) R.string.te_msg_discard_title else R.string.te_msg_delete_title),
+        message = stringResource(if (t.failed) R.string.te_msg_discard_body else R.string.te_msg_delete_body),
+        confirm = stringResource(if (t.failed) R.string.te_msg_discard else R.string.te_msg_delete),
+        destructive = true,
+        onConfirm = {
+            scope.launch {
+                val ok = withContext(Dispatchers.IO) {
+                    runCatching { WhiteNoise.deleteForEveryone(context, groupId, t) }
+                        .onFailure { android.util.Log.w("ThirdEar", "delete failed: ${it.javaClass.simpleName}") }
+                        .isSuccess
+                }
+                if (!ok) android.widget.Toast.makeText(context, R.string.te_msg_delete_failed, android.widget.Toast.LENGTH_LONG).show()
+                onDone()
+            }
+        },
+        onDismiss = onDone,
+    )
+}
+
+@Composable
+private fun DeleteButton(message: MarmotHost.TimelineMessage?, onDelete: (() -> Unit)?) {
+    if (message == null || onDelete == null) return
+    PlainButton(
+        stringResource(if (message.failed) R.string.te_msg_discard else R.string.te_msg_delete),
+        onDelete,
+        icon = Icons.Outlined.Delete,
+        color = Te.colors.faultInk,
+    )
+}
+
+@Composable
+private fun Bubble(groupId: String, m: ChatLine, player: ChatPlayer, speed: Float, onDelete: (() -> Unit)? = null) {
     val p = Te.colors
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -484,6 +526,8 @@ private fun Bubble(groupId: String, m: ChatLine, player: ChatPlayer, speed: Floa
                 }
                 if (m.ignored) Label(stringResource(R.string.te_ignored_list), Modifier.padding(top = 4.dp))
                 Row {
+                    // own messages: take back for everyone (a failed send is only discarded here)
+                    DeleteButton(m.timeline, onDelete)
                     if (m.text.isNotBlank() && !m.mine) {
                         PlainButton(
                             stringResource(R.string.te_read_aloud),

@@ -61,12 +61,20 @@ object WhiteNoise {
 
     suspend fun sendVoice(context: Context, groupId: String, file: File, fileName: String, mime: String, caption: String?) {
         ensureRunning(context)
-        readable(context) { MarmotHost.sendVoice(groupId, file, fileName, mime, caption) }
+        readable(context) { MarmotHost.sendVoice(groupId, file, fileName, mime, caption, mentionFor(context, groupId)) }
     }
 
     suspend fun sendText(context: Context, groupId: String, text: String) {
         ensureRunning(context)
-        readable(context) { MarmotHost.sendText(groupId, text) }
+        readable(context) { MarmotHost.sendText(groupId, text, mentionFor(context, groupId)) }
+    }
+
+    /** The member the group's settings mention on every message (off by default). */
+    private fun mentionFor(context: Context, groupId: String): String? = GroupSettingsStore(context).get(groupId).mention
+
+    suspend fun deleteForEveryone(context: Context, groupId: String, message: MarmotHost.TimelineMessage) {
+        ensureRunning(context)
+        readable(context) { MarmotHost.deleteForEveryone(groupId, message) }
     }
 
     /**

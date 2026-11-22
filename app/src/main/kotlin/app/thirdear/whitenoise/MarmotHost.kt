@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import app.thirdear.extensions.config
 import dev.ipf.marmotkit.AccountSummaryFfi
+import dev.ipf.marmotkit.DiscardFailedSendOutcomeFfi
 import dev.ipf.marmotkit.Marmot
 import dev.ipf.marmotkit.MarmotAndroid
 import dev.ipf.marmotkit.MarmotEventFfi
@@ -548,24 +549,73 @@ object MarmotHost {
      * encrypted for the group's current epoch: when the group moved on before the send
      * (MediaReferenceStaleEpoch), it is uploaded once more.
      */
-    suspend fun sendVoice(groupId: String, file: File, fileName: String, mime: String, caption: String?) = io { m, acct ->
+    /**
+     * [mention]: a member's pubkey hex every message to the group mentions with a `["p", hex]` tag
+     * (GroupSettings.mention), for agents that act only when mentioned; null sends as before.
+     */
+    suspend fun sendVoice(groupId: String, file: File, fileName: String, mime: String, caption: String?, mention: String? = null) = io { m, acct ->
+        // with a mention: upload only, then send the references with the tag (an upload that sends carries no tags)
         val request = MediaFileUploadRequestFfi(
             attachments = listOf(MediaFileUploadAttachmentRequestFfi(file.path, file.length().toULong(), fileName, mime, null, null)),
             caption = caption,
-            send = true,
+            send = mention == null,
             blossomServer = null,
         )
-        val result = try {
-            m.uploadMediaFiles(acct, groupId, request, MediaFileTransferControlFfi())
+        suspend fun once(): SendSummaryFfi {
+            val result = m.uploadMediaFiles(acct, groupId, request, MediaFileTransferControlFfi())
+            if (mention == null) return result.sent ?: error("uploaded but not sent")
+            return m.sendTaggedMedia(acct, groupId, result.attachments.map { it.reference }, caption, mentionTags(mention))
+        }
+        val sent = try {
+            once()
         } catch (_: MarmotKitException.MediaReferenceStaleEpoch) {
             Log.i(TAG, "group moved on during the upload, uploading again")
-            m.uploadMediaFiles(acct, groupId, request, MediaFileTransferControlFfi())
+            once()
         }
-        logQueued(result.sent ?: error("uploaded but not sent"))
+        logQueued(sent)
     }
 
-    suspend fun sendText(groupId: String, text: String) = io { m, acct ->
-        logQueued(m.sendText(acct, groupId, text))
+    private fun mentionTags(pubkey: String) = listOf(listOf("p", pubkey))
+
+    suspend fun sendText(groupId: String, text: String, mention: String? = null) = io { m, acct ->
+        logQueued(if (mention == null) m.sendText(acct, groupId, text) else m.sendTaggedText(acct, groupId, text, mentionTags(mention)))
+    }
+
+    /** A group member as the mention picker lists them. */
+    data class Member(val pubkey: String, val name: String?, val self: Boolean) {
+        val label: String get() = name ?: short(pubkey)
+
+        companion object {
+            private const val SHORT_HEAD = 12
+            private const val SHORT_TAIL = 6
+
+            fun short(pubkey: String): String {
+                val npub = marmot?.let { m -> runCatching { m.npub(pubkey) }.getOrNull() } ?: pubkey
+                return npub.take(SHORT_HEAD) + "…" + npub.takeLast(SHORT_TAIL)
+            }
+        }
+    }
+
+    suspend fun members(groupId: String): List<Member> = io { m, acct ->
+        val self = accountHex
+        m.groupMembers(acct, groupId).map { r ->
+            Member(r.memberIdHex, runCatching { m.displayName(r.memberIdHex) }.getOrNull()?.takeIf { it.isNotBlank() }, r.memberIdHex == self)
+        }.sortedWith(compareBy({ it.self }, { it.label.lowercase() }))
+    }
+
+    /**
+     * Takes back an own message for every member (a kind-5 deletion; their apps show it as deleted).
+     * A send that never left this phone is only discarded here: announcing it would tell the group
+     * about a message nobody received.
+     */
+    suspend fun deleteForEveryone(groupId: String, message: TimelineMessage) = io { m, acct ->
+        if (message.failed) {
+            val r = m.discardFailedSend(acct, groupId, message.id)
+            if (r.outcome == DiscardFailedSendOutcomeFfi.STILL_SENDING) error("still sending")
+        } else {
+            logQueued(m.deleteMessage(acct, groupId, message.id))
+        }
+        Unit
     }
 
     /**
@@ -588,6 +638,8 @@ object MarmotHost {
         val text: String,
         val audio: List<MediaAttachmentReferenceFfi>,
         val at: Long,
+        /** An own send that never reached a relay (MarmotKit: local_publish_failed). */
+        val failed: Boolean = false,
     )
 
     /** The group's latest chat messages, oldest first (system events and deleted messages left out). */
@@ -604,6 +656,7 @@ object MarmotHost {
                     text = r.plaintext,
                     audio = r.media.filterIsInstance<MediaAttachmentOutcomeFfi.Accepted>().map { it.reference }.filter { it.mediaType.startsWith("audio/") },
                     at = r.timelineAt.toLong().let { if (it > MILLIS_THRESHOLD) it else it * 1000 },
+                    failed = r.invalidationStatus == "local_publish_failed",
                 )
             }
             .sortedBy { it.at }

@@ -278,4 +278,15 @@
     <string name="te_webhook_cleartext_allow">Use http</string>
     <string name="te_webhook_cleartext_on">Sent over plain http. Only on a network that encrypts it, such as Tailscale or Nostr VPN.</string>
     <string name="te_webhook_cleartext_undo">Undo</string>
+    <string name="te_group_mention">Mention with every message</string>
+    <string name="te_group_mention_none">Nobody (default)</string>
+    <string name="te_group_mention_note">For agents that answer only when mentioned (for example a wn-agent gateway in a group with more people). Third Ear adds an invisible mention of this member to everything it sends here: line deliveries and replies. The text stays as it is.</string>
+    <string name="te_group_mention_summary">mentions %s</string>
+    <string name="te_msg_delete">Delete</string>
+    <string name="te_msg_delete_title">Delete for everyone?</string>
+    <string name="te_msg_delete_body">The message disappears for every member of the group. Their apps may show that a message was deleted.</string>
+    <string name="te_msg_discard">Discard</string>
+    <string name="te_msg_discard_title">Discard the unsent message?</string>
+    <string name="te_msg_discard_body">It never reached the group: it is only removed from this phone.</string>
+    <string name="te_msg_delete_failed">Couldn\'t delete the message. Check the connection and try again.</string>
 </resources>

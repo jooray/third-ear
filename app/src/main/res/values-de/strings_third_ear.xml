@@ -286,4 +286,15 @@
     <string name="te_webhook_cleartext_allow">http verwenden</string>
     <string name="te_webhook_cleartext_on">Wird über einfaches http gesendet. Nur in einem Netz, das es verschlüsselt, etwa Tailscale oder Nostr VPN.</string>
     <string name="te_webhook_cleartext_undo">Rückgängig</string>
+    <string name="te_group_mention">Bei jeder Nachricht erwähnen</string>
+    <string name="te_group_mention_none">Niemanden (Standard)</string>
+    <string name="te_group_mention_note">Für Agenten, die nur auf Erwähnungen antworten (etwa ein wn-agent-Gateway in einer Gruppe mit mehreren Leuten). Third Ear fügt allem, was es hierher sendet (Linien und Antworten), eine unsichtbare Erwähnung dieses Mitglieds hinzu. Der Text bleibt, wie er ist.</string>
+    <string name="te_group_mention_summary">erwähnt %s</string>
+    <string name="te_msg_delete">Löschen</string>
+    <string name="te_msg_delete_title">Für alle löschen?</string>
+    <string name="te_msg_delete_body">Die Nachricht verschwindet bei allen Mitgliedern der Gruppe. Ihre Apps zeigen eventuell an, dass eine Nachricht gelöscht wurde.</string>
+    <string name="te_msg_discard">Verwerfen</string>
+    <string name="te_msg_discard_title">Nicht gesendete Nachricht verwerfen?</string>
+    <string name="te_msg_discard_body">Sie hat die Gruppe nie erreicht: Sie wird nur von diesem Telefon entfernt.</string>
+    <string name="te_msg_delete_failed">Die Nachricht konnte nicht gelöscht werden. Prüfe die Verbindung und versuch es noch einmal.</string>
 </resources>
